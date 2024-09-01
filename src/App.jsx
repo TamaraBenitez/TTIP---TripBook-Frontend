@@ -10,7 +10,7 @@ export default function App() {
   return (
     <>
         <Header />
-        <Toolbar sx={{height: "70px"}}/>
+        <Toolbar sx={{height: "90px"}}/>
         <Routes>
           <Route path="/" element={Home()} />
           <Route path="/trips" element={Trips()} />

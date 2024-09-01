@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import StoreContext from "../../store/storecontext";
-import { Grid2 } from "@mui/material";
+import { Container } from "@mui/material";
 import TripCard from "./TripCard";
+
 export default function Trips() {
   const [trips, setTrips] = useState([]);
   const store = useContext(StoreContext);
@@ -19,22 +20,22 @@ export default function Trips() {
 
   return (
     <>
-      <Grid2 container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+      <Container className="tripsContainer" sx={{display:"flex", justifyContent:"center", flexWrap:"wrap"}}>
         {trips.map((trip, i) => {
           return (
             <TripCard
-              key={"trip-"+i}
-              name={trip.name}
+              key={"trip-"+ i}
+              name={trip.nombre}
               description={trip.descripcion}
               startDate={trip.fechaInicio}
               destination={trip.destino}
               startingPoint={trip.origen}
-              currentParticipants={trip.participantes.length}
+              participantsNumber={trip.participantes.length}
               totalCapacity={trip.capacidadMaxima}
             />
           );
         })}
-      </Grid2>
+      </Container>
     </>
   );
 }

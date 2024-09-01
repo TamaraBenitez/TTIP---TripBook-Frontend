@@ -13,8 +13,8 @@ export default function Header() {
             transition: 'all 0.5s ease',
           }}
         >
-          <Button variant='contained' >Button 1</Button>
-          <Button variant='contained' >Button 2</Button>
+          <Button variant='text' color="white">Button 1</Button>
+          <Button variant='text' color="white">Button 2</Button>
         </Toolbar>
       </AppBar>
     </>
