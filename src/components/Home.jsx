@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, AppBar, Toolbar, Container } from '@mui/material';
+import { Box, Button, TextField, Container } from '@mui/material';
 
 const Home = () => {
   const [isSearchClicked, setIsSearchClicked] = useState(false);
@@ -23,19 +23,7 @@ const Home = () => {
         transition: 'all 0.5s ease',
       }}
     >
-      <AppBar position="fixed" sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-        <Toolbar
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-            transition: 'all 0.5s ease',
-          }}
-        >
-          <Button color="inherit">Button 1</Button>
-          <Button color="inherit">Button 2</Button>
-        </Toolbar>
-      </AppBar>
+      
 
       <Container
         sx={{
