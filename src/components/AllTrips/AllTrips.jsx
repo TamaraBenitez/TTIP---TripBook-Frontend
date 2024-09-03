@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import Trips from "../TripList/Trips";
 import StoreContext from "../../store/storecontext";
 
@@ -17,5 +18,10 @@ export default function AllTrips() {
       });
   }, []);
 
-  return <Trips trips={trips} />;
+  return (
+    <>
+      <Trips trips={trips} />
+      <Outlet />
+    </>
+  );
 }
