@@ -1,5 +1,4 @@
 import BaseService from "./BaseService";
-import data from '../data.json';
 
 class TripService extends BaseService {
     constructor(axios, apiUrl){
@@ -7,12 +6,11 @@ class TripService extends BaseService {
     }
     
     GetAllTrips() {
-        // return this.axios({
-        //     url: `${this.baseUrl}/trips`,
-        //     method: "GET",
-        //     headers: this.config.headers
-        // });
-        return data;
+        return this.axios({
+            url: `${this.baseUrl}/trip`,
+            method: "GET",
+            headers: this.config.headers
+        });
     };
 }
 

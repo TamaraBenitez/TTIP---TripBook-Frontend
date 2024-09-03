@@ -3,19 +3,24 @@ import StoreContext from "../../store/storecontext";
 import { Container } from "@mui/material";
 import TripCard from "./TripCard";
 
-export default function Trips() {
+export default function Trips(props) {
   const [trips, setTrips] = useState([]);
   const store = useContext(StoreContext);
+  const { userID = null } = props || {};
 
   useEffect(() => {
-    const data = store.services.tripService.GetAllTrips();
-    // .then((data)=>{
-    //   console.log("success");
-    // })
-    // .catch((error)=>{
-    //   console.log(error)
-    // })
-    setTrips(data);
+    if(userID !== null){
+      
+    } else {
+      store.services.tripService.GetAllTrips()
+      .then((res)=>{
+        debugger;
+        setTrips(res.data);
+      })
+      .catch((error)=>{
+        console.log(error)
+      })   
+    }
   }, []);
 
   return (
@@ -24,15 +29,14 @@ export default function Trips() {
         {trips.map((trip, i) => {
           return (
             <TripCard
-              key={"trip-"+ i}
-              name={trip.nombre}
+              key={trip.id}
               to={i}
-              description={trip.descripcion}
-              startDate={trip.fechaInicio}
-              destination={trip.destino}
-              startingPoint={trip.origen}
-              participantsNumber={trip.participantes.length}
-              totalCapacity={trip.capacidadMaxima}
+              description={trip.description}
+              startDate={trip.startDate}
+              destination={trip.endPoint}
+              startingPoint={trip.startPoint}
+              participantsNumber={trip.numberOfRegistrants}
+              estimatedCost={trip.estimatedCost}
             />
           );
         })}

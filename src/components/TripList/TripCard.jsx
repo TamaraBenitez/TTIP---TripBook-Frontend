@@ -9,18 +9,19 @@ import {
   Container,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Groups, LocationOn } from "@mui/icons-material";
 import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
 
 export default function TripCard({
-  name,
   description,
   startDate,
+  startingPoint,
   destination,
   participantsNumber,
   to,
+  estimatedCost
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -50,7 +51,7 @@ export default function TripCard({
           <CardMedia
             sx={{ height: 140, position: "relative" }}
             image="/images/road.jpg"
-            title="green iguana"
+            title="road"
           >
             {isHovered && (
               <Box
@@ -81,7 +82,7 @@ export default function TripCard({
           >
             <Container sx={{ display: "flex", paddingLeft: "0px !important" }}>
               <Typography variant="h5" component="div">
-                {name}
+                {startingPoint}
               </Typography>
               {isHovered && (
                 <Container
@@ -116,6 +117,9 @@ export default function TripCard({
                 {description}
               </Typography>
             )}
+            <Typography color="primary" variant="h6">
+              ${estimatedCost}
+            </Typography>
           </CardContent>
         </CardActionArea>
         {isHovered && (

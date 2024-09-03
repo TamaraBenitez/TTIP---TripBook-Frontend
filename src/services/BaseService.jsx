@@ -3,7 +3,9 @@ class BaseService {
         this.axios = axios;
         this.baseUrl = apiUrl;
         this.config = {
-            headers: {}
+            headers: {
+                'Access-Control-Allow-Origin': "*"
+            }
         };
     }
 }
