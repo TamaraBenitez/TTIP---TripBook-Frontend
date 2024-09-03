@@ -1,8 +1,8 @@
-import React, { StrictMode, useContext } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Axios } from "axios";
+import { BrowserRouter as Router } from "react-router-dom";
+import  Axios  from "axios";
 import TripService from "./services/TripService.jsx";
 import App from "./App.jsx";
 import "@fontsource/roboto/300.css";
@@ -23,10 +23,11 @@ const theme = createTheme({
     },
   },
 });
+const baseUrl= import.meta.env.VITE_TRIPBOOK_API;
 
 const store = {
   services:{
-    tripService: new TripService(Axios,''),
+    tripService: new TripService(Axios,baseUrl),
   }
 };
 
