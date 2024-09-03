@@ -26,6 +26,7 @@ export default function Trips() {
             <TripCard
               key={"trip-"+ i}
               name={trip.nombre}
+              to={i}
               description={trip.descripcion}
               startDate={trip.fechaInicio}
               destination={trip.destino}
