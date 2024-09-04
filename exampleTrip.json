@@ -1,0 +1,46 @@
+{
+    "id": "1",
+    "startDate": "2024-09-15T00:00:00Z",
+    "endPoint": "Córdoba",
+    "startPoint": "Buenos Aires",
+    "description": "Un fin de semana de aventuras en las montañas.",
+    "estimatedCost": 300.00,
+    "tripUsers": [
+        {
+            "id": 1,
+            "name": "Raul",
+            "surname": "Gonzalez",
+            "email": "raul.gonzalez@example.com",
+            "password": "hashedpassword1",
+            "age": 32,
+            "province": "Buenos Aires",
+            "locality": "Palermo",
+            "latitude": -34.5889,
+            "longitude": -58.4327
+        },
+        {
+            "id": 2,
+            "name": "Marta",
+            "surname": "Perez",
+            "email": "marta.perez@example.com",
+            "password": "hashedpassword2",
+            "age": 28,
+            "province": "Cordoba",
+            "locality": "Nueva Cordoba",
+            "latitude": -31.4167,
+            "longitude": -64.1833
+        },
+        {
+            "id": 3,
+            "name": "Ricardo",
+            "surname": "Lopez",
+            "email": "ricardo.lopez@example.com",
+            "password": "hashedpassword3",
+            "age": 40,
+            "province": "Mendoza",
+            "locality": "Godoy Cruz",
+            "latitude": -32.9167,
+            "longitude": -68.8333
+        }
+    ]
+}
