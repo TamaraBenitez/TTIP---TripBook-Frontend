@@ -23,6 +23,7 @@ export default function TripCard({
   participantsNumber,
   to,
   estimatedCost,
+  action
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [open, setOpen] = useState(false);
@@ -79,8 +80,7 @@ export default function TripCard({
                 }}
               >
                 <Container sx={{ display: "flex", justifyContent: "center" }}>
-                  <LocationOn />
-                  <Typography variant="h6">{startingPoint}</Typography>
+                  <Typography variant="h6">{"Sale de "+startingPoint}</Typography>
                 </Container>
               </Box>
             )}

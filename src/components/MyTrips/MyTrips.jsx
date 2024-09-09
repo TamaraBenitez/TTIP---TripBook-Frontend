@@ -20,10 +20,8 @@ useEffect(()=>{
 
   return (
     <>
-    <Typography variant='h2'>
-        Mis Viajes
-    </Typography>
-    <Trips trips={trips}/>
+      <Typography variant="h4">Mis Viajes</Typography>
+      <Trips trips={trips} action={"detalles"} />
     </>
-  )
+  );
 }

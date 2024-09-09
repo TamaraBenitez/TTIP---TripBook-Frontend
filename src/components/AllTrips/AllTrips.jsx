@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Trips from "../TripList/Trips";
 import StoreContext from "../../store/storecontext";
+import { Typography } from "@mui/material";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -20,7 +21,8 @@ export default function AllTrips() {
 
   return (
     <>
-      <Trips trips={trips} />
+      <Typography variant="h4">Todos los viajes</Typography>
+      <Trips trips={trips} action={"unirme"} />
       <Outlet />
     </>
   );
