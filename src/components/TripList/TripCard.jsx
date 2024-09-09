@@ -21,7 +21,8 @@ export default function TripCard({
   destination,
   participantsNumber,
   to,
-  estimatedCost
+  estimatedCost,
+  action
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -68,8 +69,7 @@ export default function TripCard({
                 }}
               >
                 <Container sx={{ display: "flex", justifyContent: "center" }}>
-                  <LocationOn />
-                  <Typography variant="h6">{startingPoint}</Typography>
+                  <Typography variant="h6">{"Sale de "+startingPoint}</Typography>
                 </Container>
               </Box>
             )}
@@ -125,7 +125,7 @@ export default function TripCard({
         {isHovered && (
           <CardActions>
             <Button size="small" color="primary" onClick={handleClick}>
-              Unirme
+              {action}
             </Button>
           </CardActions>
         )}

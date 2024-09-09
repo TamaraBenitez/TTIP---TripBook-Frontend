@@ -19,6 +19,7 @@ export default function Trips(props) {
               startingPoint={trip.startPoint}
               participantsNumber={trip.numberOfRegistrants}
               estimatedCost={trip.estimatedCost}
+              action={props.action}
             />
           );
         })}
