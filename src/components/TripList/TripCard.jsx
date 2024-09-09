@@ -23,22 +23,13 @@ export default function TripCard({
   participantsNumber,
   to,
   estimatedCost,
-  action
+  action,
+  handleAction
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const handleClick = (e) => {
     e.stopPropagation();
-  };
-
-  const handleClickOpen = (e) => {
-    e.stopPropagation();
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   return (
@@ -135,18 +126,12 @@ export default function TripCard({
         </CardActionArea>
         {isHovered && (
           <CardActions>
-            <Button size="small" color="primary" onClick={handleClickOpen}>
-              Unirme
+            <Button size="small" color="primary" onClick={handleAction}>
+              {action}
             </Button>
           </CardActions>
         )}
       </Card>
-      <DialogCustom
-        open={open}
-        handleClose={handleClose}
-        title={"Inscripcion al viaje"}
-        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
-      />
     </>
   );
 }

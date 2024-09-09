@@ -19,6 +19,18 @@ class TripService extends BaseService {
             headers: this.config.headers
         });
     }
+
+    RegisterUserToTrip(userId, tripId) {
+        return this.axios({
+            url: `${this.baseUrl}/tripUser`,
+            method: "POST",
+            headers: this.config.headers,
+            data: {
+                userId:userId,
+                tripId:tripId
+            }
+        });
+    }
 }
 
 export default TripService;

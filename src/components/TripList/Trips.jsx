@@ -12,7 +12,7 @@ export default function Trips(props) {
           return (
             <TripCard
               key={trip.id}
-              to={i}
+              to={trip.id}
               description={trip.description}
               startDate={trip.startDate}
               destination={trip.endPoint}
@@ -20,6 +20,7 @@ export default function Trips(props) {
               participantsNumber={trip.numberOfRegistrants}
               estimatedCost={trip.estimatedCost}
               action={props.action}
+              handleAction={props.handleAction}
             />
           );
         })}
