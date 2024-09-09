@@ -14,7 +14,7 @@ export default function App() {
         <Header />
         <Toolbar sx={{height: "90px"}}/>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/trips" element={<AllTrips />} />
           <Route path="/trips/:id" element={<TripDetails />} />
           <Route path="/mytrips" element={<MyTrips/>} />
