@@ -69,7 +69,7 @@ export default function TripCard({
               >
                 <Container sx={{ display: "flex", justifyContent: "center" }}>
                   <LocationOn />
-                  <Typography variant="h6">{destination}</Typography>
+                  <Typography variant="h6">{startingPoint}</Typography>
                 </Container>
               </Box>
             )}
@@ -82,7 +82,7 @@ export default function TripCard({
           >
             <Container sx={{ display: "flex", paddingLeft: "0px !important" }}>
               <Typography variant="h5" component="div">
-                {startingPoint}
+                {destination}
               </Typography>
               {isHovered && (
                 <Container
