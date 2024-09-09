@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { Groups, LocationOn } from "@mui/icons-material";
 import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
+import DialogCustom from "../DialogCustom/DialogCustom";
 
 export default function TripCard({
   description,
@@ -21,12 +22,22 @@ export default function TripCard({
   destination,
   participantsNumber,
   to,
-  estimatedCost
+  estimatedCost,
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClick = (e) => {
     e.stopPropagation();
+  };
+
+  const handleClickOpen = (e) => {
+    e.stopPropagation();
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -124,12 +135,18 @@ export default function TripCard({
         </CardActionArea>
         {isHovered && (
           <CardActions>
-            <Button size="small" color="primary" onClick={handleClick}>
+            <Button size="small" color="primary" onClick={handleClickOpen}>
               Unirme
             </Button>
           </CardActions>
         )}
       </Card>
+      <DialogCustom
+        open={open}
+        handleClose={handleClose}
+        title={"Inscripcion al viaje"}
+        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
+      />
     </>
   );
 }
