@@ -11,6 +11,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./index.css";
 import StoreContext from "./store/storecontext.jsx";
+import UserService from "./services/UserService.jsx";
 
 const theme = createTheme({
   palette: {
@@ -28,6 +29,7 @@ const baseUrl= import.meta.env.VITE_TRIPBOOK_API;
 const store = {
   services:{
     tripService: new TripService(Axios,baseUrl),
+    userService: new UserService(Axios,baseUrl)
   }
 };
 
