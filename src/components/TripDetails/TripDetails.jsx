@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { AccountCircle, TaskAlt } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
+import { formatDate } from "../../utility/Utility";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -34,9 +35,6 @@ export default function TripDetails() {
 
   const handleCloseModal = () => {
     setOpen(false);
-  };
-  const formatDate = (startDate) => {
-    return new Date(startDate).toLocaleDateString();
   };
 
   const handleSuscribe = (e) => {
@@ -88,7 +86,7 @@ export default function TripDetails() {
                 Viaje a {trip.endPoint}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <strong>Fecha de inicio:</strong> {formatDate(trip.startDate)}
+                <strong>Fecha de salida:</strong> {formatDate(trip.startDate, true)}
               </Typography>
               <Typography variant="body1" color="textSecondary">
                 <strong>Desde:</strong> {trip.startPoint}

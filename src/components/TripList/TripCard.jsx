@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { Groups } from "@mui/icons-material";
 import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
+import { formatDate } from "../../utility/Utility";
 
 export default function TripCard({
   description,
@@ -111,7 +112,7 @@ export default function TripCard({
               )}
             </Container>
 
-            <Typography>{startDate}</Typography>
+            <Typography>{formatDate(startDate)}</Typography>
 
             {isHovered && (
               <Typography
