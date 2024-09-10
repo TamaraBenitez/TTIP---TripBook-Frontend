@@ -1,18 +1,19 @@
 import { useState, useEffect, useContext } from "react";
 import {
-  Typography,
   Skeleton,
   Card,
   CardContent,
   Alert,
   Button,
   Slide,
+  Box
 } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import Trips from "../TripList/Trips";
 import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { TaskAlt } from "@mui/icons-material";
+import RibbonHeading from "../RibbonHeading/RibbonHeading";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -90,7 +91,8 @@ export default function AllTrips() {
 
   return (
     <>
-      <Typography variant="h4">Todos los viajes</Typography>
+    <Box sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+    <RibbonHeading heading={"Viajes Disponibles"} component="h2" variant="h2"/>
       {loading ? (
         // Show 5 Skeleton cards while loading
         [...Array(5)].map((_, index) => (
@@ -137,6 +139,7 @@ export default function AllTrips() {
         </Slide>
       )}
       <Outlet />
+    </Box>
     </>
   );
 }

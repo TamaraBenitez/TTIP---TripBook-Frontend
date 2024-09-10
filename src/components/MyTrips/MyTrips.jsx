@@ -3,6 +3,7 @@ import Trips from '../TripList/Trips'
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, Skeleton, Typography } from '@mui/material';
 import StoreContext from '../../store/storecontext';
+import RibbonHeading from '../RibbonHeading/RibbonHeading';
 
 export default function MyTrips() {
     const [trips, setTrips] = useState([]);
@@ -27,7 +28,7 @@ export default function MyTrips() {
 
   return (
     <>
-      <Typography variant="h4">Mis Viajes</Typography>
+      <RibbonHeading heading={"Mis Viajes"} component="h2" variant="h2"/>
       {loading ? (
         // Show 5 Skeleton cards while loading
         [...Array(5)].map((_, index) => (
