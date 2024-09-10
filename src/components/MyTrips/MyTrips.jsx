@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Trips from '../TripList/Trips'
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, Skeleton, Typography } from '@mui/material';
 import StoreContext from '../../store/storecontext';
 
@@ -7,8 +8,9 @@ export default function MyTrips() {
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const store = useContext(StoreContext);
+    const navigate = useNavigate();
     console.log("mytrips")
-useEffect(()=>{
+    useEffect(()=>{
     store.services.userService.GetMyTrips()
         .then((res)=>{
             setTrips(res.data);
@@ -18,7 +20,10 @@ useEffect(()=>{
             console.log(e);
             setLoading(false);
         })
-},[]);
+    },[]);
+    const redirectToTrip = (e, to) =>{
+      navigate(`/trips/${to}`)
+    }
 
   return (
     <>
@@ -35,7 +40,7 @@ useEffect(()=>{
           </Card>
         ))
       ) : (
-      <Trips trips={trips} action={"detalles"} />
+      <Trips trips={trips} action={"detalles"} handleAction={redirectToTrip}/>
       )}
     </>
   );

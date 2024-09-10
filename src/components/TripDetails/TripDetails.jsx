@@ -13,12 +13,10 @@ import {
   ListItemIcon,
   AccordionDetails,
   Skeleton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  Alert,
 } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, TaskAlt } from "@mui/icons-material";
+import DialogCustom from "../DialogCustom/DialogCustom";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -27,28 +25,30 @@ export default function TripDetails() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleClickOpen = (e) => {
     e.stopPropagation();
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleCloseModal = () => {
     setOpen(false);
   };
   const formatDate = (startDate) => {
     return new Date(startDate).toLocaleDateString();
   };
 
-  const handleSuscribe=(e)=>{
+  const handleSuscribe = (e) => {
     setLoading(true);
-    handleClose();
+    handleCloseModal();
     store.services.tripService.RegisterUserToTrip("testid1", id)
-      .then((res)=>{
-        setLoading(false);
-        setIsRegistered(true);
-      })
-  }
+    .then((res) => {
+      setLoading(false);
+      setIsRegistered(true);
+      setShowAlert(true);
+    });
+  };
 
   useEffect(() => {
     store.services.tripService
@@ -58,17 +58,20 @@ export default function TripDetails() {
         const alreadyRegistered = res.data.participants.find(
           (p) => p.id == "testid1"
         );
-        setIsRegistered(alreadyRegistered !== undefined);
+        if(alreadyRegistered)
+        setIsRegistered(true);
         setLoading(false);
       })
       .catch((e) => {
         console.log(e);
         setLoading(false);
       });
-  }, [id, store.services.tripService, trip.participants]);
+  }, [id, store.services.tripService, isRegistered]);
 
   return (
     <>
+    <Box sx={{display:"flex", flexDirection: "column", alignItems:"center"}}>
+
       <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
         <CardContent>
           {loading ? (
@@ -109,7 +112,7 @@ export default function TripDetails() {
                       sx={{ justifyContent: "flex-start" }}
                       aria-controls="panel1-content"
                       id="panel1-header"
-                    >
+                      >
                       <ListItemIcon sx={{ minWidth: 40 }}>
                         <AccountCircle />
                       </ListItemIcon>
@@ -119,7 +122,7 @@ export default function TripDetails() {
                     </AccordionSummary>
                     <AccordionDetails
                       sx={{ WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}
-                    >
+                      >
                       <Box>
                         <Typography
                           variant="body2"
@@ -128,7 +131,7 @@ export default function TripDetails() {
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
-                        >
+                          >
                           Email: {user.email}
                         </Typography>
                         <Typography
@@ -138,7 +141,7 @@ export default function TripDetails() {
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
-                        >
+                          >
                           Localidad: {user.locality}, {user.province}
                         </Typography>
                       </Box>
@@ -152,17 +155,17 @@ export default function TripDetails() {
               )}
               {!isRegistered && (
                 <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: "20px",
-                  }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "20px",
+                }}
                 >
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handleClickOpen}
-                  >
+                    >
                     Unirme al viaje
                   </Button>
                 </Box>
@@ -171,21 +174,19 @@ export default function TripDetails() {
           )}
         </CardContent>
       </Card>
-      <Dialog
+      <DialogCustom
         open={open}
-        handleClose={handleClose}
-      >
-        <DialogTitle>Inscripción al viaje</DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Está seguro que desea inscribirse a este viaje?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSuscribe}>confirmar</Button>
-          <Button onClick={handleClose}>cancelar</Button>
-        </DialogActions>
-      </Dialog>
+        handleClose={handleCloseModal}
+        handleConfirm={handleSuscribe}
+        title={"Inscripcion al viaje"}
+        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
+        />
+      {showAlert &&
+        <Alert sx={{maxWidth:500}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
+          Te has Inscripto exitosamente a este viaje
+        </Alert>
+      }
+      </Box>
     </>
   );
 }

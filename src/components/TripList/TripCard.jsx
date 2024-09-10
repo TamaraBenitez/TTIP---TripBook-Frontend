@@ -10,10 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Groups, LocationOn } from "@mui/icons-material";
+import { Groups } from "@mui/icons-material";
 import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
-import DialogCustom from "../DialogCustom/DialogCustom";
 
 export default function TripCard({
   description,
@@ -31,7 +30,17 @@ export default function TripCard({
   const handleClick = (e) => {
     e.stopPropagation();
   };
-
+  function cleanString(input) {
+    // Remove spaces and replace accented vowels
+    return input
+      .replace(/\s+/g, '') // Remove all spaces
+      .replace(/[áÁ]/g, 'a')
+      .replace(/[éÉ]/g, 'e')
+      .replace(/[íÍ]/g, 'i')
+      .replace(/[óÓ]/g, 'o')
+      .replace(/[úÚ]/g, 'u')
+      .toLowerCase();
+  }
   return (
     <>
       <Card
@@ -39,6 +48,7 @@ export default function TripCard({
         className="tripCard"
         sx={{
           textDecoration: "none",
+          height: "fit-content",
           width: 345,
           transition: "transform 0.3s ease-in-out",
           "&:hover": {
@@ -53,7 +63,7 @@ export default function TripCard({
         <CardActionArea component={NavLink} to={`/trips/${to}`}>
           <CardMedia
             sx={{ height: 140, position: "relative" }}
-            image="/images/road.jpg"
+            image={`/images/${cleanString(destination)}.jpg`}
             title="road"
           >
             {isHovered && (
@@ -126,7 +136,7 @@ export default function TripCard({
         </CardActionArea>
         {isHovered && (
           <CardActions>
-            <Button size="small" color="primary" onClick={handleAction}>
+            <Button size="small" color="primary" onClick={(e)=>handleAction(e, to)}>
               {action}
             </Button>
           </CardActions>

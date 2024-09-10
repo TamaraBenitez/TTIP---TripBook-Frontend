@@ -8,7 +8,7 @@ export default function Trips(props) {
   return (
     <>
       <Container className="tripsContainer" sx={{display:"flex", justifyContent:"center", flexWrap:"wrap"}}>
-        {props.trips.map((trip, i) => {
+        {props.trips.map((trip) => {
           return (
             <TripCard
               key={trip.id}

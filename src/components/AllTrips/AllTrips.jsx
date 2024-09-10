@@ -1,16 +1,61 @@
 import { useState, useEffect, useContext } from "react";
-import { Typography, Skeleton, Card, CardContent } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import {
+  Typography,
+  Skeleton,
+  Card,
+  CardContent,
+  Alert,
+  Button,
+  Slide,
+} from "@mui/material";
+import { Outlet, useNavigate } from "react-router-dom";
 import Trips from "../TripList/Trips";
 import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
-
+import { TaskAlt } from "@mui/icons-material";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [tripToSuscribe, setTripToSuscribe] = useState(null);
   const store = useContext(StoreContext);
+  const navigate = useNavigate();
+  const confirmMsg = "¿Esta seguro que desea inscribirse a este viaje?";
+  const successMsg = "Te registraste correctamente";
+  const [modalMsg, setModalMsg] = useState(confirmMsg);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+
+  const suscribe = () => {
+    setLoading(true);
+    store.services.tripService
+      .RegisterUserToTrip("testid1", tripToSuscribe)
+      .then(() => {
+        setLoading(false);
+        setModalMsg(successMsg);
+        setModalConfirmBtn(goToMyTripsButton);
+      })
+      .catch((e) => {
+        setAlertMsg(e.response.data.message);
+        setOpen(false);
+        setLoading(false);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 3000);
+      });
+  };
+
+  const suscribeButton = <Button onClick={suscribe}>confirmar</Button>;
+
+  const goToMyTripsButton = (
+    <Button onClick={() => navigate(`/trips/${tripToSuscribe}`)}>
+      Ver detalles
+    </Button>
+  );
+
+  const [modalConfirmBtn, setModalConfirmBtn] = useState(suscribeButton);
 
   useEffect(() => {
     store.services.tripService
@@ -25,13 +70,22 @@ export default function AllTrips() {
       });
   }, [store.services.tripService]);
 
-  const handleClickOpenModal = (e) => {
+  const handleClickOpenModal = (e, to) => {
+    setTripToSuscribe(to);
     e.stopPropagation();
     setOpen(true);
   };
+  useEffect(() => {
+    if (tripToSuscribe) {
+      setModalConfirmBtn(suscribeButton);
+    }
+  }, [tripToSuscribe]);
 
   const handleCloseModal = () => {
     setOpen(false);
+    setTripToSuscribe(null);
+    setModalMsg(confirmMsg);
+    setModalConfirmBtn(suscribeButton);
   };
 
   return (
@@ -50,14 +104,37 @@ export default function AllTrips() {
         ))
       ) : (
         <>
-        <Trips trips={trips} action={"unirme"} handleAction={handleClickOpenModal}/>
-        <DialogCustom
-        open={open}
-        handleClose={handleCloseModal}
-        title={"Inscripcion al viaje"}
-        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
-      />
+          <Trips
+            trips={trips}
+            action={"unirme"}
+            handleAction={handleClickOpenModal}
+          />
+          <DialogCustom
+            open={open}
+            handleClose={handleCloseModal}
+            confirmButton={modalConfirmBtn}
+            title={"Inscripcion al viaje"}
+            textParagraph={modalMsg}
+          />
         </>
+      )}
+      {showAlert && (
+        <Slide direction="left" in={showAlert} mountOnEnter unmountOnExit>
+          <Alert
+            sx={{
+              maxWidth: 500,
+              position: "fixed",
+              top: "130px",
+              right: "10px",
+            }}
+            onClose={() => setShowAlert(false)}
+            variant="standard"
+            icon={<TaskAlt fontSize="inherit" />}
+            severity="error"
+          >
+            {alertMsg}
+          </Alert>
+        </Slide>
       )}
       <Outlet />
     </>

@@ -7,7 +7,7 @@ class UserService extends BaseService {
 
     GetMyTrips() {
         return this.axios({
-            url: `${this.baseUrl}/user/mytrips?userid=testid1`, //harcode test user
+            url: `${this.baseUrl}/tripUser/testid1/trips`, //harcode test user
             method: "GET",
             headers: this.config.headers
         });
