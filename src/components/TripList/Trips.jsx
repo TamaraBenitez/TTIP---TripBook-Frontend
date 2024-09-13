@@ -8,11 +8,11 @@ export default function Trips(props) {
   return (
     <>
       <Container className="tripsContainer" sx={{display:"flex", justifyContent:"center", flexWrap:"wrap"}}>
-        {props.trips.map((trip, i) => {
+        {props.trips.map((trip) => {
           return (
             <TripCard
               key={trip.id}
-              to={i}
+              to={trip.id}
               description={trip.description}
               startDate={trip.startDate}
               destination={trip.endPoint}
@@ -20,6 +20,7 @@ export default function Trips(props) {
               participantsNumber={trip.numberOfRegistrants}
               estimatedCost={trip.estimatedCost}
               action={props.action}
+              handleAction={props.handleAction}
             />
           );
         })}

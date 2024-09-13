@@ -11,7 +11,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const DialogCustom = ({ open, handleClose, title, textParagraph }) => {
+const DialogCustom = ({ open, handleClose, title, textParagraph, handleConfirm, confirmButton }) => {
   return (
     <>
       {" "}
@@ -29,7 +29,7 @@ const DialogCustom = ({ open, handleClose, title, textParagraph }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Confirmar</Button>
+          { confirmButton ? confirmButton : <Button onClick={handleConfirm}>Confirmar</Button>}
           <Button onClick={handleClose}>Cancelar</Button>
         </DialogActions>
       </Dialog>

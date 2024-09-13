@@ -10,10 +10,10 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Groups, LocationOn } from "@mui/icons-material";
+import { Groups } from "@mui/icons-material";
 import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
-import DialogCustom from "../DialogCustom/DialogCustom";
+import { formatDate } from "../../utility/Utility";
 
 export default function TripCard({
   description,
@@ -23,24 +23,25 @@ export default function TripCard({
   participantsNumber,
   to,
   estimatedCost,
-  action
+  action,
+  handleAction
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [open, setOpen] = useState(false);
 
   const handleClick = (e) => {
     e.stopPropagation();
   };
-
-  const handleClickOpen = (e) => {
-    e.stopPropagation();
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+  function cleanString(input) {
+    // Remove spaces and replace accented vowels
+    return input
+      .replace(/\s+/g, '') // Remove all spaces
+      .replace(/[áÁ]/g, 'a')
+      .replace(/[éÉ]/g, 'e')
+      .replace(/[íÍ]/g, 'i')
+      .replace(/[óÓ]/g, 'o')
+      .replace(/[úÚ]/g, 'u')
+      .toLowerCase();
+  }
   return (
     <>
       <Card
@@ -48,6 +49,7 @@ export default function TripCard({
         className="tripCard"
         sx={{
           textDecoration: "none",
+          height: "fit-content",
           width: 345,
           transition: "transform 0.3s ease-in-out",
           "&:hover": {
@@ -62,7 +64,7 @@ export default function TripCard({
         <CardActionArea component={NavLink} to={`/trips/${to}`}>
           <CardMedia
             sx={{ height: 140, position: "relative" }}
-            image="/images/road.jpg"
+            image={`/images/${cleanString(destination)}.jpg`}
             title="road"
           >
             {isHovered && (
@@ -110,7 +112,7 @@ export default function TripCard({
               )}
             </Container>
 
-            <Typography>{startDate}</Typography>
+            <Typography>{formatDate(startDate)}</Typography>
 
             {isHovered && (
               <Typography
@@ -135,18 +137,12 @@ export default function TripCard({
         </CardActionArea>
         {isHovered && (
           <CardActions>
-            <Button size="small" color="primary" onClick={handleClickOpen}>
-              Unirme
+            <Button size="small" color="primary" onClick={(e)=>handleAction(e, to)}>
+              {action}
             </Button>
           </CardActions>
         )}
       </Card>
-      <DialogCustom
-        open={open}
-        handleClose={handleClose}
-        title={"Inscripcion al viaje"}
-        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
-      />
     </>
   );
 }
