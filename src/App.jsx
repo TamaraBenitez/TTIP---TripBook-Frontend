@@ -7,18 +7,17 @@ import AllTrips from "./components/AllTrips/AllTrips";
 import TripDetails from "./components/TripDetails/TripDetails";
 
 export default function App() {
-  
-
   return (
     <>
-        <Header />
-        <Toolbar sx={{height: "90px"}}/>
-        <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/trips" element={<AllTrips />} />
-          <Route path="/trips/:id" element={<TripDetails />} />
-          <Route path="/mytrips" element={<MyTrips/>} />
-        </Routes>
+      <Header />
+      <Toolbar sx={{ height: "90px" }} />
+      <Routes>
+        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/" element={<AllTrips />} />
+        <Route path="/trips" element={<AllTrips />} />
+        <Route path="/trips/:id" element={<TripDetails />} />
+        <Route path="/mytrips" element={<MyTrips />} />
+      </Routes>
     </>
   );
 }
