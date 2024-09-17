@@ -8,23 +8,39 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import StoreContext from "../../store/storecontext";
 
 const Login = () => {
-  const [data, setData] = useState({ username: "", password: "" });
+  const [data, setData] = useState({ email: "", password: "" });
+  const store = useContext(StoreContext);
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
 
-  /*  const handleSubmit = (event) => {
-        event.preventDefault();
-        
-      
-      }; */
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    store.services.authService
+      .login(data)
+      .then((response) => {
+        console.log(response.data);
+        sessionStorage.setItem("token", response.data);
+        navigate("/mytrips");
+      })
+      .catch((error) => {
+        setMsgError(error.response.data);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 3000);
+
+        console.log(error.response.data);
+      });
+  };
 
   const handleInputChange = (event) => {
     setData({ ...data, [event.target.name]: event.target.value });
@@ -51,7 +67,7 @@ const Login = () => {
   }
 
   const puedeIngresar = () => {
-    return data.username.trim() !== "" && data.password.trim() !== "";
+    return data.email.trim() !== "" && data.password.trim() !== "";
   };
 
   return (
@@ -69,6 +85,7 @@ const Login = () => {
               flexDirection: "column",
               alignItems: "center",
             }}
+            onSubmit={handleSubmit}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
@@ -82,9 +99,9 @@ const Login = () => {
                 required
                 fullWidth
                 id="email"
-                label="Username"
-                name="username"
-                value={data.username}
+                label="Email"
+                name="email"
+                value={data.email}
                 onChange={handleInputChange}
                 autoComplete="email"
                 autoFocus

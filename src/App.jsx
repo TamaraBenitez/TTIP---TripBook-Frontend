@@ -6,6 +6,7 @@ import MyTrips from "./components/MyTrips/MyTrips";
 import AllTrips from "./components/AllTrips/AllTrips";
 import TripDetails from "./components/TripDetails/TripDetails";
 import Login from "./components/Auth/Login";
+import RouteCustom from "./components/RouteCustom";
 
 export default function App() {
   const location = useLocation();
@@ -20,7 +21,15 @@ export default function App() {
         <Route path="/" element={<AllTrips />} />
         <Route path="/trips" element={<AllTrips />} />
         <Route path="/trips/:id" element={<TripDetails />} />
-        <Route path="/mytrips" element={<MyTrips />} />
+
+        <Route
+          path="/mytrips"
+          element={
+            <RouteCustom>
+              <MyTrips />
+            </RouteCustom>
+          }
+        />
       </Routes>
     </>
   );
