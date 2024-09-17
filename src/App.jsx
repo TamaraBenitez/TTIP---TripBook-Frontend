@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./components/Home";
 import Header from "./components/Header/Header";
 import { Toolbar } from "@mui/material";
@@ -8,9 +8,11 @@ import TripDetails from "./components/TripDetails/TripDetails";
 import Login from "./components/Auth/Login";
 
 export default function App() {
+  const location = useLocation();
+  const isOnLogin = location.pathname === "/login";
   return (
     <>
-      <Header />
+      {!isOnLogin && <Header />}
       <Toolbar sx={{ height: "90px" }} />
       <Routes>
         {/* <Route path="/" element={<Home />} /> */}
