@@ -7,13 +7,15 @@ import AllTrips from "./components/AllTrips/AllTrips";
 import TripDetails from "./components/TripDetails/TripDetails";
 import Login from "./components/Auth/Login";
 import RouteCustom from "./components/RouteCustom";
+import Register from "./components/Auth/Register";
 
 export default function App() {
   const location = useLocation();
-  const isOnLogin = location.pathname === "/login";
+  const showHeader = location.pathname !== "/login" && 
+                    location.pathname !== "/register";
   return (
     <>
-      {!isOnLogin && <Header />}
+      {showHeader && <Header />}
       <Toolbar sx={{ height: "90px" }} />
       <Routes>
         {/* <Route path="/" element={<Home />} /> */}
@@ -21,6 +23,7 @@ export default function App() {
         <Route path="/" element={<AllTrips />} />
         <Route path="/trips" element={<AllTrips />} />
         <Route path="/trips/:id" element={<TripDetails />} />
+        <Route path="/register" element={<Register />} />
 
         <Route
           path="/mytrips"

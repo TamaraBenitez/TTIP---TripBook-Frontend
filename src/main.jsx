@@ -1,8 +1,9 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { BrowserRouter as Router } from "react-router-dom";
-import Axios from "axios";
 import TripService from "./services/TripService.jsx";
 import App from "./App.jsx";
 import "@fontsource/roboto/300.css";
@@ -40,10 +41,12 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <StoreContext.Provider value={store}>
-        <Router>
-          <CssBaseline />
-          <App />
-        </Router>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Router>
+            <CssBaseline />
+            <App />
+          </Router>
+        </LocalizationProvider>
       </StoreContext.Provider>
     </ThemeProvider>
   </StrictMode>

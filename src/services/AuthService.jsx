@@ -12,6 +12,15 @@ class AuthService extends BaseService {
       data: data,
     });
   }
+
+  register(data) {
+    return this.axios({
+      url: `${this.baseUrl}/auth/register`,
+      method: "POST",
+      headers: this.config.headers,
+      data: data
+    });
+  }
 }
 
 export default AuthService;
