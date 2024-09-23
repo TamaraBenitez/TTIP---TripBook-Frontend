@@ -68,7 +68,7 @@ export default function TripDetails() {
 
   return (
     <>
-    <Box sx={{display:"flex", flexDirection: "column", alignItems:"center"}}>
+    <Box sx={{display:"flex", flexDirection: "row", alignItems:"center"}}>
 
       <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
         <CardContent>

@@ -16,38 +16,58 @@ import StoreContext from "../../store/storecontext";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
+  const [emailError, setEmailError] = useState(false);
   const store = useContext(StoreContext);
   const [showAlert, setShowAlert] = useState(false);
   const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const handleSubmit = (event) => {
-    event.preventDefault();
-    store.services.authService
+    // event.stopImmediatePropagation();
+    // event.preventDefault();
+    event.stopPropagation()
+    validateEmail(data.email);
+    
+    if(!emailError){
+      store.services.authService
       .login(data)
       .then((response) => {
-        console.log(response.data);
         sessionStorage.setItem("token", response.data);
-        navigate("/mytrips");
+        navigate("/trips");
       })
       .catch((error) => {
+        setEmailError(true);
         setMsgError(error.response.data);
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
         }, 3000);
-
-        console.log(error.response.data);
       });
+    }
   };
 
   const handleInputChange = (event) => {
-    setData({ ...data, [event.target.name]: event.target.value });
-  };
+    const { name, value } = event.target;
+    setData({ ...data, [name]: value });
+
+    // Real-time validation
+    if (name === "email") {
+      setEmailError(!validateEmail(value));
+    };
+  }
 
   const changeVisualization = () => {
     setIsShowPassword(!isShowPassword);
+  };
+
+  const canSubmit = () => {
+    return validateEmail(data.email)
   };
 
   function Copyright(props) {
@@ -66,17 +86,11 @@ const Login = () => {
     );
   }
 
-  const puedeIngresar = () => {
-    return data.email.trim() !== "" && data.password.trim() !== "";
-  };
-
   return (
     <>
-      {" "}
-      <Grid container component="main">
+      <Grid container component="main" sx={{ justifyContent: "center" }}>
         <CssBaseline />
-
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{
               my: 8,
@@ -85,7 +99,7 @@ const Login = () => {
               flexDirection: "column",
               alignItems: "center",
             }}
-            onSubmit={handleSubmit}
+            
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
@@ -93,7 +107,10 @@ const Login = () => {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate sx={{ mt: 1 }}>
+            <Box component="form"
+                 noValidate 
+                 sx={{ mt: 1 }} 
+                 onSubmit={handleSubmit}>
               <TextField
                 margin="normal"
                 required
@@ -105,6 +122,8 @@ const Login = () => {
                 onChange={handleInputChange}
                 autoComplete="email"
                 autoFocus
+                error={emailError}
+                helperText={emailError && "Enter a valid email address"}
               />
               <TextField
                 margin="normal"
@@ -131,31 +150,23 @@ const Login = () => {
                 }}
               />
 
-              {showAlert ? (
-                <Fade in={showAlert} timeout={500}>
-                  <Alert severity="error">
-                    {msgError} Por favor, volver a intentarlo.
-                  </Alert>
-                </Fade>
-              ) : (
-                ""
-              )}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={!puedeIngresar()}
+                disabled={!canSubmit()}
+                onClick={handleSubmit}
               >
                 Sign In
               </Button>
-              <Grid container>
-                <Grid item>
+              <Box display={"flex"} justifyContent={"center"}>
+    
                   <Link href="/register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
-                </Grid>
-              </Grid>
+                
+              </Box>
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>

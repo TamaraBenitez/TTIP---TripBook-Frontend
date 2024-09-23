@@ -5,7 +5,8 @@ import {
   Box,
   Typography,
   FormControl,
-  CircularProgress
+  CircularProgress,
+  Link
 } from "@mui/material";
 import StoreContext from "../../store/storecontext";
 import { useNavigate } from "react-router-dom";
@@ -201,6 +202,13 @@ const Register = () => {
         >
           Register
         </Button>
+        <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
+    
+                  <Link href="/login" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                
+              </Box>
       </form>
     </Box>
   );
