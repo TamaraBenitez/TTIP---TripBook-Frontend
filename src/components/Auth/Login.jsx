@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
 
 const Login = () => {
@@ -29,45 +29,48 @@ const Login = () => {
   };
 
   const handleSubmit = (event) => {
-    // event.stopImmediatePropagation();
-    // event.preventDefault();
-    event.stopPropagation()
+    event.preventDefault();
     validateEmail(data.email);
-    
-    if(!emailError){
-      store.services.authService
+
+    if (!emailError) {
+    store.services.authService
       .login(data)
       .then((response) => {
+        console.log("OK")
         sessionStorage.setItem("token", response.data);
-        navigate("/trips");
+        // navigate("/trips");
       })
       .catch((error) => {
-        setEmailError(true);
-        setMsgError(error.response.data);
+        debugger;
+        if(error.status === 401){
+          setMsgError("Datos incorrectos.");
+        } else {
+          setMsgError("Ha ocurrido un error.")
+        }
+        console.log(error);
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
         }, 3000);
       });
-    }
+      }
   };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setData({ ...data, [name]: value });
 
-    // Real-time validation
     if (name === "email") {
       setEmailError(!validateEmail(value));
-    };
-  }
+    }
+  };
 
   const changeVisualization = () => {
     setIsShowPassword(!isShowPassword);
   };
 
-  const canSubmit = () => {
-    return validateEmail(data.email)
+const canSubmit = () => {
+    return validateEmail(data.email);
   };
 
   function Copyright(props) {
@@ -88,9 +91,22 @@ const Login = () => {
 
   return (
     <>
-      <Grid container component="main" sx={{ justifyContent: "center" }}>
+      <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 2,
+        maxWidth: 600,
+        margin: "auto",
+        border: "1px solid #ccc",
+        borderRadius: 2,
+        boxShadow: 2,
+      }}
+    >
         <CssBaseline />
-        <Grid xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        
           <Box
             sx={{
               my: 8,
@@ -99,7 +115,6 @@ const Login = () => {
               flexDirection: "column",
               alignItems: "center",
             }}
-            
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
@@ -107,10 +122,12 @@ const Login = () => {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form"
-                 noValidate 
-                 sx={{ mt: 1 }} 
-                 onSubmit={handleSubmit}>
+            <Box 
+              component="form"
+              noValidate
+              sx={{ mt: 1 }}
+              onSubmit={handleSubmit}
+              >
               <TextField
                 margin="normal"
                 required
@@ -123,7 +140,7 @@ const Login = () => {
                 autoComplete="email"
                 autoFocus
                 error={emailError}
-                helperText={emailError && "Enter a valid email address"}
+                helperText={emailError && "Ingrese un email válido"}
               />
               <TextField
                 margin="normal"
@@ -149,7 +166,24 @@ const Login = () => {
                   ),
                 }}
               />
-
+              {showAlert && (
+                <Fade in={showAlert} timeout={500}>
+                  <Alert 
+                      sx={{
+                      maxWidth: 500,
+                      position: "fixed",
+                      top: "130px",
+                      right: "10px",
+                    }}
+                    onClose={() => setShowAlert(false)}
+                    variant="standard"
+                    icon={<TaskAlt fontSize="inherit" />}
+                    severity="error"
+                  >
+                    {msgError} Por favor, volver a intentarlo.
+                  </Alert>
+                </Fade>
+              )}
               <Button
                 type="submit"
                 fullWidth
@@ -161,17 +195,14 @@ const Login = () => {
                 Sign In
               </Button>
               <Box display={"flex"} justifyContent={"center"}>
-    
                   <Link href="/register" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
-                
               </Box>
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
-        </Grid>
-      </Grid>
+      </Box>
     </>
   );
 };

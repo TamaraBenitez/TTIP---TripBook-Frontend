@@ -6,7 +6,7 @@ import {
   Typography,
   FormControl,
   CircularProgress,
-  Link
+  Link,
 } from "@mui/material";
 import StoreContext from "../../store/storecontext";
 import { useNavigate } from "react-router-dom";
@@ -65,26 +65,27 @@ const Register = () => {
     }));
   };
 
-  const minDate = dayjs().subtract(120, 'year');
+  const minDate = dayjs().subtract(120, "year");
 
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     setFormData({
       ...formData,
       [name]: value,
     });
-    
+
     validate(name, value);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
-    
-    if (Object.values(errors).every((error) => error === "")
-    && Object.values(formData).every((field)=> field !== "")) {
+
+    if (
+      Object.values(errors).every((error) => error === "") &&
+      Object.values(formData).every((field) => field !== "")
+    ) {
       setIsDataLoading(true);
       store.services.authService
         .register({
@@ -92,7 +93,7 @@ const Register = () => {
           surname: formData.surname,
           email: formData.email,
           password: formData.password,
-          birthDate: formData.birthDate.$d
+          birthDate: formData.birthDate.$d,
         })
         .then(() => {
           setSuccess(true);
@@ -100,7 +101,7 @@ const Register = () => {
         .catch((e) => {
           setSuccess(false);
         })
-        .finally(()=>{
+        .finally(() => {
           setIsDataLoading(false);
         });
     }
@@ -163,12 +164,14 @@ const Register = () => {
           />
         </FormControl>
         <FormControl fullWidth margin="normal">
-          <DatePicker 
+          <DatePicker
             label="Birth Date"
             name="birthDate"
             disableFuture
             minDate={minDate}
-            onChange={(newDate) => setFormData({...formData,birthDate:newDate})}
+            onChange={(newDate) =>
+              setFormData({ ...formData, birthDate: newDate })
+            }
           />
         </FormControl>
         <FormControl fullWidth>
@@ -203,12 +206,10 @@ const Register = () => {
           Register
         </Button>
         <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
-    
-                  <Link href="/login" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                
-              </Box>
+          <Link href="/login" variant="body2">
+            Already have an account? Sign in
+          </Link>
+        </Box>
       </form>
     </Box>
   );
@@ -224,7 +225,9 @@ const Register = () => {
   const failedRegistration = (
     <>
       <Typography variant="h1">Algo salió mal :(</Typography>
-      <Button variant="text" onClick={()=>setSuccess(null)}>Volver</Button>
+      <Button variant="text" onClick={() => setSuccess(null)}>
+        Volver
+      </Button>
     </>
   );
 

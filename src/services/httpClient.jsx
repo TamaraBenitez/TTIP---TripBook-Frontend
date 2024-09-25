@@ -17,7 +17,7 @@ httpClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Manejo de errores de autenticación (401)
+    // If error is 401 (Unauthorized) and the request has not been retried
     if (
       error.response !== undefined &&
       error.response.status === 401 &&
@@ -26,11 +26,15 @@ httpClient.interceptors.response.use(
       originalRequest._retry = true;
 
       sessionStorage.removeItem("token");
-      window.location.reload();
 
-      return httpClient(originalRequest);
+      // Check if the user is on the login page
+      const isLoginPage = window.location.pathname === "/login";
+
+      // If not on the login page, redirect to login and notify about session expiration
+      if (!isLoginPage) {
+        window.location.href = "/login"; // Redirect to login with a query parameter
+      }
     }
-
     return Promise.reject(error);
   }
 );
