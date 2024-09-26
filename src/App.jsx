@@ -11,8 +11,8 @@ import Register from "./components/Auth/Register";
 
 export default function App() {
   const location = useLocation();
-  const showHeader = location.pathname !== "/login" && 
-                    location.pathname !== "/register";
+  const showHeader =
+    location.pathname !== "/login" && location.pathname !== "/register";
   return (
     <>
       {showHeader && <Header />}
@@ -21,8 +21,22 @@ export default function App() {
         {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<AllTrips />} />
-        <Route path="/trips" element={<AllTrips />} />
-        <Route path="/trips/:id" element={<TripDetails />} />
+        <Route
+          path="/trips"
+          element={
+            <RouteCustom>
+              <AllTrips />
+            </RouteCustom>
+          }
+        />
+        <Route
+          path="/trips/:id"
+          element={
+            <RouteCustom>
+              <TripDetails />
+            </RouteCustom>
+          }
+        />
         <Route path="/register" element={<Register />} />
 
         <Route
