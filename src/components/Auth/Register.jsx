@@ -12,6 +12,9 @@ import StoreContext from "../../store/storecontext";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { ErrorOutline } from "@mui/icons-material";
+import AlertCustom from "../AlertCustom/AlertCustom";
+import DialogCustom from "../DialogCustom/DialogCustom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +35,9 @@ const Register = () => {
   });
   const [isDataLoading, setIsDataLoading] = useState(false);
   const store = useContext(StoreContext);
-  const [success, setSuccess] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
 
   const validate = (field, value) => {
@@ -97,9 +102,17 @@ const Register = () => {
         })
         .then(() => {
           setSuccess(true);
+          setTimeout(() => {
+            setSuccess(false);
+          }, 3000);
         })
-        .catch((e) => {
+        .catch((error) => {
+          setMsgError(error.response.data.message);
           setSuccess(false);
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 3000);
         })
         .finally(() => {
           setIsDataLoading(false);
@@ -107,13 +120,22 @@ const Register = () => {
     }
   };
 
-  const display = () => {
-    if (success == null) return register;
-    if (success) {
-      return successfulRegistration;
-    } else return failedRegistration;
-  };
-  const register = (
+  const spinner = <CircularProgress />;
+  const okButton = (
+    <Button
+      onClick={() => navigate("/login")}
+      sx={{
+        right: "38%",
+      }}
+      variant="contained"
+    >
+      OK
+    </Button>
+  );
+
+  return isDataLoading ? (
+    spinner
+  ) : (
     <Box
       sx={{
         display: "flex",
@@ -121,11 +143,13 @@ const Register = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: 2,
-        maxWidth: 400,
+        maxWidth: 600,
         margin: "auto",
         border: "1px solid #ccc",
         borderRadius: 2,
         boxShadow: 2,
+        px: 4,
+        py: 8,
       }}
     >
       <Typography variant="h4" gutterBottom>
@@ -211,27 +235,26 @@ const Register = () => {
           </Link>
         </Box>
       </form>
+      {
+        <AlertCustom
+          inProp={showAlert}
+          timeout={500}
+          onClose={() => setShowAlert(true)}
+          msg={msgError}
+          icon={<ErrorOutline/>}
+        />
+      }
+      {
+        <DialogCustom
+          open={success}
+          title={"Registro Exitoso"}
+          textParagraph={"Te redirigiremos para loguearte"}
+          handleClose={() => navigate("/login")}
+          confirmButton={okButton}
+        />
+      }
     </Box>
   );
-  const spinner = <CircularProgress />;
-
-  const successfulRegistration = (
-    <>
-      <Typography variant="h1">Registro Exitoso!</Typography>
-      <Button>Comenzar a viajar</Button>
-    </>
-  );
-
-  const failedRegistration = (
-    <>
-      <Typography variant="h1">Algo salió mal :(</Typography>
-      <Button variant="text" onClick={() => setSuccess(null)}>
-        Volver
-      </Button>
-    </>
-  );
-
-  return isDataLoading ? spinner : display();
 };
 
 export default Register;
