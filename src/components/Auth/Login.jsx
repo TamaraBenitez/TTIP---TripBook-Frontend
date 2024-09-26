@@ -41,7 +41,6 @@ const Login = () => {
         // navigate("/trips");
       })
       .catch((error) => {
-        debugger;
         if(error.status === 401){
           setMsgError("Datos incorrectos.");
         } else {

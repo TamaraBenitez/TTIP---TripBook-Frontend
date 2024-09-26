@@ -178,6 +178,7 @@ export default function TripDetails() {
         handleConfirm={handleSuscribe}
         title={"Inscripcion al viaje"}
         textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
+        showCancelButton={true}
         />
       {showAlert &&
         <Alert sx={{maxWidth:500}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
