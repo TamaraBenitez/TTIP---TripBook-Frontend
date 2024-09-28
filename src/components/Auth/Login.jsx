@@ -33,26 +33,27 @@ const Login = () => {
     validateEmail(data.email);
 
     if (!emailError) {
-    store.services.authService
-      .login(data)
-      .then((response) => {
-        console.log("OK")
-        sessionStorage.setItem("token", response.data);
-        // navigate("/trips");
-      })
-      .catch((error) => {
-        if(error.status === 401){
-          setMsgError("Datos incorrectos.");
-        } else {
-          setMsgError("Ha ocurrido un error.")
-        }
-        console.log(error);
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
-      });
-      }
+      store.services.authService
+        .login(data)
+        .then((response) => {
+          console.log("OK");
+          sessionStorage.setItem("token", response.data.token);
+          console.log(response.data.token);
+          navigate("/trips");
+        })
+        .catch((error) => {
+          if (error.status === 401) {
+            setMsgError("Datos incorrectos.");
+          } else {
+            setMsgError("Ha ocurrido un error.");
+          }
+          console.log(error);
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 3000);
+        });
+    }
   };
 
   const handleInputChange = (event) => {
@@ -68,7 +69,7 @@ const Login = () => {
     setIsShowPassword(!isShowPassword);
   };
 
-const canSubmit = () => {
+  const canSubmit = () => {
     return validateEmail(data.email);
   };
 
@@ -91,116 +92,116 @@ const canSubmit = () => {
   return (
     <>
       <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 2,
-        maxWidth: 600,
-        margin: "auto",
-        border: "1px solid #ccc",
-        borderRadius: 2,
-        boxShadow: 2,
-      }}
-    >
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 2,
+          maxWidth: 600,
+          margin: "auto",
+          border: "1px solid #ccc",
+          borderRadius: 2,
+          boxShadow: 2,
+        }}
+      >
         <CssBaseline />
-        
+
+        <Box
+          sx={{
+            my: 8,
+            mx: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
           <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
+            component="form"
+            noValidate
+            sx={{ mt: 1 }}
+            onSubmit={handleSubmit}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box 
-              component="form"
-              noValidate
-              sx={{ mt: 1 }}
-              onSubmit={handleSubmit}
-              >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email"
-                name="email"
-                value={data.email}
-                onChange={handleInputChange}
-                autoComplete="email"
-                autoFocus
-                error={emailError}
-                helperText={emailError && "Ingrese un email válido"}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type={isShowPassword ? "text" : "password"}
-                id="password"
-                autoComplete="current-password"
-                value={data.password}
-                onChange={handleInputChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        style={{ padding: "0px" }}
-                        onClick={changeVisualization}
-                      >
-                        {isShowPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {showAlert && (
-                <Fade in={showAlert} timeout={500}>
-                  <Alert 
-                      sx={{
-                      maxWidth: 500,
-                      position: "fixed",
-                      top: "130px",
-                      right: "10px",
-                    }}
-                    onClose={() => setShowAlert(false)}
-                    variant="standard"
-                    icon={<TaskAlt fontSize="inherit" />}
-                    severity="error"
-                  >
-                    {msgError} Por favor, volver a intentarlo.
-                  </Alert>
-                </Fade>
-              )}
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={!canSubmit()}
-                onClick={handleSubmit}
-              >
-                Sign In
-              </Button>
-              <Box display={"flex"} justifyContent={"center"}>
-                  <Link href="/register" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-              </Box>
-              <Copyright sx={{ mt: 5 }} />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              value={data.email}
+              onChange={handleInputChange}
+              autoComplete="email"
+              autoFocus
+              error={emailError}
+              helperText={emailError && "Ingrese un email válido"}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type={isShowPassword ? "text" : "password"}
+              id="password"
+              autoComplete="current-password"
+              value={data.password}
+              onChange={handleInputChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      style={{ padding: "0px" }}
+                      onClick={changeVisualization}
+                    >
+                      {isShowPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {showAlert && (
+              <Fade in={showAlert} timeout={500}>
+                <Alert
+                  sx={{
+                    maxWidth: 500,
+                    position: "fixed",
+                    top: "130px",
+                    right: "10px",
+                  }}
+                  onClose={() => setShowAlert(false)}
+                  variant="standard"
+                  icon={<TaskAlt fontSize="inherit" />}
+                  severity="error"
+                >
+                  {msgError} Por favor, volver a intentarlo.
+                </Alert>
+              </Fade>
+            )}
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              disabled={!canSubmit()}
+              onClick={handleSubmit}
+            >
+              Sign In
+            </Button>
+            <Box display={"flex"} justifyContent={"center"}>
+              <Link href="/register" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
             </Box>
+            <Copyright sx={{ mt: 5 }} />
           </Box>
+        </Box>
       </Box>
     </>
   );

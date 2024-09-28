@@ -8,6 +8,7 @@ import TripDetails from "./components/TripDetails/TripDetails";
 import Login from "./components/Auth/Login";
 import RouteCustom from "./components/RouteCustom";
 import Register from "./components/Auth/Register";
+import Profile from "./components/Profile/Profile";
 
 export default function App() {
   const location = useLocation();
@@ -21,6 +22,14 @@ export default function App() {
         {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<AllTrips />} />
+        <Route
+          path="/profile"
+          element={
+            <RouteCustom>
+              <Profile />
+            </RouteCustom>
+          }
+        />
         <Route
           path="/trips"
           element={
