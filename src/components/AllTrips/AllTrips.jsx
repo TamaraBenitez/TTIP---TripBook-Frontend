@@ -117,6 +117,7 @@ export default function AllTrips() {
             confirmButton={modalConfirmBtn}
             title={"Inscripcion al viaje"}
             textParagraph={modalMsg}
+            showCancelButton={true}
           />
         </>
       )}

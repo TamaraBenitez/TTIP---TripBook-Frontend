@@ -68,7 +68,7 @@ export default function TripDetails() {
 
   return (
     <>
-    <Box sx={{display:"flex", flexDirection: "column", alignItems:"center"}}>
+    <Box sx={{display:"flex", flexDirection: "row", alignItems:"center"}}>
 
       <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
         <CardContent>
@@ -178,6 +178,7 @@ export default function TripDetails() {
         handleConfirm={handleSuscribe}
         title={"Inscripcion al viaje"}
         textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
+        showCancelButton={true}
         />
       {showAlert &&
         <Alert sx={{maxWidth:500}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
