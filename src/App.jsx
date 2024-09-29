@@ -9,6 +9,7 @@ import Login from "./components/Auth/Login";
 import RouteCustom from "./components/RouteCustom";
 import Register from "./components/Auth/Register";
 import VerifyEmail from "./components/Auth/VerifyEmail";
+import Profile from "./components/Profile/Profile";
 
 export default function App() {
   const location = useLocation();
@@ -20,6 +21,7 @@ export default function App() {
     { path: '/trips/:id', component: <TripDetails /> },
     { path: '/mytrips', component: <MyTrips /> },
     { path: '/verify-email', component: <VerifyEmail /> },
+    { path:"/profile",  component:<Profile /> }
   ];
 
   return (
