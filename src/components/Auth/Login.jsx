@@ -36,9 +36,8 @@ const Login = () => {
     store.services.authService
       .login(data)
       .then((response) => {
-        console.log("OK")
-        sessionStorage.setItem("token", response.data);
-        // navigate("/trips");
+        localStorage.setItem("token", response.data);
+        navigate("/trips");
       })
       .catch((error) => {
         if(error.status === 401){

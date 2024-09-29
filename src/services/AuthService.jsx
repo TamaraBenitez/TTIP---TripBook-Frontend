@@ -21,6 +21,14 @@ class AuthService extends BaseService {
       data: data
     });
   }
+
+  verifyEmail(token) {
+    return axios({
+      url:`${this.baseUrl}/auth/verify-email?token=${token}`,
+      method: "POST",
+      headers: this.config.headers
+    });
+  }
 }
 
 export default AuthService;

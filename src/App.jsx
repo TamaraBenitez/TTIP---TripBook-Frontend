@@ -8,45 +8,35 @@ import TripDetails from "./components/TripDetails/TripDetails";
 import Login from "./components/Auth/Login";
 import RouteCustom from "./components/RouteCustom";
 import Register from "./components/Auth/Register";
+import VerifyEmail from "./components/Auth/VerifyEmail";
 
 export default function App() {
   const location = useLocation();
-  const showHeader =
-    location.pathname !== "/login" && location.pathname !== "/register";
+  const showHeader = location.pathname !== '/login' && location.pathname !== '/register';
+
+  const routes = [
+    { path: '/', component: <AllTrips /> },
+    { path: '/trips', component: <AllTrips /> },
+    { path: '/trips/:id', component: <TripDetails /> },
+    { path: '/mytrips', component: <MyTrips /> },
+    { path: '/verify-email', component: <VerifyEmail /> },
+  ];
+
   return (
     <>
       {showHeader && <Header />}
-      <Toolbar sx={{ height: "90px" }} />
+      <Toolbar sx={{ height: '90px' }} />
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<AllTrips />} />
-        <Route
-          path="/trips"
-          element={
-            <RouteCustom>
-              <AllTrips />
-            </RouteCustom>
-          }
-        />
-        <Route
-          path="/trips/:id"
-          element={
-            <RouteCustom>
-              <TripDetails />
-            </RouteCustom>
-          }
-        />
         <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/mytrips"
-          element={
-            <RouteCustom>
-              <MyTrips />
-            </RouteCustom>
-          }
-        />
+        {routes.map(({ path, component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={<RouteCustom>{component}</RouteCustom>}
+          />
+        ))}
       </Routes>
     </>
   );
