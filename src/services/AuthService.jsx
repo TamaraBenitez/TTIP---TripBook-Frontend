@@ -23,7 +23,7 @@ class AuthService extends BaseService {
   }
 
   verifyEmail(token) {
-    return axios({
+    return this.axios({
       url:`${this.baseUrl}/auth/verify-email?token=${token}`,
       method: "POST",
       headers: this.config.headers
