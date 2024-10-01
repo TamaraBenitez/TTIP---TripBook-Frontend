@@ -17,6 +17,15 @@ class AuthService extends BaseService {
     return this.axios({
       url: `${this.baseUrl}/auth/register`,
       method: "POST",
+      headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
+      data: data
+    });
+  }
+
+  sendVerificationEmail(data){
+    return this.axios({
+      url:`${this.baseUrl}/auth/send-verification-email`,
+      method: "POST",
       headers: this.config.headers,
       data: data
     });

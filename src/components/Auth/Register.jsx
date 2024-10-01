@@ -12,9 +12,10 @@ import StoreContext from "../../store/storecontext";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { ErrorOutline } from "@mui/icons-material";
+import { CloudUpload, ErrorOutline } from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import DialogCustom from "../DialogCustom/DialogCustom";
+import EmailConfirmation from "./EmailConfirmation";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ const Register = () => {
     birthDate: "",
     password: "",
     confirmPassword: "",
+    dniFile: "",
   });
 
   const [errors, setErrors] = useState({
@@ -37,8 +39,9 @@ const Register = () => {
   const store = useContext(StoreContext);
   const [success, setSuccess] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [msgError, setMsgError] = useState("");
-  const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
 
   const validate = (field, value) => {
     let error = "";
@@ -60,6 +63,8 @@ const Register = () => {
       case "confirmPassword":
         if (value !== formData.password) error = "Passwords do not match";
         break;
+      case "dniFile":
+        if (!value) error = "Please upload a photo of your DNI";
       default:
         break;
     }
@@ -86,24 +91,26 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
-
+    let date = dayjs(formData.birthDate.$d).toISOString();
     if (
       Object.values(errors).every((error) => error === "") &&
       Object.values(formData).every((field) => field !== "")
     ) {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("surname", formData.surname);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("birthDate", date);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("dniFile", formData.dniFile);
       setIsDataLoading(true);
       store.services.authService
-        .register({
-          name: formData.name,
-          surname: formData.surname,
-          email: formData.email,
-          password: formData.password,
-          birthDate: formData.birthDate.$d,
-        })
-        .then(() => {
-          setSuccess(true);
+        .register(formDataToSend)
+        .then((user) => {
+          setUserId(user.data.id)
+          setShowModal(true);
           setTimeout(() => {
-            setSuccess(false);
+            handleCloseModal();
           }, 3000);
         })
         .catch((error) => {
@@ -112,6 +119,7 @@ const Register = () => {
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
+            setSuccess(true);
           }, 3000);
         })
         .finally(() => {
@@ -120,10 +128,15 @@ const Register = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSuccess(true);
+  };
+
   const spinner = <CircularProgress />;
   const okButton = (
     <Button
-      onClick={() => navigate("/login")}
+      onClick={handleCloseModal}
       sx={{
         right: "38%",
       }}
@@ -135,6 +148,8 @@ const Register = () => {
 
   return isDataLoading ? (
     spinner
+  ) : success ? (
+    <EmailConfirmation userId={userId}/>
   ) : (
     <Box
       sx={{
@@ -220,6 +235,38 @@ const Register = () => {
             margin="normal"
           />
         </FormControl>
+        {/* <FormControl fullWidth margin="normal">
+          <label htmlFor="dniFile">DNI Photo</label>
+          <input
+            id="dniFile"
+            type="file"
+            name="dniFile"
+            accept="image/*"
+            onChange={(e) =>
+              setFormData({ ...formData, dniFile: e.target.files[0] })
+            }
+          />
+        </FormControl> */}
+        <FormControl fullWidth margin="normal">
+          <Button
+            className="boton"
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUpload />}
+          >
+            DNI Photo
+            <TextField
+              type="file"
+              sx={{ display: "none" }}
+              onChange={(e) =>
+                setFormData({ ...formData, dniFile: e.target.files[0] })
+              }
+              multiple
+            />
+          </Button>
+        </FormControl>
         <Button
           type="submit"
           variant="contained"
@@ -241,15 +288,17 @@ const Register = () => {
           timeout={500}
           onClose={() => setShowAlert(true)}
           msg={msgError}
-          icon={<ErrorOutline/>}
+          icon={<ErrorOutline />}
         />
       }
       {
         <DialogCustom
-          open={success}
+          open={showModal}
           title={"Registro Exitoso"}
-          textParagraph={"Te redirigiremos para loguearte"}
-          handleClose={() => navigate("/login")}
+          textParagraph={
+            "The enviaremos un mail para verificar tu correo electronico"
+          }
+          handleClose={handleCloseModal}
           confirmButton={okButton}
         />
       }
