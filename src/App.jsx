@@ -19,9 +19,16 @@ export default function App() {
       {showHeader && <Header />}
       <Toolbar sx={{ height: "90px" }} />
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<AllTrips />} />
+        <Route
+          path="/"
+          element={
+            <RouteCustom>
+              {" "}
+              <Home />
+            </RouteCustom>
+          }
+        />
         <Route
           path="/profile"
           element={
