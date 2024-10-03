@@ -72,7 +72,7 @@ export default function Header() {
     setAnchorElUser(null);
   };
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <SvgIcon sx={{ fill: "white" }}>
