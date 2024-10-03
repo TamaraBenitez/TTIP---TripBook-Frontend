@@ -5,7 +5,7 @@ const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
   if (config.headers)
     config.headers.Authorization = token ? `Bearer ${token}` : "";
   return config;
@@ -25,7 +25,7 @@ httpClient.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
 
       // Check if the user is on the login page
       const isLoginPage = window.location.pathname === "/login";

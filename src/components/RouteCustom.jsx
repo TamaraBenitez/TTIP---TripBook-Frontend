@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 const RouteCustom = ({ children }) => {
-  const existToken = !!sessionStorage.getItem("token");
+  const existToken = !!localStorage.getItem("token");
 
   console.log("existToken", existToken);
 

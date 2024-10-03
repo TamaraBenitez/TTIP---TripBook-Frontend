@@ -32,7 +32,7 @@ export default function Header() {
   const { services } = useContext(StoreContext);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       const decoded = jwtDecode(token);
       const userId = decoded.id;
@@ -59,7 +59,7 @@ export default function Header() {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
     navigate("/login");
   };
 

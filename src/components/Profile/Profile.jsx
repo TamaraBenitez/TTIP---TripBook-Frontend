@@ -22,7 +22,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
       try {
@@ -45,7 +45,7 @@ const Profile = () => {
         console.error("Error decoding token:", error);
       }
     } else {
-      console.error("No token found in sessionStorage");
+      console.error("No token found in localStorage");
     }
   }, [services]);
 
