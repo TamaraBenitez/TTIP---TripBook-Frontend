@@ -149,11 +149,6 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   };
   const validColor = () => {
     return !verifiedDni ? "#ffffff" : "#d4edda";
-    // if (step === 0) {
-    //   return (dniError || tramiteError) && dni.length < 8 && tramite.length < 11
-    //     ? "#f8d7da"
-    //     : "#ffffff";
-    // } else if (step === 1) return !isStepValid() ? "#ffffff" : "#d4edda";
   };
   return (
     <Dialog open={open} onClose={onClose}>
