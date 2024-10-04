@@ -102,7 +102,7 @@ const Register = () => {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("birthDate", date);
       formDataToSend.append("password", formData.password);
-      formDataToSend.append("dniFile", formData.dniFile);
+      formDataToSend.append("dniPhoto", formData.dniFile);
       setIsDataLoading(true);
       store.services.authService
         .register(formDataToSend)
@@ -237,7 +237,7 @@ const Register = () => {
         </FormControl>
         <FormControl fullWidth margin="normal">
           <InputLabel sx={{ position:"relative", marginBottom: "4%"}}>
-            DNI Barcode Photo <span style={{ color: "gray" }}>(optional)</span>
+            DNI Photo
           </InputLabel>
           <Button
             className="boton"
@@ -247,7 +247,7 @@ const Register = () => {
             tabIndex={-1}
             startIcon={<CloudUpload />}
           >
-            Upload Barcode Photo
+            Upload Photo
             <TextField
               type="file"
               sx={{ display: "none" }}
@@ -263,10 +263,6 @@ const Register = () => {
             />
           </Button>
           <FormHelperText>{fileMessage}</FormHelperText>
-          <FormHelperText>
-            Upload your barcode photo. If you upload, you will be a verified
-            user.
-          </FormHelperText>
         </FormControl>
         <Button
           type="submit"
