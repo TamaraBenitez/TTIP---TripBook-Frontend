@@ -11,9 +11,11 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const checkVerification = async () => {
       const token =localStorage.getItem("token");
-      const decoded = jwtDecode(token)
-      const userData = await store.services.userService.GetUser(decoded.id); 
-      setUser(userData.data);
+      if(token){
+        const decoded = jwtDecode(token)
+        const userData = await store.services.userService.GetUser(decoded.id); 
+        setUser(userData.data);
+      }
     };
     
     checkVerification();

@@ -38,6 +38,15 @@ class AuthService extends BaseService {
       headers: this.config.headers
     });
   }
+
+  verifyDni(data){
+    return this.axios({
+      url: `${this.baseUrl}/pdf417-decoder/decode`,
+      method: "POST",
+      headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
+      data: data
+    });
+  }
 }
 
 export default AuthService;

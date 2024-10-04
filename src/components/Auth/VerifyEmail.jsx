@@ -26,8 +26,7 @@ const VerifyEmail = () => {
 
       try {
         const response = await store.services.authService.verifyEmail(token);
-
-        if (response.data && response.data.success) {
+        if (response.data) {
           setStatus('success');
           setMessage('Your email has been successfully verified!');
         } else {
@@ -70,10 +69,10 @@ const VerifyEmail = () => {
             <Button
               variant="contained"
               color="primary"
-              href="/login"
+              href="/"
               sx={{ mt: 2 }}
             >
-              Go to Login
+              Go to Home
             </Button>
           </Alert>
         )}

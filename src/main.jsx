@@ -39,7 +39,7 @@ const store = {
 };
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <ThemeProvider theme={theme}>
       <StoreContext.Provider value={store}>
         <UserProvider>
@@ -52,5 +52,5 @@ createRoot(document.getElementById("root")).render(
         </UserProvider>
       </StoreContext.Provider>
     </ThemeProvider>
-  </StrictMode>
+  // </StrictMode>
 );

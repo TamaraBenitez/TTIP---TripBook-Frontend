@@ -235,7 +235,7 @@ const Register = () => {
             margin="normal"
           />
         </FormControl>
-        <FormControl margin="normal">
+        <FormControl fullWidth margin="normal">
           <InputLabel sx={{ position:"relative", marginBottom: "4%"}}>
             DNI Barcode Photo <span style={{ color: "gray" }}>(optional)</span>
           </InputLabel>
@@ -290,6 +290,7 @@ const Register = () => {
           onClose={() => setShowAlert(true)}
           msg={msgError}
           icon={<ErrorOutline />}
+          severity={"error"}
         />
       }
       {
