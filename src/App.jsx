@@ -13,21 +13,22 @@ import Profile from "./components/Profile/Profile";
 
 export default function App() {
   const location = useLocation();
-  const showHeader = location.pathname !== '/login' && location.pathname !== '/register';
+  const showHeader =
+    location.pathname !== "/login" && location.pathname !== "/register";
 
   const routes = [
-    { path: '/', component: <AllTrips /> },
-    { path: '/trips', component: <AllTrips /> },
-    { path: '/trips/:id', component: <TripDetails /> },
-    { path: '/mytrips', component: <MyTrips /> },
-    { path: '/verify-email', component: <VerifyEmail /> },
-    { path:"/profile",  component:<Profile /> }
+    { path: "/", component: <Home /> },
+    { path: "/trips", component: <AllTrips /> },
+    { path: "/trips/:id", component: <TripDetails /> },
+    { path: "/mytrips", component: <MyTrips /> },
+    { path: "/verify-email", component: <VerifyEmail /> },
+    { path: "/profile", component: <Profile /> },
   ];
 
   return (
     <>
       {showHeader && <Header />}
-      <Toolbar sx={{ height: '90px' }} />
+      <Toolbar sx={{ height: "90px" }} />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

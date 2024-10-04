@@ -33,25 +33,25 @@ const Login = () => {
     validateEmail(data.email);
 
     if (!emailError) {
-    store.services.authService
-      .login(data)
-      .then((response) => {
-        localStorage.setItem("token", response.data.token);
-        navigate("/trips");
-      })
-      .catch((error) => {
-        if(error.status === 401){
-          setMsgError("Datos incorrectos.");
-        } else {
-          setMsgError("Ha ocurrido un error.")
-        }
-        console.log(error);
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
-      });
-      }
+      store.services.authService
+        .login(data)
+        .then((response) => {
+          localStorage.setItem("token", response.data.token);
+          navigate("/");
+        })
+        .catch((error) => {
+          if (error.status === 401) {
+            setMsgError("Datos incorrectos.");
+          } else {
+            setMsgError("Ha ocurrido un error.");
+          }
+          console.log(error);
+          setShowAlert(true);
+          setTimeout(() => {
+            setShowAlert(false);
+          }, 3000);
+        });
+    }
   };
 
   const handleInputChange = (event) => {
