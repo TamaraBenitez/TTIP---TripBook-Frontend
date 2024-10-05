@@ -2,7 +2,7 @@ import { TaskAlt } from '@mui/icons-material'
 import { Alert, Fade } from '@mui/material'
 import React from 'react'
 
-export default function AlertCustom({inProp, timeout, onClose, msg, icon}) {
+export default function AlertCustom({inProp, timeout, onClose, msg, icon, severity}) {
   return (
     <Fade in={inProp} timeout={timeout}>
           <Alert
@@ -15,7 +15,7 @@ export default function AlertCustom({inProp, timeout, onClose, msg, icon}) {
             onClose={onClose}
             variant="standard"
             icon={icon ? icon : <TaskAlt fontSize="inherit" />}
-            severity="error"
+            severity={severity}
           >
             {msg}
           </Alert>

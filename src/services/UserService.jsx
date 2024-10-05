@@ -20,6 +20,15 @@ class UserService extends BaseService {
       headers: this.config.headers,
     });
   }
+
+  UpdateUser(id,user){
+    return this.axios({
+      url: `${this.baseUrl}/user/verify/${id}`,
+      method: "PATCH",
+      headers: this.config.headers,
+      data: user
+    })
+  }
 }
 
 export default UserService;

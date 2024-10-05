@@ -1,18 +1,39 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Typography, Button, Container } from "@mui/material";
 import { MailOutline } from "@mui/icons-material";
-import StoreContext from "../../store/storecontext";
+import StoreContext from '../../store/storecontext';
+import { useNavigate } from 'react-router-dom';
 
 const EmailConfirmation = ({ userId }) => {
   const store = useContext(StoreContext);
-  const handleResendEmail = () => {
-    store.services
-        .authService.sendVerificationEmail({ userId: userId });
-  }
+  const navigate = useNavigate()
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+
+  const handleSendEmail = () => {
+    store.services.authService.sendVerificationEmail({ userId });
+    setIsButtonDisabled(true);
+    setCountdown(30);
+  };
+
   useEffect(() => {
-    store.services
-        .authService.sendVerificationEmail({ userId: userId });
+    if (countdown > 0) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    } else {
+      setIsButtonDisabled(false);
+    }
+  }, [countdown]);
+
+  useEffect(() => {
+    handleSendEmail();
   }, [userId]);
+
+  const handleGoBack = () => {
+    navigate('/login');
+  };
 
   return (
     <Container maxWidth="sm">
@@ -42,10 +63,19 @@ const EmailConfirmation = ({ userId }) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleResendEmail}
+          onClick={handleSendEmail}
+          disabled={isButtonDisabled}
           sx={{ marginTop: 2 }}
         >
-          Reenviar correo de confirmación
+          {isButtonDisabled ? `Reenviar en ${countdown}s` : 'Reenviar correo de confirmación'}
+        </Button>
+        <Button
+          variant="text"
+          color="primary"
+          onClick={handleGoBack}
+          sx={{ marginTop: 2 }}
+        >
+          Volver a la página de inicio de sesión
         </Button>
       </Box>
     </Container>

@@ -7,9 +7,10 @@ import {
   FormControl,
   CircularProgress,
   Link,
+  FormHelperText,
+  InputLabel,
 } from "@mui/material";
 import StoreContext from "../../store/storecontext";
-import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { CloudUpload, ErrorOutline } from "@mui/icons-material";
@@ -18,15 +19,16 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     name: "",
     surname: "",
     email: "",
     birthDate: "",
     password: "",
     confirmPassword: "",
-    dniFile: "",
-  });
+    dniFile: null,
+  };
+  const [formData, setFormData] = useState(emptyForm);
 
   const [errors, setErrors] = useState({
     name: "",
@@ -42,7 +44,7 @@ const Register = () => {
   const [showModal, setShowModal] = useState(false);
   const [msgError, setMsgError] = useState("");
   const [userId, setUserId] = useState("");
-
+  const [fileMessage, setFileMessage] = useState("");
   const validate = (field, value) => {
     let error = "";
 
@@ -63,8 +65,6 @@ const Register = () => {
       case "confirmPassword":
         if (value !== formData.password) error = "Passwords do not match";
         break;
-      case "dniFile":
-        if (!value) error = "Please upload a photo of your DNI";
       default:
         break;
     }
@@ -102,12 +102,12 @@ const Register = () => {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("birthDate", date);
       formDataToSend.append("password", formData.password);
-      formDataToSend.append("dniFile", formData.dniFile);
+      formDataToSend.append("dniPhoto", formData.dniFile);
       setIsDataLoading(true);
       store.services.authService
         .register(formDataToSend)
         .then((user) => {
-          setUserId(user.data.id)
+          setUserId(user.data.id);
           setShowModal(true);
           setTimeout(() => {
             handleCloseModal();
@@ -117,10 +117,10 @@ const Register = () => {
           setMsgError(error.response.data.message);
           setSuccess(false);
           setShowAlert(true);
+          setFormData(emptyForm);
           setTimeout(() => {
             setShowAlert(false);
-            setSuccess(true);
-          }, 3000);
+          }, 5000);
         })
         .finally(() => {
           setIsDataLoading(false);
@@ -149,7 +149,7 @@ const Register = () => {
   return isDataLoading ? (
     spinner
   ) : success ? (
-    <EmailConfirmation userId={userId}/>
+    <EmailConfirmation userId={userId} />
   ) : (
     <Box
       sx={{
@@ -235,19 +235,10 @@ const Register = () => {
             margin="normal"
           />
         </FormControl>
-        {/* <FormControl fullWidth margin="normal">
-          <label htmlFor="dniFile">DNI Photo</label>
-          <input
-            id="dniFile"
-            type="file"
-            name="dniFile"
-            accept="image/*"
-            onChange={(e) =>
-              setFormData({ ...formData, dniFile: e.target.files[0] })
-            }
-          />
-        </FormControl> */}
         <FormControl fullWidth margin="normal">
+          <InputLabel sx={{ position:"relative", marginBottom: "4%"}}>
+            DNI Photo
+          </InputLabel>
           <Button
             className="boton"
             component="label"
@@ -256,16 +247,22 @@ const Register = () => {
             tabIndex={-1}
             startIcon={<CloudUpload />}
           >
-            DNI Photo
+            Upload Photo
             <TextField
               type="file"
               sx={{ display: "none" }}
-              onChange={(e) =>
-                setFormData({ ...formData, dniFile: e.target.files[0] })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, dniFile: e.target.files[0] });
+                if (e.target.files.length > 0) {
+                  setFileMessage(`Selected file: ${e.target.files[0].name}`);
+                } else {
+                  setFileMessage("");
+                }
+              }}
               multiple
             />
           </Button>
+          <FormHelperText>{fileMessage}</FormHelperText>
         </FormControl>
         <Button
           type="submit"
@@ -289,6 +286,7 @@ const Register = () => {
           onClose={() => setShowAlert(true)}
           msg={msgError}
           icon={<ErrorOutline />}
+          severity={"error"}
         />
       }
       {

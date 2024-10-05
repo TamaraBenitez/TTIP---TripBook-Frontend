@@ -15,6 +15,7 @@ import StoreContext from "./store/storecontext.jsx";
 import UserService from "./services/UserService.jsx";
 import { httpClient } from "./services/httpClient.jsx";
 import AuthService from "./services/AuthService.jsx";
+import { UserProvider } from "./user/UserContext.jsx";
 
 const theme = createTheme({
   palette: {
@@ -38,16 +39,18 @@ const store = {
 };
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <ThemeProvider theme={theme}>
       <StoreContext.Provider value={store}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Router>
-            <CssBaseline />
-            <App />
-          </Router>
-        </LocalizationProvider>
+        <UserProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Router>
+              <CssBaseline />
+              <App />
+            </Router>
+          </LocalizationProvider>
+        </UserProvider>
       </StoreContext.Provider>
     </ThemeProvider>
-  </StrictMode>
+  // </StrictMode>
 );
