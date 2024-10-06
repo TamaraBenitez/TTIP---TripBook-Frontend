@@ -18,6 +18,7 @@ import {
 import { AccountCircle, TaskAlt } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { formatDate } from "../../utility/Utility";
+import MapComponent from "../MapComponent/MapComponent";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -172,6 +173,7 @@ export default function TripDetails() {
           )}
         </CardContent>
       </Card>
+      <MapComponent />
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}
