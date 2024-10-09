@@ -4,15 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, Skeleton, Typography } from '@mui/material';
 import StoreContext from '../../store/storecontext';
 import RibbonHeading from '../RibbonHeading/RibbonHeading';
+import { useUser } from '../../user/UserContext';
 
 export default function MyTrips() {
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const store = useContext(StoreContext);
+    const { user, setUser } = useUser();
     const navigate = useNavigate();
     console.log("mytrips")
     useEffect(()=>{
-    store.services.userService.GetMyTrips()
+    store.services.userService.GetMyTrips(user.id)
         .then((res)=>{
             setTrips(res.data);
             setLoading(false);
