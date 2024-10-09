@@ -27,7 +27,8 @@ class TripService extends BaseService {
             headers: this.config.headers,
             data: {
                 userId:userId,
-                tripId:tripId
+                tripId:tripId,
+                status: "pending"
             }
         });
     }

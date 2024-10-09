@@ -14,6 +14,7 @@ import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
+import { useUser } from "../../user/UserContext";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -27,11 +28,12 @@ export default function AllTrips() {
   const [modalMsg, setModalMsg] = useState(confirmMsg);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const { user, setUser } = useUser();
 
   const suscribe = () => {
     setLoading(true);
     store.services.tripService
-      .RegisterUserToTrip("testid1", tripToSuscribe)
+      .RegisterUserToTrip(user.id ,tripToSuscribe)
       .then(() => {
         setLoading(false);
         setModalMsg(successMsg);

@@ -18,6 +18,8 @@ import {
 import { AccountCircle, TaskAlt } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { formatDate } from "../../utility/Utility";
+import MapComponent from "../MapComponent/MapComponent";
+import { useUser } from "../../user/UserContext";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -27,6 +29,7 @@ export default function TripDetails() {
   const [open, setOpen] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const { user, setUser } = useUser();
 
   const handleClickOpen = (e) => {
     e.stopPropagation();
@@ -40,7 +43,7 @@ export default function TripDetails() {
   const handleSuscribe = (e) => {
     setLoading(true);
     handleCloseModal();
-    store.services.tripService.RegisterUserToTrip("testid1", id)
+    store.services.tripService.RegisterUserToTrip(user.id, id)
     .then((res) => {
       setLoading(false);
       setIsRegistered(true);
@@ -54,7 +57,7 @@ export default function TripDetails() {
       .then((res) => {
         setTrip(res.data);
         const alreadyRegistered = res.data.participants.find(
-          (p) => p.id == "testid1"
+          (p) => p.id == user.id
         );
         if(alreadyRegistered)
         setIsRegistered(true);
@@ -172,6 +175,7 @@ export default function TripDetails() {
           )}
         </CardContent>
       </Card>
+      <MapComponent />
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}
@@ -181,7 +185,7 @@ export default function TripDetails() {
         showCancelButton={true}
         />
       {showAlert &&
-        <Alert sx={{maxWidth:500}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
+        <Alert sx={{maxWidth:500, position:"fixed", left:600, bottom:300, zIndex:3}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
           Te has Inscripto exitosamente a este viaje
         </Alert>
       }
