@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
 import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
@@ -22,6 +22,10 @@ const Login = () => {
   const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const [imageFile, setImageFile] = useState(null); // Para almacenar la imagen capturada
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,19 +37,26 @@ const Login = () => {
     validateEmail(data.email);
 
     if (!emailError) {
+      const formData = new FormData();
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      if (imageFile) {
+        formData.append("file", imageFile);
+      }
+
       store.services.authService
-        .login(data)
+        .login(formData) // Enviar el formData en lugar de los datos normales
         .then((response) => {
           localStorage.setItem("token", response.data.token);
           navigate("/");
         })
         .catch((error) => {
           if (error.status === 401) {
-            setMsgError("Datos incorrectos.");
+            setMsgError(error.response.data.message);
           } else {
             setMsgError("Ha ocurrido un error.");
+            console.log(error);
           }
-          console.log(error);
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
@@ -68,7 +79,32 @@ const Login = () => {
   };
 
   const canSubmit = () => {
-    return validateEmail(data.email);
+    return validateEmail(data.email) && imageFile && data.password;
+  };
+
+  const startCamera = async () => {
+    setIsCameraOn(true);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoRef.current.srcObject = stream;
+  };
+
+  const takePicture = () => {
+    const context = canvasRef.current.getContext("2d");
+    context.drawImage(
+      videoRef.current,
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
+    canvasRef.current.toBlob((blob) => {
+      setImageFile(blob); // Almacenar la imagen como archivo
+      setIsCameraOn(false);
+      // Detener la cámara
+      const stream = videoRef.current.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
+    });
   };
 
   function Copyright(props) {
@@ -164,21 +200,49 @@ const Login = () => {
                 ),
               }}
             />
+            <Button variant="outlined" onClick={startCamera} sx={{ mt: 2 }}>
+              Tomar Foto
+            </Button>
+
+            {isCameraOn && (
+              <>
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  style={{ width: "100%", marginTop: "10px" }}
+                />
+                <Button
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  onClick={takePicture}
+                >
+                  Capturar Imagen
+                </Button>
+              </>
+            )}
+            <canvas
+              ref={canvasRef}
+              style={{ display: "none" }}
+              width="640"
+              height="480"
+            />
             {showAlert && (
               <Fade in={showAlert} timeout={500}>
                 <Alert
                   sx={{
                     maxWidth: 500,
                     position: "fixed",
-                    top: "130px",
-                    right: "10px",
+                    bottom: "30px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 2,
                   }}
                   onClose={() => setShowAlert(false)}
                   variant="standard"
                   icon={<TaskAlt fontSize="inherit" />}
                   severity="error"
                 >
-                  {msgError} Por favor, volver a intentarlo.
+                  {msgError}. Por favor, volve a intentarlo.
                 </Alert>
               </Fade>
             )}
