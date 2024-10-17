@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -71,7 +71,9 @@ export default function Header() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  return (
+
+  const existToken = !!localStorage.getItem("token");
+  return existToken ? (
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -219,6 +221,64 @@ export default function Header() {
               ))}
             </Menu>
           </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  ) : (
+    <AppBar position="static" color="primary">
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <SvgIcon sx={{ fill: "white" }}>
+            <image href={Compass} height="100%" />
+          </SvgIcon>
+          <Typography
+            variant="h6"
+            noWrap
+            component={NavLink}
+            to={"/"}
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              fontFamily: "monospace",
+              fontWeight: 700,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            TripBook
+          </Typography>
+
+          <Typography
+            variant="h6"
+            noWrap
+            component={NavLink}
+            to={"/"}
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              fontSize: "0.9rem",
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            Iniciar Sesion
+          </Typography>
+
+          <Typography
+            variant="h6"
+            noWrap
+            component={NavLink}
+            to={"/register"}
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              fontSize: "0.9rem",
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            Registrarse
+          </Typography>
         </Toolbar>
       </Container>
     </AppBar>

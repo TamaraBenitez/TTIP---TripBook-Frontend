@@ -27,7 +27,7 @@ export default function App() {
 
   return (
     <>
-      {showHeader && <Header />}
+      <Header />
       <Toolbar sx={{ height: "90px" }} />
       <Routes>
         <Route path="/login" element={<Login />} />

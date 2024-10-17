@@ -9,6 +9,7 @@ import {
   Link,
   FormHelperText,
   InputLabel,
+  Grid,
 } from "@mui/material";
 import StoreContext from "../../store/storecontext";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -17,6 +18,7 @@ import { CloudUpload, ErrorOutline } from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
+import backgroundImage from "../../assets/rutaRegister.png";
 
 const Register = () => {
   const emptyForm = {
@@ -117,7 +119,6 @@ const Register = () => {
           setMsgError(error.response.data.message);
           setSuccess(false);
           setShowAlert(true);
-          setFormData(emptyForm);
           setTimeout(() => {
             setShowAlert(false);
           }, 5000);
@@ -151,156 +152,181 @@ const Register = () => {
   ) : success ? (
     <EmailConfirmation userId={userId} />
   ) : (
-    <Box
+    <Grid
+      container
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 2,
-        maxWidth: 600,
-        margin: "auto",
         border: "1px solid #ccc",
         borderRadius: 2,
-        boxShadow: 2,
-        px: 4,
-        py: 8,
+        boxShadow: 10,
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Register
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth>
-          <TextField
-            label="Name"
-            name="name"
-            onChange={handleChange}
-            error={Boolean(errors.name)}
-            helperText={errors.name}
-            margin="normal"
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            label="Surname"
-            name="surname"
-            onChange={handleChange}
-            error={Boolean(errors.surname)}
-            helperText={errors.surname}
-            margin="normal"
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            onChange={handleChange}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
-            margin="normal"
-          />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <DatePicker
-            label="Birth Date"
-            name="birthDate"
-            disableFuture
-            minDate={minDate}
-            onChange={(newDate) =>
-              setFormData({ ...formData, birthDate: newDate })
-            }
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            onChange={handleChange}
-            error={Boolean(errors.password)}
-            helperText={errors.password}
-            margin="normal"
-          />
-        </FormControl>
-        <FormControl fullWidth>
-          <TextField
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            onChange={handleChange}
-            error={Boolean(errors.confirmPassword)}
-            helperText={errors.confirmPassword}
-            margin="normal"
-          />
-        </FormControl>
-        <FormControl fullWidth margin="normal">
-          <InputLabel sx={{ position:"relative", marginBottom: "4%"}}>
-            DNI Photo
-          </InputLabel>
-          <Button
-            className="boton"
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUpload />}
-          >
-            Upload Photo
-            <TextField
-              type="file"
-              sx={{ display: "none" }}
-              onChange={(e) => {
-                setFormData({ ...formData, dniFile: e.target.files[0] });
-                if (e.target.files.length > 0) {
-                  setFileMessage(`Selected file: ${e.target.files[0].name}`);
-                } else {
-                  setFileMessage("");
-                }
-              }}
-              multiple
-            />
-          </Button>
-          <FormHelperText>{fileMessage}</FormHelperText>
-        </FormControl>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 2 }}
+      {" "}
+      <Grid
+        item
+        xs={6}
+        sx={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          minHeight: "100vh",
+        }}
+      >
+        {" "}
+      </Grid>
+      <Grid item xs={6}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 2,
+            maxWidth: 600,
+            margin: "auto",
+
+            px: 4,
+            py: 8,
+          }}
         >
-          Register
-        </Button>
-        <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
-          <Link href="/login" variant="body2">
-            Already have an account? Sign in
-          </Link>
-        </Box>
-      </form>
-      {
-        <AlertCustom
-          inProp={showAlert}
-          timeout={500}
-          onClose={() => setShowAlert(true)}
-          msg={msgError}
-          icon={<ErrorOutline />}
-          severity={"error"}
-        />
-      }
-      {
-        <DialogCustom
-          open={showModal}
-          title={"Registro Exitoso"}
-          textParagraph={
-            "The enviaremos un mail para verificar tu correo electronico"
+          <Typography variant="h4" gutterBottom sx={{ color: "#226668" }}>
+            Registro
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <FormControl fullWidth>
+              <TextField
+                label="Name"
+                name="name"
+                onChange={handleChange}
+                error={Boolean(errors.name)}
+                helperText={errors.name}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Surname"
+                name="surname"
+                onChange={handleChange}
+                error={Boolean(errors.surname)}
+                helperText={errors.surname}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                onChange={handleChange}
+                error={Boolean(errors.email)}
+                helperText={errors.email}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <DatePicker
+                label="Birth Date"
+                name="birthDate"
+                disableFuture
+                minDate={minDate}
+                onChange={(newDate) =>
+                  setFormData({ ...formData, birthDate: newDate })
+                }
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Password"
+                name="password"
+                type="password"
+                onChange={handleChange}
+                error={Boolean(errors.password)}
+                helperText={errors.password}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                onChange={handleChange}
+                error={Boolean(errors.confirmPassword)}
+                helperText={errors.confirmPassword}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel sx={{ position: "relative", marginBottom: "4%" }}>
+                DNI Photo
+              </InputLabel>
+              <Button
+                className="boton"
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUpload />}
+              >
+                Upload Photo
+                <TextField
+                  type="file"
+                  sx={{ display: "none" }}
+                  onChange={(e) => {
+                    setFormData({ ...formData, dniFile: e.target.files[0] });
+                    if (e.target.files.length > 0) {
+                      setFileMessage(
+                        `Selected file: ${e.target.files[0].name}`
+                      );
+                    } else {
+                      setFileMessage("");
+                    }
+                  }}
+                  multiple
+                />
+              </Button>
+              <FormHelperText>{fileMessage}</FormHelperText>
+            </FormControl>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+            >
+              Register
+            </Button>
+            <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
+              <Link href="/login" variant="body2">
+                Already have an account? Sign in
+              </Link>
+            </Box>
+          </form>
+          {
+            <AlertCustom
+              inProp={showAlert}
+              timeout={500}
+              onClose={() => setShowAlert(true)}
+              msg={msgError}
+              icon={<ErrorOutline />}
+              severity={"error"}
+            />
           }
-          handleClose={handleCloseModal}
-          confirmButton={okButton}
-        />
-      }
-    </Box>
+          {
+            <DialogCustom
+              open={showModal}
+              title={"Registro Exitoso"}
+              textParagraph={
+                "The enviaremos un mail para verificar tu correo electronico"
+              }
+              handleClose={handleCloseModal}
+              confirmButton={okButton}
+            />
+          }
+        </Box>
+      </Grid>
+    </Grid>
   );
 };
 
