@@ -45,7 +45,7 @@ const Login = () => {
       }
 
       store.services.authService
-        .login(formData) // Enviar el formData en lugar de los datos normales
+        .login(formData)
         .then((response) => {
           localStorage.setItem("token", response.data.token);
           navigate("/");
@@ -200,9 +200,35 @@ const Login = () => {
                 ),
               }}
             />
-            <Button variant="outlined" onClick={startCamera} sx={{ mt: 2 }}>
-              Tomar Foto
-            </Button>
+            {!imageFile ? (
+              <Button
+                variant="outlined"
+                onClick={startCamera}
+                sx={{ mt: 2 }}
+                disabled={isCameraOn}
+              >
+                Tomar Foto
+              </Button>
+            ) : (
+              <Alert
+                icon={<TaskAlt fontSize="inherit" />}
+                severity="success"
+                action={
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setImageFile(null);
+                      setIsCameraOn(false);
+                    }}
+                  >
+                    Volver a tomar
+                  </Button>
+                }
+              >
+                Imagen tomada.
+              </Alert>
+            )}
 
             {isCameraOn && (
               <>
