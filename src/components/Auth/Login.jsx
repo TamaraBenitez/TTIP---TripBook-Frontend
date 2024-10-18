@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
 import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
+import DialogCustom from "../DialogCustom/DialogCustom";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -26,6 +27,7 @@ const Login = () => {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const [openModalTakePhoto, setOpenModalTakePhoto] = useState(false);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,6 +86,7 @@ const Login = () => {
 
   const startCamera = async () => {
     setIsCameraOn(true);
+    setOpenModalTakePhoto(true);
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     videoRef.current.srcObject = stream;
   };
@@ -101,6 +104,7 @@ const Login = () => {
       setImageFile(blob); // Almacenar la imagen como archivo
       setIsCameraOn(false);
       // Detener la cámara
+      setOpenModalTakePhoto(false);
       const stream = videoRef.current.srcObject;
       const tracks = stream.getTracks();
       tracks.forEach((track) => track.stop());
@@ -123,27 +127,38 @@ const Login = () => {
     );
   }
 
+  const closeModalTakePhoto = () => {
+    setIsCameraOn(false);
+    // Detener la cámara
+    setOpenModalTakePhoto(false);
+    const stream = videoRef.current.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+  };
+
   return (
-    <>
+    <div>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: 2,
+
           maxWidth: 600,
           margin: "auto",
           border: "1px solid #ccc",
           borderRadius: 2,
           boxShadow: 2,
+
+          overflowY: "auto", // Permite el scroll solo dentro del contenedor
         }}
       >
         <CssBaseline />
 
         <Box
           sx={{
-            my: 8,
+            my: 2,
             mx: 4,
             display: "flex",
             flexDirection: "column",
@@ -231,24 +246,29 @@ const Login = () => {
             )}
 
             {isCameraOn && (
-              <>
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  style={{ width: "100%", marginTop: "10px" }}
-                />
-                <Button
-                  variant="contained"
-                  sx={{ mt: 2 }}
-                  onClick={takePicture}
-                >
-                  Capturar Imagen
-                </Button>
-              </>
+              <DialogCustom
+                open={openModalTakePhoto}
+                confirmButton={
+                  <Button variant="text" onClick={takePicture}>
+                    Capturar Imagen
+                  </Button>
+                }
+                textParagraph={
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    style={{ width: "100%", marginTop: "10px" }}
+                  />
+                }
+                handleClose={closeModalTakePhoto}
+                showCancelButton
+              ></DialogCustom>
             )}
             <canvas
               ref={canvasRef}
-              style={{ display: "none" }}
+              style={{
+                display: "none",
+              }}
               width="640"
               height="480"
             />
@@ -291,7 +311,7 @@ const Login = () => {
           </Box>
         </Box>
       </Box>
-    </>
+    </div>
   );
 };
 
