@@ -27,7 +27,7 @@ export default function App() {
 
   return (
     <>
-      <Header />
+      {showHeader && <Header />}
       <Toolbar />
       <Routes>
         <Route path="/login" element={<Login />} />

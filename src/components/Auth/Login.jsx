@@ -3,17 +3,27 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
+import {
+  Alert,
+  Fade,
+  IconButton,
+  InputAdornment,
+  LinearProgress,
+} from "@mui/material";
 import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import Compass from "../../assets/5796.svg";
+import { SvgIcon } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -28,6 +38,7 @@ const Login = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [openModalTakePhoto, setOpenModalTakePhoto] = useState(false);
+  const [openModalLoading, setOpenModalLoading] = useState(false);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,24 +56,24 @@ const Login = () => {
       if (imageFile) {
         formData.append("file", imageFile);
       }
+      setOpenModalLoading(true);
 
       store.services.authService
         .login(formData)
         .then((response) => {
           localStorage.setItem("token", response.data.token);
+          setOpenModalLoading(false);
           navigate("/");
         })
         .catch((error) => {
-          if (error.status === 401) {
-            setMsgError(error.response.data.message);
-          } else {
-            setMsgError("Ha ocurrido un error.");
-            console.log(error);
-          }
+          setOpenModalLoading(false);
+
+          setMsgError(error.response.data.message);
+
           setShowAlert(true);
           setTimeout(() => {
             setShowAlert(false);
-          }, 3000);
+          }, 4000);
         });
     }
   };
@@ -136,8 +147,46 @@ const Login = () => {
     tracks.forEach((track) => track.stop());
   };
 
+  const handleNavigateRegister = () => {
+    navigate("/register");
+  };
+
   return (
     <div>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="relative" sx={{ zIndex: 1000, top: "-65px" }}>
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <SvgIcon sx={{ fill: "white" }}>
+                <image href={Compass} height="100%" />
+              </SvgIcon>
+              <Typography
+                variant="h6"
+                noWrap
+                sx={{
+                  ml: 1, // Margen izquierdo para espaciar el logo y el texto
+                  display: { xs: "none", md: "flex" },
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                TripBook
+              </Typography>
+            </Box>
+            <Button color="inherit" onClick={handleNavigateRegister}>
+              Register
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -311,6 +360,18 @@ const Login = () => {
           </Box>
         </Box>
       </Box>
+      <Dialog
+        open={openModalLoading}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{ style: { zIndex: 1300 } }}
+      >
+        <DialogContent>
+          Este proceso puede demorar ya que se esta procesando su rostro. Sea
+          paciente
+          <LinearProgress />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
