@@ -20,10 +20,7 @@ import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import Compass from "../../assets/5796.svg";
-import { SvgIcon } from "@mui/material";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import ToolbarAuth from "./ToolbarAuth";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -153,40 +150,7 @@ const Login = () => {
 
   return (
     <div>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="relative" sx={{ zIndex: 1000, top: "-65px" }}>
-          <Toolbar
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <SvgIcon sx={{ fill: "white" }}>
-                <image href={Compass} height="100%" />
-              </SvgIcon>
-              <Typography
-                variant="h6"
-                noWrap
-                sx={{
-                  ml: 1, // Margen izquierdo para espaciar el logo y el texto
-                  display: { xs: "none", md: "flex" },
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  color: "inherit",
-                  textDecoration: "none",
-                }}
-              >
-                TripBook
-              </Typography>
-            </Box>
-            <Button color="inherit" onClick={handleNavigateRegister}>
-              Register
-            </Button>
-          </Toolbar>
-        </AppBar>
-      </Box>
+      <ToolbarAuth titleButton={"Register"} onClick={handleNavigateRegister} />
       <Box
         sx={{
           display: "flex",
