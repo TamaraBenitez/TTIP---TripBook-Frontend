@@ -172,7 +172,10 @@ const Register = () => {
     <EmailConfirmation userId={userId} />
   ) : (
     <>
-      <ToolbarAuth titleButton={"Login"} onClick={handleNavigateLogin} />
+      <ToolbarAuth
+        titleButton={"Iniciar Sesion"}
+        onClick={handleNavigateLogin}
+      />
       <Box
         sx={{
           display: "flex",
@@ -190,12 +193,12 @@ const Register = () => {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          Register
+          Registro
         </Typography>
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <TextField
-              label="Name"
+              label="Nombre"
               name="name"
               onChange={handleChange}
               error={Boolean(errors.name)}
@@ -205,7 +208,7 @@ const Register = () => {
           </FormControl>
           <FormControl fullWidth>
             <TextField
-              label="Surname"
+              label="Apellido"
               name="surname"
               onChange={handleChange}
               error={Boolean(errors.surname)}
@@ -226,7 +229,7 @@ const Register = () => {
           </FormControl>
           <FormControl fullWidth margin="normal">
             <DatePicker
-              label="Birth Date"
+              label="Fecha de nacimiento"
               name="birthDate"
               disableFuture
               minDate={minDate}
@@ -237,7 +240,7 @@ const Register = () => {
           </FormControl>
           <FormControl fullWidth>
             <TextField
-              label="Password"
+              label="Contraseña"
               name="password"
               type="password"
               onChange={handleChange}
@@ -248,7 +251,7 @@ const Register = () => {
           </FormControl>
           <FormControl fullWidth>
             <TextField
-              label="Confirm Password"
+              label="Confirmar contraseña"
               name="confirmPassword"
               type="password"
               onChange={handleChange}
@@ -266,7 +269,7 @@ const Register = () => {
               tabIndex={-1}
               startIcon={<CloudUpload />}
             >
-              Upload Photo
+              Subir foto
               <TextField
                 type="file"
                 sx={{ display: "none" }}
@@ -290,11 +293,11 @@ const Register = () => {
             fullWidth
             sx={{ mt: 2 }}
           >
-            Register
+            Registrarse
           </Button>
           <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
             <Link href="/login" variant="body2">
-              Already have an account? Sign in
+              Ya tienes una cuenta? Inicia sesion
             </Link>
           </Box>
         </form>

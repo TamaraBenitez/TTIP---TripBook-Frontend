@@ -21,6 +21,8 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import ToolbarAuth from "./ToolbarAuth";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import Tooltip from "@mui/material/Tooltip";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -150,7 +152,7 @@ const Login = () => {
 
   return (
     <div>
-      <ToolbarAuth titleButton={"Register"} onClick={handleNavigateRegister} />
+      <ToolbarAuth titleButton={"Registro"} onClick={handleNavigateRegister} />
       <Box
         sx={{
           display: "flex",
@@ -182,7 +184,7 @@ const Login = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Iniciar sesion
           </Typography>
           <Box
             component="form"
@@ -209,7 +211,7 @@ const Login = () => {
               required
               fullWidth
               name="password"
-              label="Password"
+              label="Contraseña"
               type={isShowPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
@@ -229,14 +231,24 @@ const Login = () => {
               }}
             />
             {!imageFile ? (
-              <Button
-                variant="outlined"
-                onClick={startCamera}
-                sx={{ mt: 2 }}
-                disabled={isCameraOn}
-              >
-                Tomar Foto
-              </Button>
+              <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+                <Button
+                  variant="outlined"
+                  onClick={startCamera}
+                  disabled={isCameraOn}
+                >
+                  Tomar Foto
+                </Button>
+                <Tooltip
+                  title="Se requiere una foto para procesar la autenticación facial"
+                  arrow
+                >
+                  <HelpOutlineIcon sx={{ ml: 1, color: "#226668" }} />
+                </Tooltip>
+                <Typography variant="body2" sx={{ ml: 1, color: "#226668" }}>
+                  Requerido
+                </Typography>
+              </Box>
             ) : (
               <Alert
                 icon={<TaskAlt fontSize="inherit" />}
@@ -313,11 +325,11 @@ const Login = () => {
               disabled={!canSubmit()}
               onClick={handleSubmit}
             >
-              Sign In
+              Iniciar sesion
             </Button>
             <Box display={"flex"} justifyContent={"center"}>
               <Link href="/register" variant="body2">
-                {"Don't have an account? Sign Up"}
+                {"No tienes una cuenta? Registrate"}
               </Link>
             </Box>
             <Copyright sx={{ mt: 5 }} />
