@@ -5,21 +5,24 @@ import StoreContext from '../store/storecontext';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState({ emailVerified: false });
+  const [user, setUser] = useState(null);
   const store = useContext(StoreContext);
 
   useEffect(() => {
     const checkVerification = async () => {
-      const token =localStorage.getItem("token");
-      if(token){
-        const decoded = jwtDecode(token)
-        const userData = await store.services.userService.GetUser(decoded.id); 
-        setUser(userData.data);
+      if(!user){
+        const token =localStorage.getItem("token");
+        if(token){
+          const decoded = jwtDecode(token)
+          const userData = await store.services.userService.GetUser(decoded.id); 
+          console.log("===========> USERDATA", userData.data)
+          setUser(userData.data);
+        }
       }
     };
     
     checkVerification();
-  }, []);
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

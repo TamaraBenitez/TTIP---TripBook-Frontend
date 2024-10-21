@@ -28,7 +28,7 @@ export default function AllTrips() {
   const [modalMsg, setModalMsg] = useState(confirmMsg);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const { user, setUser } = useUser();
+  const { user } = useUser();
 
   const suscribe = () => {
     setLoading(true);

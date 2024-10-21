@@ -39,7 +39,7 @@ class AuthService extends BaseService {
     });
   }
 
-  verifyDni(data){
+  verifyDocument(data){
     return this.axios({
       url: `${this.baseUrl}/pdf417-decoder/decode`,
       method: "POST",

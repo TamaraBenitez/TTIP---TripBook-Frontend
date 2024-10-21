@@ -1,13 +1,23 @@
 import React from "react";
-import { Container } from "@mui/material";
+import { Box, Container, IconButton, useTheme } from "@mui/material";
 import TripCard from "./TripCard";
+import {  AddOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 export default function Trips(props) {
-
-
+  const theme = useTheme();
+  const navigate = useNavigate();
   return (
     <>
-      <Container className="tripsContainer" sx={{display:"flex", justifyContent:"center", flexWrap:"wrap"}}>
+      <Container
+        className="tripsContainer"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
         {props.trips.map((trip) => {
           return (
             <TripCard
@@ -15,15 +25,31 @@ export default function Trips(props) {
               to={trip.id}
               description={trip.description}
               startDate={trip.startDate}
-              destination={trip.endPoint}
-              startingPoint={trip.startPoint}
-              participantsNumber={trip.numberOfRegistrants}
+              destination={trip.destination}
+              startingPoint={trip.origin}
+              participantsNumber={trip.maxPassengers - trip.registrants}
               estimatedCost={trip.estimatedCost}
               action={props.action}
               handleAction={props.handleAction}
             />
           );
         })}
+        <Box sx={{width:345, display:"flex", justifyContent:"center", alignItems:"center", height:250}}>
+          <IconButton
+            sx={{
+              height: "100px",
+              width: "100px",
+              color: theme.palette.primary.light,
+              ":hover": {
+                bgcolor: theme.palette.secondary.light,
+                color: "white",
+              },
+            }}
+            onClick={()=>navigate("/trip")}
+          >
+            <AddOutlined sx={{ fontSize: "-webkit-xxx-large" }} />
+          </IconButton>
+        </Box>
       </Container>
     </>
   );

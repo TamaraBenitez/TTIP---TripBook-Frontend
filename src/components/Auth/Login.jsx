@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import { Alert, Fade, IconButton, InputAdornment } from "@mui/material";
 import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
+import { useUser } from "../../user/UserContext";
 
 const Login = () => {
   const [data, setData] = useState({ email: "", password: "" });
@@ -22,7 +23,7 @@ const Login = () => {
   const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
-
+  const { setUser } = useUser();
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -37,6 +38,8 @@ const Login = () => {
         .login(data)
         .then((response) => {
           localStorage.setItem("token", response.data.token);
+          //trigger UserContext useEffect
+          setUser(null);
           navigate("/");
         })
         .catch((error) => {

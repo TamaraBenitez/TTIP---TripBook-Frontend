@@ -130,7 +130,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
     const formDataToSend = new FormData();
     formDataToSend.append("userId", user.id);
     formDataToSend.append("file", photo);
-    store.services.authService.verifyDni(formDataToSend).then(() => {
+    store.services.authService.verifyDocument(formDataToSend).then(() => {
       setVerifiedDni(true);
     });
   };
