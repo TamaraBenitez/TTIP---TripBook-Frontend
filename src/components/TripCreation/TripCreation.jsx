@@ -158,7 +158,7 @@ const TripCreation = () => {
       formDataToSend.append("userId", user.id);
       formDataToSend.append("file", photo);
       store.services.authService
-        .verifyDocument(formDataToSend)
+        .verifyLicense(formDataToSend)
         .then((response) => {
           setVerifyingLicense(false);
           if (response.data.valid) {
