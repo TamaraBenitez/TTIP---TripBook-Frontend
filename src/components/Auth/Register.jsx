@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   FormControl,
-  CircularProgress,
   Link,
   FormHelperText,
   LinearProgress,
@@ -17,8 +16,6 @@ import { CloudUpload, ErrorOutline } from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
-import { useNavigate } from "react-router";
-import ToolbarAuth from "./ToolbarAuth";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
@@ -49,7 +46,6 @@ const Register = () => {
   const [msgError, setMsgError] = useState("");
   const [userId, setUserId] = useState("");
   const [fileMessage, setFileMessage] = useState("");
-  const navigate = useNavigate();
 
   const validate = (field, value) => {
     let error = "";
@@ -138,10 +134,6 @@ const Register = () => {
     setSuccess(true);
   };
 
-  const handleNavigateLogin = () => {
-    navigate("/login");
-  };
-
   const okButton = (
     <Button
       onClick={handleCloseModal}
@@ -171,10 +163,6 @@ const Register = () => {
     <EmailConfirmation userId={userId} />
   ) : (
     <>
-      <ToolbarAuth
-        titleButton={"Iniciar Sesion"}
-        onClick={handleNavigateLogin}
-      />
       <Box
         sx={{
           display: "flex",

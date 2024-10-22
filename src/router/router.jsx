@@ -18,6 +18,7 @@ import Login from "../components/Auth/Login";
 import Home from "../components/Home";
 import Header from "../components/Header/Header";
 import { Toolbar } from "@mui/material";
+import ToolbarAuth from "../components/Auth/ToolbarAuth";
 
   const routes = [
     { path: "/home", component: <Home /> },
@@ -30,11 +31,26 @@ import { Toolbar } from "@mui/material";
     { path: "/trip", component: <TripCreation /> },
   ];
 
+  const authRoutes = [
+    { path:"/login", component:<Login />},
+    { path:"/register", component:<Register />}
+  ]
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        
+        {authRoutes.map(({path, component},i)=>(
+          <Route
+            key={path}
+            path={path}
+            element={
+              <>
+              <ToolbarAuth titleButton={i == 0 ? "Registro" : "Iniciar Sesion"} navigateTo={i == 0 ?  "/register" : "/login"}/>
+              {component}
+              </>
+            }/>
+        ))}
         <Route path="/" element={<Home />} />
           <Route index element={<Navigate to="/home" />} />
           {routes.map(({ path, component }) => (

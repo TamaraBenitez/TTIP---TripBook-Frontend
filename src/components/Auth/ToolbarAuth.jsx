@@ -6,10 +6,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
-const ToolbarAuth = ({ titleButton, onClick }) => {
+const ToolbarAuth = ({ titleButton, navigateTo }) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="relative" sx={{ zIndex: 1000, top: "-65px" }}>
+      <AppBar position="relative" sx={{ zIndex: 1000, marginBottom:10}}>
         <Toolbar
           sx={{
             display: "flex",
@@ -36,7 +36,7 @@ const ToolbarAuth = ({ titleButton, onClick }) => {
               TripBook
             </Typography>
           </Box>
-          <Button color="inherit" onClick={onClick}>
+          <Button color="inherit" onClick={()=>window.location.href = navigateTo}>
             {titleButton}
           </Button>
         </Toolbar>

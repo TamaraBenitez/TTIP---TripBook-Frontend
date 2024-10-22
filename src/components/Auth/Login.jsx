@@ -21,7 +21,6 @@ import { useUser } from "../../user/UserContext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import ToolbarAuth from "./ToolbarAuth";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -149,14 +148,8 @@ const Login = () => {
     const tracks = stream.getTracks();
     tracks.forEach((track) => track.stop());
   };
-
-  const handleNavigateRegister = () => {
-    navigate("/register");
-  };
-
   return (
     <div>
-      <ToolbarAuth titleButton={"Registro"} onClick={handleNavigateRegister} />
       <Box
         sx={{
           display: "flex",
