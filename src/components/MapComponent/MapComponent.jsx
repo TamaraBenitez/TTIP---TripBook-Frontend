@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -7,7 +7,7 @@ import pin from "/images/pin.svg?url";
 import flag from "/images/Flag2.svg?url";
 import RoutingMachine from "./RoutingMachine";
 
-// const startPointMarker = new L.Icon({
+// const originMarker = new L.Icon({
 //   iconUrl: pin,
 //   iconAnchor: null,
 //   popupAnchor: null,
@@ -18,7 +18,7 @@ import RoutingMachine from "./RoutingMachine";
 //   className: "start-point-icon",
 // });
 
-// const endPointMarker = new L.Icon({
+// const destinationMarker = new L.Icon({
 //   iconUrl: flag,
 //   iconAnchor: null,
 //   popupAnchor: null,
@@ -32,14 +32,33 @@ import RoutingMachine from "./RoutingMachine";
 // Create a component to handle the routing logic
 
 
-const MapComponent = () => {
-  const startPoint = [-38.95, -68.05]; // Example coordinates
-  const pickpoint1 = [-38.3, -68.2] 
-  const endPoint = [-24.8, -65.4]; // Example coordinates
+const MapComponent = ({coordinates}) => {
+  const [coords, setCoords] = useState(null);
+  console.log(coordinates)
+  useEffect(()=>{
+    var start;
+    var end;
+    var pickPoints = [];
+    if(coordinates !== undefined){
+      for (let i = 0; i < coordinates.length; i++) {
+        const coord = coordinates[i];
+        if (coord.isStart){
+          start = [parseFloat(coord.latitude), parseFloat(coord.longitude)]
+        } else if(coord.isEnd){
+          end = [parseFloat(coord.latitude),parseFloat(coord.longitude)]
+        } else {
+          pickPoints.push([parseFloat(coord.latitude),parseFloat(coord.longitude)])
+        }
+      }
+      let res = [start, ...pickPoints, end];
+      setCoords(res)
+    }
+  },[coordinates])
+  
 
   return (
     <MapContainer
-      center={startPoint}
+      center={coords ? coords[0] : [51.505, -0.09]}
       zoom={5}
       style={{ height: "400px", width: "60%" }}
     >
@@ -48,15 +67,15 @@ const MapComponent = () => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       {/*
-      <Marker icon={startPointMarker} position={startPoint}>
+      <Marker icon={originMarker} position={origin}>
         <Popup>Start</Popup>
       </Marker>
-      <Marker icon={endPointMarker} position={endPoint}>
+      <Marker icon={destinationMarker} position={destination}>
         <Popup>End</Popup>
       </Marker>*/}
 
       {/* Add the RoutingControl to calculate the fastest route */}
-      <RoutingMachine coordenates={[startPoint, pickpoint1, endPoint]}/>
+      {(coords!==null) && <RoutingMachine coordinates={coords}/>}
     </MapContainer>
   );
 };

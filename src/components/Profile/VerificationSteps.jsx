@@ -23,7 +23,8 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useUser } from "../../user/UserContext";
 import StoreContext from "../../store/storecontext";
-import { CheckCircleOutline } from "@mui/icons-material";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import AlertCustom from "../AlertCustom/AlertCustom";
 
 const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const { user, setUser } = useUser();
@@ -39,6 +40,8 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const [dniError, setDniError] = useState("");
   const [tramiteError, setTramiteError] = useState("");
   const [verifiedDni, setVerifiedDni] = useState(user.isUserVerified);
+  const [showBarcodeError, setShowBarcodeError] = useState(false);
+  const [barcodeError, setBarcodeError] = useState("");
 
   useEffect(() => {
     if (!user.isEmailVerified) {
@@ -51,12 +54,9 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   }, []);
 
   useEffect(() => {
-    if (verifiedDni) {
-      store.services.userService.GetUser(user.id).then((updatedUser) => {
-        setUser(updatedUser.data);
-      });
-    }
-  }, []);
+      setUser({...user, isUserVerified:verifiedDni}); //Trigger userContext useEffect 
+  }, [verifiedDni]);
+
   const handleSendEmailVerification = async () => {
     setEmailButtonDisabled(true);
     setCountdown(30);
@@ -110,6 +110,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
 
   const handlePreviousStep = () => {
     setStep((prev) => prev - 1);
+    setBarcodeError("");
   };
 
   const handleUploadPhoto = (event) => {
@@ -130,8 +131,14 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
     const formDataToSend = new FormData();
     formDataToSend.append("userId", user.id);
     formDataToSend.append("file", photo);
-    store.services.authService.verifyDni(formDataToSend).then(() => {
+    store.services.authService.verifyDNI(formDataToSend).then(() => {
       setVerifiedDni(true);
+    }).catch((error)=>{
+      setBarcodeError(error.response.data.message);
+      setShowBarcodeError(true)
+      setTimeout(()=>{
+        setShowBarcodeError(false);
+      },5000);
     });
   };
   const isEmailAccordionGreen = user.isEmailVerified
@@ -147,9 +154,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
       return photo;
     }
   };
-  const validColor = () => {
-    return !verifiedDni ? "#ffffff" : "#d4edda";
-  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Verification Steps</DialogTitle>
@@ -196,7 +201,11 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
         <Accordion
           defaultExpanded
           style={{
-            backgroundColor: validColor(),
+            backgroundColor: verifiedDni ?
+            "#d4edda"
+           : barcodeError
+           ? "#f8d7da"
+           : "#ffffff",
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -291,6 +300,14 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
       </DialogActions>
+      <AlertCustom
+            inProp={showBarcodeError}
+            timeout={500}
+            onClose={() => setShowBarcodeError(false)}
+            msg={barcodeError}
+            icon={<ErrorOutline />}
+            severity={"error"}
+          />
     </Dialog>
   );
 };

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import BaseService from "./BaseService";
 class TripService extends BaseService {
     constructor(axios, apiUrl){
@@ -28,9 +29,20 @@ class TripService extends BaseService {
             data: {
                 userId:userId,
                 tripId:tripId,
-                status: "pending"
+                status: "pending",
+                role:"passenger",
+                joinDate:dayjs()
             }
         });
+    }
+
+    CreateTrip(tripData){
+        return this.axios({
+            url: `${this.baseUrl}/trip`,
+            method: "POST",
+            headers: this.config.headers,
+            data:tripData
+        })
     }
 }
 

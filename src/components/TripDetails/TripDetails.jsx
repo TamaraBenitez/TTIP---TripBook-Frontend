@@ -86,13 +86,13 @@ export default function TripDetails() {
           ) : (
             <>
               <Typography variant="h4" component="h1" gutterBottom>
-                Viaje a {trip.endPoint}
+                Viaje a {trip.destination}
               </Typography>
               <Typography variant="body1" color="textSecondary">
                 <strong>Fecha de salida:</strong> {formatDate(trip.startDate, true)}
               </Typography>
               <Typography variant="body1" color="textSecondary">
-                <strong>Desde:</strong> {trip.startPoint}
+                <strong>Desde:</strong> {trip.origin}
               </Typography>
               <Typography variant="body1" color="textSecondary">
                 <strong>Descripción:</strong> {trip.description}
@@ -175,7 +175,7 @@ export default function TripDetails() {
           )}
         </CardContent>
       </Card>
-      <MapComponent />
+      {trip.tripCoordinates && <MapComponent coordinates={trip.tripCoordinates}/>}
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}

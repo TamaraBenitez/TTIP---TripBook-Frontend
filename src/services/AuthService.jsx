@@ -39,9 +39,18 @@ class AuthService extends BaseService {
     });
   }
 
-  verifyDni(data){
+  verifyDNI(data){
     return this.axios({
-      url: `${this.baseUrl}/pdf417-decoder/decode`,
+      url: `${this.baseUrl}/pdf417-decoder/decode/dni`,
+      method: "POST",
+      headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
+      data: data
+    });
+  }
+
+  verifyLicense(data){
+    return this.axios({
+      url: `${this.baseUrl}/pdf417-decoder/decode/license`,
       method: "POST",
       headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
       data: data

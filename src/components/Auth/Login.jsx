@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
+import { useUser } from "../../user/UserContext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -32,6 +33,7 @@ const Login = () => {
   const [msgError, setMsgError] = useState("");
   const navigate = useNavigate();
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const { setUser } = useUser();
   const [imageFile, setImageFile] = useState(null); // Para almacenar la imagen capturada
   const [isCameraOn, setIsCameraOn] = useState(false);
   const videoRef = useRef(null);
@@ -61,6 +63,8 @@ const Login = () => {
         .login(formData)
         .then((response) => {
           localStorage.setItem("token", response.data.token);
+          //trigger UserContext useEffect
+          setUser(null);
           setOpenModalLoading(false);
           navigate("/");
         })

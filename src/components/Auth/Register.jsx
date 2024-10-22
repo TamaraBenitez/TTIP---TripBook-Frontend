@@ -142,7 +142,6 @@ const Register = () => {
     navigate("/login");
   };
 
-  const spinner = <CircularProgress />;
   const okButton = (
     <Button
       onClick={handleCloseModal}
