@@ -15,6 +15,7 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import { useUser } from "../../user/UserContext";
+import TripsSkeleton from "../TripList/TripsSkeleton";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -95,18 +96,7 @@ export default function AllTrips() {
     <>
     <Box sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
     <RibbonHeading heading={"Viajes Disponibles"} component="h2" variant="h2"/>
-      {loading ? (
-        // Show 5 Skeleton cards while loading
-        [...Array(5)].map((_, index) => (
-          <Card key={index} style={{ marginBottom: "1rem" }}>
-            <Skeleton variant="rectangular" height={140} />
-            <CardContent>
-              <Skeleton variant="text" />
-              <Skeleton variant="text" width="60%" />
-            </CardContent>
-          </Card>
-        ))
-      ) : (
+      {loading ? <TripsSkeleton/> : (
         <>
           <Trips
             trips={trips}
