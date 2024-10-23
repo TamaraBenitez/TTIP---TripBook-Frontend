@@ -46,8 +46,8 @@ const Profile = () => {
   return (
     <>
       {userDataLoading ? (
-        <Box sx={{display:"flex", justifyContent:"center", height:"100%"}}>
-        <CircularProgress />
+        <Box sx={{ display: "flex", justifyContent: "center", height: "100%" }}>
+          <CircularProgress />
         </Box>
       ) : (
         <Box
@@ -65,9 +65,9 @@ const Profile = () => {
               severity="warning"
               sx={{ alignSelf: "center", width: "20vw" }}
             >
-              Account not verified
+              Cuenta no verificada
               <Typography variant="body1" color="textPrimary">
-                Your account is not verified.
+                Su cuenta no esta verificada
               </Typography>
               <Button
                 variant="outlined"
@@ -75,7 +75,7 @@ const Profile = () => {
                 onClick={() => setVerifyingUser(true)}
                 sx={{ mt: 1 }}
               >
-                Verify Now
+                Verificar ahora
               </Button>
             </Alert>
           )}

@@ -126,7 +126,7 @@ const TripCreation = () => {
         setStepValid(destination.length > 0 && destinationCoords !== null);
         break;
       case 3:
-        setStepValid(seats > 0 && estimatedCost >= 0 && notes);
+        setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
         break;
       case 4:
         setStepValid(photo !== undefined);
@@ -224,11 +224,11 @@ const TripCreation = () => {
     navigate("/mytrips");
   };
   const steps = [
-    "Choose Departure Point",
-    "Choose Departure Date",
-    "Choose Destination Point",
-    "Set Seats and Notes",
-    "Verify Driver License",
+    "Elija el punto de salida",
+    "Elija la fecha de salida",
+    "Elija el punto de destino",
+    "Establecer asientos y notas",
+    "Verificar licencia de conducir",
   ];
 
   return (
@@ -311,6 +311,9 @@ const TripCreation = () => {
                     label="Fecha de salida"
                     value={departureDate}
                     onChange={handleChangeDate}
+                    slotProps={{
+                      actionBar: { actions: [] },
+                    }}
                   />
                 </Paper>
               </Box>
@@ -449,7 +452,7 @@ const TripCreation = () => {
                       marginBottom={3}
                     >
                       Como último paso, necesitamos asegurarnos que tenés
-                      permiso para viajar.
+                      permiso para conducir.
                     </Typography>
                     <Box
                       sx={{
@@ -543,7 +546,7 @@ const TripCreation = () => {
               }}
             >
               <Button disabled={activeStep === 0} onClick={handleBack}>
-                Back
+                Atras
               </Button>
 
               <Button
@@ -559,7 +562,7 @@ const TripCreation = () => {
           <>
             <Box display={"flex"} justifyContent={"center"}>
               <Typography variant="h3" gutterBottom>
-                Confirm Your Trip
+                Confirmacion del viaje
               </Typography>
             </Box>
             <Paper
