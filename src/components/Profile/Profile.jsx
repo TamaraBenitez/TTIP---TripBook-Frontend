@@ -14,7 +14,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useUser } from "../../user/UserContext";
 import VerificationSteps from "./VerificationSteps";
-import { jwtDecode } from "jwt-decode";
 import AlertCustom from "../AlertCustom/AlertCustom";
 
 const Profile = () => {
