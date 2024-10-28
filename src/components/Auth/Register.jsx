@@ -220,6 +220,7 @@ const Register = () => {
               name="birthDate"
               disableFuture
               minDate={minDate}
+              format="DD/MM/YYYY"
               onChange={(newDate) =>
                 setFormData({ ...formData, birthDate: newDate })
               }

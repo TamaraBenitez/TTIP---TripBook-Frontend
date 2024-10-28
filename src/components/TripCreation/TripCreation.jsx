@@ -40,6 +40,8 @@ import { StaticDateTimePicker } from "@mui/x-date-pickers";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import { useBlocker, useNavigate } from "react-router-dom";
 import DialogCustom from "../DialogCustom/DialogCustom";
+import AlertCustom from "../AlertCustom/AlertCustom";
+import { ErrorOutline } from "@mui/icons-material";
 
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -64,6 +66,8 @@ const TripCreation = () => {
   const store = useContext(StoreContext);
   const { user } = useUser();
   const navigate = useNavigate();
+  const [errorTrip, setErrorTrip] = useState("");
+  const [isErrorTrip, setIsErrorTrip] = useState(false);
 
   //Prevent user from leaving
   let blocker = useBlocker(({ currentLocation, nextLocation }) => {
@@ -187,10 +191,10 @@ const TripCreation = () => {
 
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
-  const createTrip = () => {
+  const createTrip = async () => {
     setTripConfirmed(true);
-    store.services.tripService
-      .CreateTrip({
+    try {
+      await store.services.tripService.CreateTrip({
         startPoint: {
           latitude: departureCoords[0],
           longitude: departureCoords[1],
@@ -206,10 +210,14 @@ const TripCreation = () => {
         origin: departure,
         destination: destination,
         userId: user.id,
-      })
-      .then(() => {
-        setShowSuccessModal(true);
       });
+
+      setShowSuccessModal(true); // Mostrar modal de éxito
+    } catch (error) {
+      setIsErrorTrip(true);
+      console.error("Error al crear el viaje:", error);
+      setErrorTrip(error.response.data.message);
+    }
   };
 
   const handleSwitchPoints = () => {
@@ -486,7 +494,7 @@ const TripCreation = () => {
                           tabIndex={-1}
                           startIcon={<CloudUpload />}
                         >
-                          Upload Photo
+                          Subir foto
                           <TextField
                             type="file"
                             sx={{ display: "none" }}
@@ -644,6 +652,15 @@ const TripCreation = () => {
           textParagraph={"Serás redirigido a Mis Viajes"}
         />
       }
+
+      <AlertCustom
+        inProp={isErrorTrip}
+        timeout={500}
+        onClose={() => setIsErrorTrip(false)}
+        msg={errorTrip}
+        icon={<ErrorOutline />}
+        severity={"error"}
+      />
     </>
   );
 };
