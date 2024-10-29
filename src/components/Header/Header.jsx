@@ -19,10 +19,10 @@ import StoreContext from "../../store/storecontext";
 import { jwtDecode } from "jwt-decode";
 
 const pages = [
-  { name: "All Trips", to: "/trips" },
-  { name: "My Trips", to: "/mytrips" },
+  { name: "Todos los viajes", to: "/trips" },
+  { name: "Mis viajes", to: "/mytrips" },
 ];
-const settings = ["Profile", "Logout"];
+const settings = ["Perfil", "Salir"];
 
 export default function Header() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -169,7 +169,7 @@ export default function Header() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <Tooltip title="Abrir menu">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   sx={{
@@ -205,9 +205,9 @@ export default function Header() {
                 <MenuItem
                   key={setting}
                   onClick={
-                    setting === "Logout"
+                    setting === "Salir"
                       ? handleLogout
-                      : setting === "Profile"
+                      : setting === "Perfil"
                       ? handleProfileClick
                       : handleCloseUserMenu
                   }

@@ -69,10 +69,10 @@ describe("Profile Component", () => {
     expect(screen.getByText(mockUser.email)).toBeDefined();
   });
 
-  it("displays warning and 'Verify Now' button when account is not verified", () => {
+  it("displays warning and 'Verificar ahora' button when account is not verified", () => {
     renderComponent();
-    expect(screen.getByText("Account not verified")).toBeDefined();
-    const verifyButton = screen.getByRole("button", { name: /verify now/i });
+    expect(screen.getByText("Cuenta no verificada")).toBeDefined();
+    const verifyButton = screen.getByRole("button", { name: /verificar ahora/i });
     expect(verifyButton).toBeDefined();
   });
 
@@ -86,16 +86,16 @@ describe("Profile Component", () => {
     expect(screen.getByLabelText("No validado")).toBeDefined();
   });
 
-  it("displays VerificationSteps component when 'Verify Now' button is clicked",async () => {
+  it("displays VerificationSteps component when 'Verificar ahora' button is clicked",async () => {
     renderComponent();
-    const verifyButton = await screen.getByRole("button", { name: /verify now/i });
+    const verifyButton = await screen.getByRole("button", { name: /verificar ahora/i });
     fireEvent.click(verifyButton);
-    expect(await screen.getByText(/verification steps/i)).toBeDefined();
+    expect(await screen.getByText(/Pasos de verificacion/i)).toBeDefined();
   });
 
   it("shows success alert message after verification is successful", () => {
     renderComponent({}, false);
-    fireEvent.click(screen.getByRole("button", { name: /verify now/i }));
+    fireEvent.click(screen.getByRole("button", { name: /verificar ahora/i }));
     expect(screen.getByText("Su cuenta ha sido verificada con exito")).toBeDefined();
   });
 });

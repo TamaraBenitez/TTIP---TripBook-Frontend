@@ -54,7 +54,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   }, []);
 
   useEffect(() => {
-      setUser({...user, isUserVerified:verifiedDni}); //Trigger userContext useEffect 
+    setUser({ ...user, isUserVerified: verifiedDni }); //Trigger userContext useEffect
   }, [verifiedDni]);
 
   const handleSendEmailVerification = async () => {
@@ -78,7 +78,9 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
       setDni(value);
       setDniError("");
     } else {
-      setDniError("DNI must be exactly 8 digits long and numeric.");
+      setDniError(
+        "El DNI debe tener exactamente 8 dígitos de largo y ser numérico."
+      );
     }
   };
 
@@ -88,7 +90,9 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
       setTramite(value);
       setTramiteError("");
     } else {
-      setTramiteError("Tramite must be exactly 11 digits long and numeric.");
+      setTramiteError(
+        "El numero de trámite debe tener exactamente 11 dígitos y ser numérico."
+      );
     }
   };
 
@@ -116,30 +120,33 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const handleUploadPhoto = (event) => {
     setPhoto(event.target.files[0]);
   };
-  const handleClose = () =>{
-    if(user.isEmailVerified && user.isUserVerified){
-      setSuccessAlert(true)
-      setTimeout(()=>{
+  const handleClose = () => {
+    if (user.isEmailVerified && user.isUserVerified) {
+      setSuccessAlert(true);
+      setTimeout(() => {
         setSuccessAlert(false);
-      },5000);
+      }, 5000);
     }
     onClose();
-  }
+  };
 
   const verifyDniData = (e) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     formDataToSend.append("userId", user.id);
     formDataToSend.append("file", photo);
-    store.services.authService.verifyDNI(formDataToSend).then(() => {
-      setVerifiedDni(true);
-    }).catch((error)=>{
-      setBarcodeError(error.response.data.message);
-      setShowBarcodeError(true)
-      setTimeout(()=>{
-        setShowBarcodeError(false);
-      },5000);
-    });
+    store.services.authService
+      .verifyDNI(formDataToSend)
+      .then(() => {
+        setVerifiedDni(true);
+      })
+      .catch((error) => {
+        setBarcodeError(error.response.data.message);
+        setShowBarcodeError(true);
+        setTimeout(() => {
+          setShowBarcodeError(false);
+        }, 5000);
+      });
   };
   const isEmailAccordionGreen = user.isEmailVerified
     ? "success"
@@ -157,7 +164,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Verification Steps</DialogTitle>
+      <DialogTitle>Pasos de verificacion</DialogTitle>
       <DialogContent>
         <Accordion
           defaultExpanded
@@ -171,12 +178,12 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Email Verification</Typography>
+            <Typography>Verificacion de email</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {user.isEmailVerified ? (
               <Box display="flex">
-                <Typography>Email verified!</Typography>
+                <Typography>Email verificado!</Typography>
                 <CheckCircleOutline color="success" sx={{ ml: 1 }} />
               </Box>
             ) : (
@@ -186,12 +193,12 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                   onClick={handleSendEmailVerification}
                   disabled={emailButtonDisabled}
                 >
-                  Send Verification Email
+                  Enviar verificacion de mail
                 </Button>
                 {emailButtonDisabled && (
                   <Typography variant="body2" color="textSecondary">
-                    You didn't receive any email? Try again in {countdown}{" "}
-                    seconds.
+                    ¿No has recibido un correo electrónico? Vuelve a intentarlo
+                    en {countdown} segundos.
                   </Typography>
                 )}
               </>
@@ -201,30 +208,30 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
         <Accordion
           defaultExpanded
           style={{
-            backgroundColor: verifiedDni ?
-            "#d4edda"
-           : barcodeError
-           ? "#f8d7da"
-           : "#ffffff",
+            backgroundColor: verifiedDni
+              ? "#d4edda"
+              : barcodeError
+              ? "#f8d7da"
+              : "#ffffff",
           }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>DNI Verification</Typography>
+            <Typography>Verificacion de DNI</Typography>
           </AccordionSummary>
           <AccordionDetails>
             {verifiedDni ? (
               <Box display="flex">
-                <Typography>Dni verified!</Typography>
+                <Typography>Dni verificado!</Typography>
                 <CheckCircleOutline color="success" sx={{ ml: 1 }} />
               </Box>
             ) : (
               <>
                 <Stepper activeStep={step} sx={{ mb: 3 }}>
                   <Step>
-                    <StepLabel>Input DNI Info</StepLabel>
+                    <StepLabel>Introducir información del DNI</StepLabel>
                   </Step>
                   <Step>
-                    <StepLabel>Barcode Photo</StepLabel>
+                    <StepLabel>Foto de código de barras</StepLabel>
                   </Step>
                 </Stepper>
                 {step === 0 && (
@@ -271,7 +278,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                       onClick={handleNextStep}
                       disabled={!isStepValid()}
                     >
-                      Next
+                      Siguiente
                     </Button>
                   </>
                 )}
@@ -285,10 +292,10 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                       />
                     </Box>
                     <Button variant="contained" onClick={verifyDniData}>
-                      Submit
+                      Enviar
                     </Button>
                     <Button variant="outlined" onClick={handlePreviousStep}>
-                      Back
+                      Atras
                     </Button>
                   </>
                 )}
@@ -298,16 +305,16 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
         </Accordion>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose}>Cerrar</Button>
       </DialogActions>
       <AlertCustom
-            inProp={showBarcodeError}
-            timeout={500}
-            onClose={() => setShowBarcodeError(false)}
-            msg={barcodeError}
-            icon={<ErrorOutline />}
-            severity={"error"}
-          />
+        inProp={showBarcodeError}
+        timeout={500}
+        onClose={() => setShowBarcodeError(false)}
+        msg={barcodeError}
+        icon={<ErrorOutline />}
+        severity={"error"}
+      />
     </Dialog>
   );
 };
