@@ -14,50 +14,24 @@ import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
-import { useUser } from "../../user/UserContext";
 import TripsSkeleton from "../TripList/TripsSkeleton";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [tripToSuscribe, setTripToSuscribe] = useState(null);
   const store = useContext(StoreContext);
   const navigate = useNavigate();
   const confirmMsg = "¿Esta seguro que desea inscribirse a este viaje?";
-  const successMsg = "Te registraste correctamente";
+  const [loading, setLoading] = useState(true);
+
   const [modalMsg, setModalMsg] = useState(confirmMsg);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const { user } = useUser();
+  
 
-  const suscribe = () => {
-    setLoading(true);
-    store.services.tripService
-      .RegisterUserToTrip(user.id ,tripToSuscribe)
-      .then(() => {
-        setLoading(false);
-        setModalMsg(successMsg);
-        setModalConfirmBtn(goToMyTripsButton);
-      })
-      .catch((e) => {
-        setAlertMsg(e.response.data.message);
-        setOpen(false);
-        setLoading(false);
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
-      });
-  };
+  const suscribeButton = <Button onClick={()=>navigate(`/trip/suscribe/${tripToSuscribe}`)}>confirmar</Button>;
 
-  const suscribeButton = <Button onClick={suscribe}>confirmar</Button>;
-
-  const goToMyTripsButton = (
-    <Button onClick={() => navigate(`/trips/${tripToSuscribe}`)}>
-      Ver detalles
-    </Button>
-  );
 
   const [modalConfirmBtn, setModalConfirmBtn] = useState(suscribeButton);
 

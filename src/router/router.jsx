@@ -19,6 +19,7 @@ import Home from "../components/Home";
 import Header from "../components/Header/Header";
 import { Toolbar } from "@mui/material";
 import ToolbarAuth from "../components/Auth/ToolbarAuth";
+import TripRegistration from "../components/TripRegistration/TripRegistration";
 
   const routes = [
     { path: "/home", component: <Home /> },
@@ -29,6 +30,7 @@ import ToolbarAuth from "../components/Auth/ToolbarAuth";
     { path: "/verify-email", component: <VerifyEmail /> },
     { path: "/profile", component: <Profile /> },
     { path: "/trip", component: <TripCreation /> },
+    { path: "/trip/suscribe/:id", component: <TripRegistration /> },
   ];
 
   const authRoutes = [
