@@ -3,74 +3,75 @@ import MapComponent from "../MapComponent/MapComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import StoreContext from "../../store/storecontext";
 import { useUser } from "../../user/UserContext";
-import { Button } from "@mui/material";
-import { MapContainer } from "react-leaflet";
+import { Box, CircularProgress } from "@mui/material";
+import DialogCustom from "../DialogCustom/DialogCustom";
+
 
 export default function TripRegistration() {
-  const [trip, setTrip] = useState({tripCoordinates:null});
-  const [pickupPoint, setPickupPoint] = useState();
-  const [loading, setLoading] = useState(true);
-  const confirmMsg = "¿Esta seguro que desea inscribirse a este viaje?";
-  const [modalMsg, setModalMsg] = useState(confirmMsg);
-  const successMsg = "Te registraste correctamente";
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [trip, setTrip] = useState({ tripCoordinates: null });
   const { id } = useParams();
-  const { user } = useUser();
+  const { user, userDataLoading } = useUser();
   const store = useContext(StoreContext);
+  const [departureCoords, setDepartureCoords] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("Propuesta enviada")
+  const [modalMsg, setModalMsg] = useState("Hemos notificado al conductor.")
   const navigate = useNavigate();
+  const proposeNewRoute = (pickPoint) => {
+    let requestBody = {
+      userId: user.id,
+      tripId: trip.id,
+      latitude: pickPoint[0],
+      longitude: pickPoint[1]
+    } 
+    store.services.tripService.RegisterUserToTrip(requestBody)
+    .then(()=>{
+      setOpen(true)
+    })
+    .catch((error)=>{
+      debugger;
+      setModalTitle("Error")
+      setModalMsg(error.response.data.message);
+      setOpen(true)
+    })
+  }
 
-  const goToMyTripsButton = (
-    <Button onClick={() => navigate(`/trips/${tripToSuscribe}`)}>
-      Ver detalles
-    </Button>
-  );
-
-  const suscribe = () => {
-    setLoading(true);
-    store.services.tripService
-      .RegisterUserToTrip(user.id, tripToSuscribe)
-      .then(() => {
-        setLoading(false);
-        setModalMsg(successMsg);
-        setModalConfirmBtn(goToMyTripsButton);
-      })
-      .catch((e) => {
-        setAlertMsg(e.response.data.message);
-        setOpen(false);
-        setLoading(false);
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
-      });
-  };
   useEffect(() => {
-    if(!trip.tripCoordinates){
-        store.services.tripService
-        .GetTrip(id)
-        .then((res) => {
+    if (!trip.tripCoordinates) {
+      store.services.tripService
+      .GetTrip(id)
+      .then((res) => {
           setTrip(res.data);
+          setDepartureCoords([res.data.tripCoordinates[0].latitude, res.data.tripCoordinates[0].longitude]);
           const alreadyRegistered = res.data.participants.find(
-            (p) => p.id == user.id
+            (p) => {
+              return p.id == user.id}
           );
-          if(alreadyRegistered)
-          setIsRegistered(true);
+          if (alreadyRegistered) setIsRegistered(true);
           setLoading(false);
         })
         .catch((e) => {
           console.log(e);
-          setLoading(false);
         });
     }
   }, [trip]);
   return (
-    <>
-     {trip.tripCoordinates &&
-        <MapContainer
-        >
-         <MapComponent coordinates={trip.tripCoordinates} registeringToTrip={true}/>
-        </MapContainer>
-        }
-  </>
-  )
+    <>{userDataLoading ? (
+      <Box sx={{ display: "flex", justifyContent: "center", height: "100%" }}>
+        <CircularProgress />
+      </Box>
+    ) :
+      departureCoords && trip.tripCoordinates && ( 
+          <MapComponent isRegistering={true} proposeNewRoute={proposeNewRoute} coordinates={trip.tripCoordinates[0]}/>
+      )}
+
+      <DialogCustom
+            open={open}
+            handleConfirm={()=>navigate("/")}
+            handleClose={()=>navigate("/")}
+            title={modalTitle}
+            textParagraph={modalMsg}
+      />
+    </>
+  );
 }

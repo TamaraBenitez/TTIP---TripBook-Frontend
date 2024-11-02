@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import StoreContext from "../../store/storecontext";
 import {
   Card,
@@ -30,7 +30,7 @@ export default function TripDetails() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { user, setUser } = useUser();
-
+  const navigate = useNavigate();
   const handleClickOpen = (e) => {
     e.stopPropagation();
     setOpen(true);
@@ -43,18 +43,20 @@ export default function TripDetails() {
   const handleSuscribe = (e) => {
     setLoading(true);
     handleCloseModal();
-    store.services.tripService.RegisterUserToTrip(user.id, id)
-    .then((res) => {
-      setLoading(false);
-      setIsRegistered(true);
-      setShowAlert(true);
-    });
+    navigate(`/trip/suscribe/${id}`)
+    // store.services.tripService.RegisterUserToTrip(user.id, id)
+    // .then((res) => {
+    //   setLoading(false);
+    //   setIsRegistered(true);
+    //   setShowAlert(true);
+    // });
   };
 
   useEffect(() => {
     store.services.tripService
       .GetTrip(id)
       .then((res) => {
+        debugger;
         setTrip(res.data);
         const alreadyRegistered = res.data.participants.find(
           (p) => p.id == user.id
@@ -175,7 +177,7 @@ export default function TripDetails() {
           )}
         </CardContent>
       </Card>
-      {trip.tripCoordinates && <MapComponent coordinates={trip.tripCoordinates}/>}
+      {trip.tripCoordinates && <MapComponent coordinates={trip.tripCoordinates[0]}/>}
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}

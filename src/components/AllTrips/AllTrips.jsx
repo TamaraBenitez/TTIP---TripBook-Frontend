@@ -14,7 +14,6 @@ import StoreContext from "../../store/storecontext";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
-import { useUser } from "../../user/UserContext";
 import TripsSkeleton from "../TripList/TripsSkeleton";
 
 export default function AllTrips() {

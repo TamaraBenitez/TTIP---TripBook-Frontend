@@ -42,6 +42,8 @@ import { useBlocker, useNavigate } from "react-router-dom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { ErrorOutline } from "@mui/icons-material";
+import MapClickHandler from "../MapComponent/MapClickHandler";
+import CenterMap from "../MapComponent/CenterMap";
 
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -78,34 +80,10 @@ const TripCreation = () => {
     );
   });
 
-  //handle re-center map when the coordenates change
-  const CenterMap = (props) => {
-    const map = useMap();
-    const coordenates = props?.coordenates;
-    useEffect(() => {
-      if (coordenates !== null) {
-        map.setView(coordenates);
-      }
-    }, [map, coordenates]);
-
-    return null;
-  };
-
   // Handle map clicks to set departure point
-  const handleMapClick = (coordsSetter) => {
-    return () => {
-      const MapClickHandler = () => {
-        useMapEvents({
-          click: (e) => {
-            coordsSetter([e.latlng.lat, e.latlng.lng]);
-          },
-        });
-        return null;
-      };
-      return <MapClickHandler />;
-    };
-  };
-
+  const handleMapClick = (handleNewMarker) =>{
+    return <MapClickHandler handleNewMarker={handleNewMarker} />;
+  } 
   const handleChangeDate = (newDate) => {
     setDepartureDate(newDate);
   };
@@ -297,8 +275,8 @@ const TripCreation = () => {
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                   <Marker position={departureCoords || [-34.6037, -58.3816]} />
-                  {handleMapClick(setDepartureCoords)()}
-                  <CenterMap coordenates={departureCoords} />
+                  {handleMapClick(setDepartureCoords)}
+                  <CenterMap coordinates={departureCoords} />
                 </MapContainer>
               </Grid2>
             )}
@@ -356,7 +334,7 @@ const TripCreation = () => {
                   <Marker
                     position={destinationCoords || [-34.6037, -58.3816]}
                   />
-                  {handleMapClick(setDestinationCoords)()}
+                  {handleMapClick(setDestinationCoords)}
                   <CenterMap coordenates={destinationCoords} />
                 </MapContainer>
               </Grid2>

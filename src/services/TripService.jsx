@@ -21,18 +21,12 @@ class TripService extends BaseService {
         });
     }
 
-    RegisterUserToTrip(userId, tripId) {
+    RegisterUserToTrip(data) {
         return this.axios({
-            url: `${this.baseUrl}/tripUser`,
+            url: `${this.baseUrl}/tripUser/createRegistrationWithOtherCoordinates`,
             method: "POST",
             headers: this.config.headers,
-            data: {
-                userId:userId,
-                tripId:tripId,
-                status: "pending",
-                role:"passenger",
-                joinDate:dayjs()
-            }
+            data: data
         });
     }
 
