@@ -3,8 +3,9 @@ import MapComponent from "../MapComponent/MapComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import StoreContext from "../../store/storecontext";
 import { useUser } from "../../user/UserContext";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import DialogCustom from "../DialogCustom/DialogCustom";
+import RibbonHeading from "../RibbonHeading/RibbonHeading";
 
 export default function TripRegistration() {
   const [trip, setTrip] = useState({ tripCoordinates: null });
@@ -57,7 +58,9 @@ export default function TripRegistration() {
     }
   }, [trip]);
   return (
-    <>
+    <Box sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+    <RibbonHeading heading={"Unirse a un viaje"} component="h2" variant="h2"/>
+    <Typography variant="h3">Elige dónde quieres unirte</Typography>    
       {userDataLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", height: "100%" }}>
           <CircularProgress />
@@ -80,6 +83,6 @@ export default function TripRegistration() {
         title={modalTitle}
         textParagraph={modalMsg}
       />
-    </>
+    </Box>
   );
 }

@@ -5,12 +5,11 @@ import "leaflet-routing-machine";
 import "leaflet-geometryutil";
 import RoutingMachine from "./RoutingMachine";
 import MapClickHandler from "./MapClickHandler";
-import { Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import CenterMap from "./CenterMap";
 
-
 // Utility function to calculate distance between two points
-const calculateDistance = (map,latlng1, latlng2) => {
+const calculateDistance = (map, latlng1, latlng2) => {
   return map.distance(latlng1, latlng2); // distance in meters
 };
 
@@ -18,7 +17,7 @@ const calculateDistance = (map,latlng1, latlng2) => {
 const findNearestRouteSegment = (mapInstance, route, point) => {
   let minDistance = Infinity;
   for (let i = 0; i < route.length - 1; i++) {
-    const closestPointOnSegment = L.GeometryUtil.closestOnSegment(mapInstance,point, route[i], route[i + 1]);
+    const closestPointOnSegment = L.GeometryUtil.closestOnSegment(mapInstance, point, route[i], route[i + 1]);
     const segmentPointDistance = calculateDistance(mapInstance, closestPointOnSegment, point);
 
     if (segmentPointDistance < minDistance) {
@@ -29,21 +28,24 @@ const findNearestRouteSegment = (mapInstance, route, point) => {
 };
 
 //returns true if point1 is nearest to objective
-const isNearest = (point1, point2, objective, map)=>{
-  return calculateDistance(map, point1, objective) < calculateDistance(map, point2, objective)
-}
+const isNearest = (point1, point2, objective, map) => {
+  return calculateDistance(map, point1, objective) < calculateDistance(map, point2, objective);
+};
 
-const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering = false, proposeNewRoute}) => {
+const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering = false, proposeNewRoute }) => {
   const [coords, setCoords] = useState(null);
   const [route, setRouteCoordinates] = useState([]);
   const [userMarker, setUserMarker] = useState(null);
   const [mapInstance, setMapInstance] = useState(null);
   const [routeCalculated, setRouteCalculated] = useState(false);
   const [calculating, setCalculating] = useState(false);
+  const [isPointInRange, setIsPointInRange] = useState(true);
+
   // Handle map clicks to set departure point
-  const handleMapClick = (handleNewMarker) =>{
+  const handleMapClick = (handleNewMarker) => {
     return <MapClickHandler handleNewMarker={handleNewMarker} />;
-  } 
+  };
+
   // Helper component to capture map instance
   const MapHelper = ({ onMapLoad }) => {
     const map = useMap();
@@ -57,8 +59,8 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
     setRouteCoordinates(coordinates);
   };
 
-  //map list of trip-coordinates entities to array of coordinates
-  const mapTripCoordinates = (tripCoords) =>{
+  // Map list of trip-coordinates entities to array of coordinates
+  const mapTripCoordinates = (tripCoords) => {
     let start, end;
     let stops = [];
     if (tripCoords !== undefined) {
@@ -70,28 +72,30 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
       }
       return [start, ...stops, end];
     }
-  }
-  const editPoint = () =>{
-    setUserMarker(null);
-    setRouteCalculated(false)
-  }
-  const calculateNewRoute = () =>{
-        // Add the point and re-sort. 
-        //Take always from original 'coordinates' to avoid stacking markers on coords state
-        setCalculating(true);
-        const [startPoint, ...tail] = mapTripCoordinates(coordinates);
-        const updatedCoords = sortedCoords(startPoint, userMarker, tail);
-        setCoords(updatedCoords);
-  }
+  };
 
-  const sortedCoords = (start, newPoint, route)=>{
+  const editPoint = () => {
+    setUserMarker(null);
+    setRouteCalculated(false);
+  };
+
+  const calculateNewRoute = () => {
+    // Add the point and re-sort.
+    // Take always from original 'coordinates' to avoid stacking markers on coords state
+    setCalculating(true);
+    const [startPoint, ...tail] = mapTripCoordinates(coordinates);
+    const updatedCoords = sortedCoords(startPoint, userMarker, tail);
+    setCoords(updatedCoords);
+  };
+
+  const sortedCoords = (start, newPoint, route) => {
     var sorted = [];
     var newPointAdded = false;
     for (let point = 0; point < route.length; point++) {
       const currentPoint = route[point];
-      if(isNearest(currentPoint, newPoint, start, mapInstance)){
+      if (isNearest(currentPoint, newPoint, start, mapInstance)) {
         sorted.push(currentPoint);
-      } else if(!newPointAdded){
+      } else if (!newPointAdded) {
         sorted.push(newPoint);
         newPointAdded = true;
         // Add the remaining points and break out of the loop
@@ -100,79 +104,88 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
       }
     }
     return [start, ...sorted];
-  }
-  const showMarker = () => {
-    return coords && isRegistering && userMarker;
-  }
-  const canAddMarker = () =>{
-    return isRegistering && coords && !routeCalculated
-  }
+  };
+
+  const showMarker = () => coords && isRegistering && userMarker;
+
+  const canAddMarker = () => isRegistering && coords && !routeCalculated;
+
+  const getMarkerPosition = () => userMarker;
+  
   useEffect(() => {
-    if(coordinates !== undefined){
+    if (coordinates !== undefined) {
       setCoords(mapTripCoordinates(coordinates));
     }
   }, [coordinates]);
 
-  const handleNewMarker = (newPoint) => {
-    // Calculate the distance to the nearest segment
-    const distanceToRoute = findNearestRouteSegment(mapInstance, route, newPoint);
-    if (distanceToRoute > maxToleranceDistance) {
-      alert("El punto esta fuera de la distancia maxima tolerable!");
-      return;
+  useEffect(() => {
+    if (userMarker && mapInstance && route.length > 0) {
+      const distanceToRoute = findNearestRouteSegment(mapInstance, route, userMarker);
+      setIsPointInRange(distanceToRoute <= maxToleranceDistance);
     }
+  }, [userMarker, mapInstance, route]);
 
+  const handleNewMarker = (newPoint) => {
     setUserMarker(newPoint);
-
   };
-  const getMarkerPosition = () =>{
-   return userMarker;
-  }
+
+
   return (
     <>
-    <MapContainer
-      center={coords ? coords[0] : [51.505, -0.09]}
-      zoom={5}
-      style={{ height: "400px", width: "60%" }}
-    >
-      <MapHelper onMapLoad={setMapInstance} />
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <TileLayer
-        url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" 
-        subdomains={['mt0','mt1','mt2','mt3']} 
-      />
-      {showMarker() && 
-      <>
-        <Marker position={getMarkerPosition()} /> 
-        <Circle center={userMarker} radius={maxToleranceDistance} color="blue" fillOpacity={0.2} />
-        <CenterMap coordinates={userMarker} />
-      </>
-      }
-      <CenterMap></CenterMap>
-      {canAddMarker() && handleMapClick(handleNewMarker)}
-      {coords && <RoutingMachine coordinates={coords} 
-                                 setRouteCoordinates={handleRouteCoordinates}
-                                 setCalculating={setCalculating}
-                                 setRouteCalculated={setRouteCalculated}
-                                 manualCalculation={calculating}/>}
-      {/* Buffer zone around the route */}
-      
-    </MapContainer>
-    {isRegistering && 
-    <>
-    <Button 
-      onClick={
-        routeCalculated ? ()=>proposeNewRoute(userMarker) : calculateNewRoute
-      }
-      disabled={calculating}
-    >
-      {routeCalculated ? "Proponer" : "Calcular"} Ruta
-    </Button>
-    {routeCalculated && <Button onClick={editPoint}>Editar Punto</Button>}
-    </>
-    }
+      <MapContainer
+        center={coords ? coords[0] : [51.505, -0.09]}
+        zoom={5}
+        style={{ height: "400px", width: "80%" }}
+      >
+        <MapHelper onMapLoad={setMapInstance} />
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        <TileLayer
+          url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+        />
+        {showMarker() && (
+          <>
+            <Marker position={getMarkerPosition()} />
+            <Circle
+              center={userMarker}
+              radius={maxToleranceDistance}
+              pathOptions={{color: isPointInRange ? "green" : "red"}}
+              fillOpacity={0.2}
+            />
+            <CenterMap coordinates={userMarker} />
+          </>
+        )}
+        {canAddMarker() && handleMapClick(handleNewMarker)}
+        {coords && (
+          <RoutingMachine
+            coordinates={coords}
+            setRouteCoordinates={handleRouteCoordinates}
+            setCalculating={setCalculating}
+            setRouteCalculated={setRouteCalculated}
+            manualCalculation={calculating}
+          />
+        )}
+      </MapContainer>
+      {isRegistering && (
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%", marginTop: 5 }}>
+          {routeCalculated && <Button onClick={editPoint}>Editar Punto</Button>}
+          <Button
+            variant="contained"
+            onClick={routeCalculated ? () => proposeNewRoute(userMarker) : calculateNewRoute}
+            disabled={calculating || userMarker == null || !isPointInRange}
+          >
+            {routeCalculated ? "Proponer" : "Calcular"} Ruta
+          </Button>
+        </Box>
+      )}
+      {!isPointInRange && (
+        <Typography variant="body2" color="error" sx={{ textAlign: "center", marginTop: 2 }}>
+          El punto está fuera de la distancia máxima tolerable.
+        </Typography>
+      )}
     </>
   );
 };
