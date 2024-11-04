@@ -3,17 +3,35 @@ import "leaflet-routing-machine";
 import "./RoutingMachine.css";
 import { useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
-
-const RoutingMachine = ({coordinates, setRouteCoordinates = ()=>{}, setCalculating = ()=>{}, setRouteCalculated = ()=>{}, manualCalculation = false}) => {
+import location from "../../assets/greenLocation.svg";
+const RoutingMachine = ({
+  coordinates,
+  customCoordinate,
+  setRouteCoordinates = () => {},
+  setCalculating = () => {},
+  setRouteCalculated = () => {},
+  manualCalculation = false
+}) => {
   const map = useMap(); // Get the map instance from react-leaflet
   const [coords, setCoords] = useState(coordinates);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     setCoords(coordinates);
-  },[coordinates])
+  }, [coordinates]);
+
   useEffect(() => {
     setCalculating(true);
-    if (coords !== undefined) {
+
+    if (coords) {
+      const greenIcon = new L.Icon({
+        iconUrl: location,
+        iconSize: [45, 75], // Use array format for icon size
+        iconAnchor: [22.5, 75], // Set anchor point at the bottom center
+        shadowUrl: null,
+        shadowAnchor: null,
+        className: "start-point-icon",
+      });
+
       const routingControl = L.Routing.control({
         waypoints: coords.map((coord) => L.latLng(coord[0], coord[1])),
         lineOptions: {
@@ -25,6 +43,18 @@ const RoutingMachine = ({coordinates, setRouteCoordinates = ()=>{}, setCalculati
         addWaypoints: false,
         draggableWaypoints: false,
         fitSelectedRoutes: true,
+        createMarker: (i, waypoint) => {
+          debugger;
+          // Check if the current waypoint matches the custom coordinate
+          if (customCoordinate && 
+              waypoint.latLng.lat == customCoordinate[0] &&
+              waypoint.latLng.lng == customCoordinate[1]) {
+            // Return custom marker if it matches
+            return L.marker(waypoint.latLng, { icon: greenIcon });
+          }
+          // Otherwise, return the default marker
+          return L.marker(waypoint.latLng);
+        },
       })
         .on("routesfound", (e) => {
           const route = e.routes[0];
@@ -32,13 +62,13 @@ const RoutingMachine = ({coordinates, setRouteCoordinates = ()=>{}, setCalculati
             coord.lat,
             coord.lng,
           ]);
-          if(setRouteCoordinates){
+          if (setRouteCoordinates) {
             setRouteCoordinates(routeCoords);
             setCalculating(false);
-            if(manualCalculation){
+            if (manualCalculation) {
               setRouteCalculated(true);
             }
-          } 
+          }
         })
         .addTo(map);
 
@@ -47,7 +77,7 @@ const RoutingMachine = ({coordinates, setRouteCoordinates = ()=>{}, setCalculati
         map.removeControl(routingControl);
       };
     }
-  }, [map, coords]);
+  }, [map, coords, customCoordinate]);
 
   return null; // This component doesn't render anything itself
 };

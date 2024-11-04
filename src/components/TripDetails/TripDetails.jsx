@@ -14,15 +14,28 @@ import {
   AccordionDetails,
   Skeleton,
   Alert,
+  SvgIcon,
+  Tooltip,
 } from "@mui/material";
-import { AccountCircle, TaskAlt } from "@mui/icons-material";
+import { AccountCircle, Cancel, CheckCircle, TaskAlt } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { formatDate } from "../../utility/Utility";
 import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
+import whatsapp from "../../assets/Whatsapp.svg";
 
-export default function TripDetails() {
-  const { id } = useParams();
+export default function TripDetails({
+  pendingSolicitudes,
+  tripIdParam = null,
+  tripUserId = null,
+}) {
+  var id;
+  if (!tripIdParam) {
+    const idObj = useParams();
+    id = idObj.id;
+  } else {
+    id = tripIdParam;
+  }
   const store = useContext(StoreContext);
   const [trip, setTrip] = useState({});
   const [loading, setLoading] = useState(true);
@@ -35,7 +48,6 @@ export default function TripDetails() {
     e.stopPropagation();
     setOpen(true);
   };
-
   const handleCloseModal = () => {
     setOpen(false);
   };
@@ -45,22 +57,57 @@ export default function TripDetails() {
     handleCloseModal();
     navigate(`/trip/suscribe/${id}`);
   };
+  const setTripDetails = (res) => {
+    setTrip(res.data);
+    if (!pendingSolicitudes) {
+      const alreadyRegistered = res.data.participants.find(
+        (p) => p.id == user.id
+      );
+      if (alreadyRegistered) setIsRegistered(true);
+    }
+    setLoading(false);
+  };
+  const showMap = () => {
+    //if we are showing pending request the coordinates property name change
+    const showIfPending = pendingSolicitudes && trip.coordinatesConfirmed;
+    const showIfConfirmed = trip.tripCoordinates;
+    return showIfPending || showIfConfirmed;
+  };
+
+  const getCoordinates = () => {
+    if (pendingSolicitudes) {
+      return [trip.coordinates[0], ...trip.coordinatesConfirmed];
+    } else {
+      return trip.tripCoordinates[0];
+    }
+  };
+
+  const getUserMarker = () => {
+    debugger;
+    if (pendingSolicitudes) {
+      return [trip.coordinates[0].latitude, trip.coordinates[0].longitude];
+    } else return null;
+  };
 
   useEffect(() => {
-    store.services.tripService
-      .GetTrip(id)
-      .then((res) => {
-        setTrip(res.data);
-        const alreadyRegistered = res.data.participants.find(
-          (p) => p.id == user.id
-        );
-        if (alreadyRegistered) setIsRegistered(true);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
-      });
+    //If is a pending solicitude, show the pending coordinates
+    if (pendingSolicitudes) {
+      store.services.tripService
+        .GetRequest(tripUserId, id)
+        .then(setTripDetails)
+        .catch((e) => {
+          console.log(e);
+          setLoading(false);
+        });
+    } else {
+      store.services.tripService
+        .GetTrip(id)
+        .then(setTripDetails)
+        .catch((e) => {
+          console.log(e);
+          setLoading(false);
+        });
+    }
   }, [id, store.services.tripService, isRegistered]);
 
   return (
@@ -81,6 +128,7 @@ export default function TripDetails() {
                 <Typography variant="h4" component="h1" gutterBottom>
                   Viaje a {trip.destination}
                 </Typography>
+                <Divider />
                 <Typography variant="body1" color="textSecondary">
                   <strong>Fecha de salida:</strong>{" "}
                   {formatDate(trip.startDate, true)}
@@ -88,21 +136,98 @@ export default function TripDetails() {
                 <Typography variant="body1" color="textSecondary">
                   <strong>Desde:</strong> {trip.origin}
                 </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  <strong>Descripción:</strong> {trip.description}
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  <strong>Costo estimado:</strong> ${trip.estimatedCost}
-                </Typography>
+                {!pendingSolicitudes && (
+                  <Typography variant="body1" color="textSecondary">
+                    <strong>Descripción:</strong> {trip.description}
+                  </Typography>
+                )}
+                {!pendingSolicitudes && (
+                  <Typography variant="body1" color="textSecondary">
+                    <strong>Costo estimado:</strong> ${trip.estimatedCost}
+                  </Typography>
+                )}
 
-                <Divider sx={{ margin: "20px 0" }} />
+                {!pendingSolicitudes && (
+                  <>
+                    <Divider sx={{ margin: "20px 0" }} />
 
-                <Typography variant="h5" component="h2" gutterBottom>
-                  Participantes
-                </Typography>
-                {trip.participants?.length > 0 ? (
-                  trip.participants.map((user) => (
-                    <Accordion key={user.id} sx={{ maxWidth: 250 }}>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                      Participantes
+                    </Typography>
+                    {trip.participants?.length > 0 ? (
+                      trip.participants.map((user) => (
+                        <Accordion key={user.id} sx={{ maxWidth: 250 }}>
+                          <AccordionSummary
+                            sx={{ justifyContent: "flex-start" }}
+                            aria-controls="panel1-content"
+                            id="panel1-header"
+                          >
+                            <ListItemIcon sx={{ minWidth: 40 }}>
+                              <AccountCircle />
+                            </ListItemIcon>
+                            <Typography variant="body1">
+                              {user.name} {user.surname}
+                            </Typography>
+                          </AccordionSummary>
+                          <AccordionDetails
+                            sx={{
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                Email: {user.email}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                Localidad: {user.locality}, {user.province}
+                              </Typography>
+                            </Box>
+                          </AccordionDetails>
+                        </Accordion>
+                      ))
+                    ) : (
+                      <Typography variant="body1">
+                        No hay participantes registrados aún.
+                      </Typography>
+                    )}
+                    {!isRegistered && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          marginTop: "20px",
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleClickOpen}
+                        >
+                          Unirme al viaje
+                        </Button>
+                      </Box>
+                    )}
+                  </>
+                )}
+                {pendingSolicitudes && (
+                  <>
+                    <Divider sx={{ margin: "20px 0" }} />
+                    <Accordion sx={{ maxWidth: 250 }}>
                       <AccordionSummary
                         sx={{ justifyContent: "flex-start" }}
                         aria-controls="panel1-content"
@@ -112,11 +237,30 @@ export default function TripDetails() {
                           <AccountCircle />
                         </ListItemIcon>
                         <Typography variant="body1">
-                          {user.name} {user.surname}
+                          {trip.name} {trip.surname}
                         </Typography>
+                        <Tooltip
+                          title={
+                            trip.isUserVerified
+                              ? "User Verified"
+                              : "User Not Verified"
+                          }
+                          placement="right"
+                        >
+                          {trip.isUserVerified ? (
+                            <CheckCircle
+                              sx={{ color: "green", marginLeft: "10px" }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "red", marginLeft: "10px" }} />
+                          )}
+                        </Tooltip>
                       </AccordionSummary>
                       <AccordionDetails
-                        sx={{ WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}
+                        sx={{
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                        }}
                       >
                         <Box>
                           <Typography
@@ -127,7 +271,7 @@ export default function TripDetails() {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            Email: {user.email}
+                            Email: {trip.email}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -137,67 +281,77 @@ export default function TripDetails() {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            Localidad: {user.locality}, {user.province}
+                            Localidad: {trip.locality}, {trip.province}
                           </Typography>
+                          {pendingSolicitudes && (
+                            <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
+                            <SvgIcon>
+                              <image href={whatsapp} height="100%" />
+                            </SvgIcon>
+                            <Typography variant="body2"
+                            color="textSecondary"
+                            sx={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}>{trip.contact}</Typography>
+                            </Box>
+                          )}
                         </Box>
                       </AccordionDetails>
                     </Accordion>
-                  ))
-                ) : (
-                  <Typography variant="body1">
-                    No hay participantes registrados aún.
-                  </Typography>
-                )}
-                {!isRegistered && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginTop: "20px",
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleClickOpen}
-                    >
-                      Unirme al viaje
-                    </Button>
-                  </Box>
+                  </>
                 )}
               </>
             )}
           </CardContent>
         </Card>
-        {trip.tripCoordinates && (
-          <MapComponent coordinates={trip.tripCoordinates[0]} />
-        )}
-        <DialogCustom
-          open={open}
-          handleClose={handleCloseModal}
-          handleConfirm={handleSuscribe}
-          title={"Inscripcion al viaje"}
-          textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
-          showCancelButton={true}
-        />
-        {showAlert && (
-          <Alert
-            sx={{
-              maxWidth: 500,
-              position: "fixed",
-              left: 600,
-              bottom: 300,
-              zIndex: 3,
-            }}
-            onClose={() => setShowAlert(false)}
-            variant="outlined"
-            icon={<TaskAlt fontSize="inherit" />}
-            severity="success"
-          >
-            Te has Inscripto exitosamente a este viaje
-          </Alert>
+        {showMap() && (
+          <MapComponent
+            coordinates={getCoordinates()}
+            userMarkerParam={getUserMarker()}
+            width={"65%"}
+          />
         )}
       </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          marginTop: "10px",
+          justifyContent: "space-around",
+        }}
+      >
+        <Button color="error" variant="contained">
+          Denegar
+        </Button>
+        <Button variant="contained">Confirmar</Button>
+      </Box>
+      <DialogCustom
+        open={open}
+        handleClose={handleCloseModal}
+        handleConfirm={handleSuscribe}
+        title={"Inscripcion al viaje"}
+        textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
+        showCancelButton={true}
+      />
+      {showAlert && (
+        <Alert
+          sx={{
+            maxWidth: 500,
+            position: "fixed",
+            left: 600,
+            bottom: 300,
+            zIndex: 3,
+          }}
+          onClose={() => setShowAlert(false)}
+          variant="outlined"
+          icon={<TaskAlt fontSize="inherit" />}
+          severity="success"
+        >
+          Te has inscripto exitosamente a este viaje
+        </Alert>
+      )}
     </>
   );
 }

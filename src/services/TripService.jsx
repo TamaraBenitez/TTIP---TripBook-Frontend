@@ -45,6 +45,14 @@ class TripService extends BaseService {
       data: tripData,
     });
   }
+
+  GetRequest(tripUserId, tripId){
+    return this.axios({
+      url: `${this.baseUrl}/tripUser/requestDetails/${tripUserId}/${tripId}`,
+      method: "GET",
+      headers: this.config.headers,
+    });
+  }
 }
 
 export default TripService;

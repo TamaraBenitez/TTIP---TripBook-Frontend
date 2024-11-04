@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Circle, MapContainer, Marker, Polyline, TileLayer, useMap } from "react-leaflet";
+import { Circle, MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import "leaflet-geometryutil";
@@ -7,6 +7,9 @@ import RoutingMachine from "./RoutingMachine";
 import MapClickHandler from "./MapClickHandler";
 import { Box, Button, Typography } from "@mui/material";
 import CenterMap from "./CenterMap";
+import L from "leaflet"; // Import Leaflet for icon creation
+import location from "../../assets/greenLocation.svg";
+
 
 // Utility function to calculate distance between two points
 const calculateDistance = (map, latlng1, latlng2) => {
@@ -32,14 +35,23 @@ const isNearest = (point1, point2, objective, map) => {
   return calculateDistance(map, point1, objective) < calculateDistance(map, point2, objective);
 };
 
-const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering = false, proposeNewRoute }) => {
+const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegistering = false, proposeNewRoute, userMarkerParam = null }) => {
   const [coords, setCoords] = useState(null);
   const [route, setRouteCoordinates] = useState([]);
-  const [userMarker, setUserMarker] = useState(null);
+  const [userMarker, setUserMarker] = useState(userMarkerParam);
   const [mapInstance, setMapInstance] = useState(null);
   const [routeCalculated, setRouteCalculated] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [isPointInRange, setIsPointInRange] = useState(true);
+  // Create a green icon
+  const greenIcon = new L.Icon({
+    iconUrl: location,
+    iconSize: [45, 75], // Use array format for icon size
+    iconAnchor: [22.5, 75], // Set anchor point at the bottom center
+    shadowUrl: null,
+    shadowAnchor: null,
+    className: "start-point-icon",
+  });
 
   // Handle map clicks to set departure point
   const handleMapClick = (handleNewMarker) => {
@@ -106,8 +118,8 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
     return [start, ...sorted];
   };
 
-  const showMarker = () => coords && isRegistering && userMarker;
-
+  const showMarker = () => coords && userMarker;
+  
   const canAddMarker = () => isRegistering && coords && !routeCalculated;
 
   const getMarkerPosition = () => userMarker;
@@ -135,7 +147,7 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
       <MapContainer
         center={coords ? coords[0] : [51.505, -0.09]}
         zoom={5}
-        style={{ height: "400px", width: "80%" }}
+        style={{ height: "400px", width: width ? width : "80%" }}
       >
         <MapHelper onMapLoad={setMapInstance} />
         <TileLayer
@@ -148,13 +160,13 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
         />
         {showMarker() && (
           <>
-            <Marker position={getMarkerPosition()} />
-            <Circle
+            <Marker position={getMarkerPosition()} icon={greenIcon}/>
+            {isRegistering && <Circle
               center={userMarker}
               radius={maxToleranceDistance}
               pathOptions={{color: isPointInRange ? "green" : "red"}}
               fillOpacity={0.2}
-            />
+            />}
             <CenterMap coordinates={userMarker} />
           </>
         )}
@@ -166,6 +178,7 @@ const MapComponent = ({ coordinates, maxToleranceDistance = 2000, isRegistering 
             setCalculating={setCalculating}
             setRouteCalculated={setRouteCalculated}
             manualCalculation={calculating}
+            customCoordinate={userMarker}
           />
         )}
       </MapContainer>

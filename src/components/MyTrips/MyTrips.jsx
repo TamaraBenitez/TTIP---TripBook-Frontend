@@ -70,10 +70,8 @@ export default function MyTrips() {
     navigate(`/trips/${to}`);
   };
 
-  const handleViewDetails = (tripUserId, tripId) => {
-    alert("hellouuuu");
-    console.log(tripUserId);
-    console.log(tripId);
+  const handleViewRequest = (tripUserId, tripId) => {
+    navigate(`/request?tripUserId=${tripUserId}&tripId=${tripId}`)
   };
 
   return (
@@ -150,7 +148,7 @@ export default function MyTrips() {
                           <Button
                             variant="outlined"
                             onClick={() =>
-                              handleViewDetails(
+                              handleViewRequest(
                                 passenger.tripUserId,
                                 trip.tripId
                               )
