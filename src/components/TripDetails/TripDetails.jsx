@@ -83,7 +83,6 @@ export default function TripDetails({
   };
 
   const getUserMarker = () => {
-    debugger;
     if (pendingSolicitudes) {
       return [trip.coordinates[0].latitude, trip.coordinates[0].longitude];
     } else return null;

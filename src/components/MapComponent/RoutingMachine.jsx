@@ -44,7 +44,6 @@ const RoutingMachine = ({
         draggableWaypoints: false,
         fitSelectedRoutes: true,
         createMarker: (i, waypoint) => {
-          debugger;
           // Check if the current waypoint matches the custom coordinate
           if (customCoordinate && 
               waypoint.latLng.lat == customCoordinate[0] &&
