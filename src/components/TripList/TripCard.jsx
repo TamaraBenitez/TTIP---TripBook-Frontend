@@ -7,6 +7,7 @@ import {
   CardContent,
   CardMedia,
   Container,
+  Grid2,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -21,6 +22,7 @@ export default function TripCard({
   startingPoint,
   destination,
   participantsNumber,
+  maxPassengers,
   to,
   estimatedCost,
   action,
@@ -93,24 +95,30 @@ export default function TripCard({
               overflow: "hidden",
             }}
           >
-            <Container sx={{ display: "flex", paddingLeft: "0px !important" }}>
+            <Grid2 container size={12} sx={{ display: "flex", paddingLeft: "0px !important" }}>
+              <Grid2 size={6} width={"55%"}>
+
               <Typography variant="h5" component="div">
                 {destination}
               </Typography>
+              </Grid2>
               {isHovered && (
-                <Container
-                  sx={{
-                    display: "flex",
-                    paddingRight: "0px !important",
-                    width: "20%",
-                    marginRight: "0px",
-                  }}
+                <Grid2
+                size={6}
+                sx={{
+                  display: "flex",
+                  width: "45%",
+                  marginRight: "0px",
+                  justifyContent: "flex-end"
+                }}
                 >
                   <Groups className="groupIcon" />
-                  {participantsNumber}
-                </Container>
+                  <Typography>
+                    {participantsNumber} / {maxPassengers}
+                  </Typography>
+                </Grid2>
               )}
-            </Container>
+            </Grid2>
 
             <Typography>{formatDate(startDate)}</Typography>
 

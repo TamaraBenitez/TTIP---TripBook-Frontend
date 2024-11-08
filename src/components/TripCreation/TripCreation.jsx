@@ -44,6 +44,8 @@ import AlertCustom from "../AlertCustom/AlertCustom";
 import { ErrorOutline } from "@mui/icons-material";
 import MapClickHandler from "../MapComponent/MapClickHandler";
 import CenterMap from "../MapComponent/CenterMap";
+import MapComponent from "../MapComponent/CustomRouteMap";
+import CustomRouteMap from "../MapComponent/CustomRouteMap";
 
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -53,6 +55,7 @@ const TripCreation = () => {
   const [seats, setSeats] = useState(1);
   const [estimatedCost, setEstimatedCost] = useState(0);
   const [notes, setNotes] = useState("");
+  const [maxTolerableDistance, setMaxTolerableDistance] = useState(5000);
   const [fileMessage, setFileMessage] = useState("");
   const [licenseError, setLicenseError] = useState(null);
   const [departureCoords, setDepartureCoords] = useState([-34.6037, -58.3816]);
@@ -70,6 +73,8 @@ const TripCreation = () => {
   const navigate = useNavigate();
   const [errorTrip, setErrorTrip] = useState("");
   const [isErrorTrip, setIsErrorTrip] = useState(false);
+  // const [editRoute, setEditRoute] = useState(false);
+  const [route, setRoute] = useState([departureCoords, destinationCoords]);
 
   //Prevent user from leaving
   let blocker = useBlocker(({ currentLocation, nextLocation }) => {
@@ -219,9 +224,9 @@ const TripCreation = () => {
 
   return (
     <>
-      <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}>
+      {/* <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}> */}
         <RibbonHeading heading={"Nuevo Viaje"} component="h2" variant="h2" />
-        {!showConfirmation ? (
+         {!showConfirmation ? (
           <Box paddingInline={3}>
             <Stepper activeStep={activeStep} sx={{ marginBottom: 3 }}>
               {steps.map((label, index) => (
@@ -326,7 +331,7 @@ const TripCreation = () => {
                 </Grid2>
 
                 <MapContainer
-                  center={[51.505, -0.09]}
+                  center={[-34.6037, -58.3816]}
                   zoom={13}
                   style={{ height: "400px", width: "100%" }}
                 >
@@ -348,7 +353,7 @@ const TripCreation = () => {
                 <Paper sx={{ width: "100%", height: "100%" }}>
                   <Grid2 container size={12} spacing={5} padding={5}>
                     <Grid2
-                      size={6}
+                      size={4}
                       sx={{
                         display: "flex",
                         flexDirection: "row",
@@ -372,7 +377,7 @@ const TripCreation = () => {
                       </Tooltip>
                     </Grid2>
                     <Grid2
-                      size={6}
+                      size={4}
                       sx={{
                         display: "flex",
                         flexDirection: "row",
@@ -390,6 +395,30 @@ const TripCreation = () => {
                       />
                       <Tooltip
                         title="Costo estimado por pasajero"
+                        placement="right"
+                      >
+                        <HelpOutline />
+                      </Tooltip>
+                    </Grid2>
+                    <Grid2
+                      size={4}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <TextField
+                        label="Tolerancia maxima"
+                        type="number"
+                        variant="outlined"
+                        fullWidth
+                        value={maxTolerableDistance}
+                        onChange={(e) => setMaxTolerableDistance(e.target.value)}
+                        sx={{ marginRight: 2 }}
+                      />
+                      <Tooltip
+                        title="Cuánto estas dispuesto a desviarte? (metros)"
                         placement="right"
                       >
                         <HelpOutline />
@@ -529,6 +558,7 @@ const TripCreation = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 marginTop: 3,
+                marginBottom:3
               }}
             >
               <Button disabled={activeStep === 0} onClick={handleBack}>
@@ -544,23 +574,23 @@ const TripCreation = () => {
               </Button>
             </Box>
           </Box>
-        ) : (
-          <>
-            <Box display={"flex"} justifyContent={"center"}>
+        // </Box>
+        ) : ( 
+           <Grid2 container size={12} spacing={4} sx={{flexDirection:"row-reverse", paddingInline:4, justifyContent: "space-around", alignItems: "center"}}> 
+            <Grid2 size={4}>
               <Typography variant="h3" gutterBottom>
                 Confirmacion del viaje
               </Typography>
-            </Box>
-            <Paper
+              <Paper
+              
               sx={{
                 display: "flex",
                 flexDirection: "column",
-
+                height:"70%",  
+                width:"max-content",
                 alignItems: "flex-start",
                 alignSelf: "center",
-                width: "60vw",
-                paddingLeft: 4,
-                paddingBlock: 5,
+                padding:5
               }}
             >
               <Box display={"flex"}>
@@ -608,9 +638,14 @@ const TripCreation = () => {
                 </Button>
               </Box>
             </Paper>
-          </>
+            </Grid2>
+            <Grid2 size={6}>
+            <Typography>Edita tu ruta</Typography>
+            <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} setRoute/> 
+            </Grid2>
+          </Grid2> 
         )}
-      </Box>
+
       {
         <DialogCustom
           title="Seguro que quieres salir?"

@@ -321,10 +321,13 @@ export default function TripDetails({
           justifyContent: "space-around",
         }}
       >
+       {pendingSolicitudes && 
+       <>
         <Button color="error" variant="contained">
           Denegar
         </Button>
         <Button variant="contained">Confirmar</Button>
+       </> }
       </Box>
       <DialogCustom
         open={open}

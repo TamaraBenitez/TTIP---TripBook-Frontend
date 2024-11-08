@@ -95,7 +95,10 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
     // Add the point and re-sort.
     // Take always from original 'coordinates' to avoid stacking markers on coords state
     setCalculating(true);
-    const [startPoint, ...tail] = mapTripCoordinates(coordinates);
+    if(typeof coordinates !== Array){
+      coordinates = mapTripCoordinates(coordinates);
+    } 
+    const [startPoint, ...tail] = coordinates;
     const updatedCoords = sortedCoords(startPoint, userMarker, tail);
     setCoords(updatedCoords);
   };

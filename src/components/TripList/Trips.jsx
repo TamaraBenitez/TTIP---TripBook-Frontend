@@ -27,7 +27,8 @@ export default function Trips(props) {
               startDate={trip.startDate}
               destination={trip.destination}
               startingPoint={trip.origin}
-              participantsNumber={trip.maxPassengers - trip.registrants}
+              participantsNumber={trip.registrants}
+              maxPassengers={trip.maxPassengers}
               estimatedCost={trip.estimatedCost}
               action={props.action}
               handleAction={props.handleAction}
