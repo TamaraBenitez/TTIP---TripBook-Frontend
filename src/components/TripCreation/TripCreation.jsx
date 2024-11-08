@@ -55,7 +55,7 @@ const TripCreation = () => {
   const [seats, setSeats] = useState(1);
   const [estimatedCost, setEstimatedCost] = useState(0);
   const [notes, setNotes] = useState("");
-  const [maxTolerableDistance, setMaxTolerableDistance] = useState(5000);
+  const [maxTolerableDistance, setMaxTolerableDistance] = useState(2500);
   const [fileMessage, setFileMessage] = useState("");
   const [licenseError, setLicenseError] = useState(null);
   const [departureCoords, setDepartureCoords] = useState([-34.6037, -58.3816]);
@@ -193,6 +193,7 @@ const TripCreation = () => {
         origin: departure,
         destination: destination,
         userId: user.id,
+        maxTolerableDistance: parseInt(maxTolerableDistance)
       });
 
       setShowSuccessModal(true); // Mostrar modal de éxito
