@@ -71,8 +71,26 @@ export default function MyTrips() {
   };
 
   const handleViewRequest = (tripUserId, tripId) => {
-    navigate(`/request?tripUserId=${tripUserId}&tripId=${tripId}`)
+    navigate(`/request?tripUserId=${tripUserId}&tripId=${tripId}`);
   };
+
+  function EmptyMessage({ message }) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100px",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h6" color="textSecondary">
+          {message}
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -107,61 +125,73 @@ export default function MyTrips() {
         ) : (
           <>
             <TabPanel value={value} index={0}>
-              <Trips
-                trips={trips}
-                action={"detalles"}
-                handleAction={redirectToTrip}
-              />
+              {trips.length === 0 ? (
+                <EmptyMessage message="Aún no tienes viajes como pasajero." />
+              ) : (
+                <Trips
+                  trips={trips}
+                  action={"detalles"}
+                  handleAction={redirectToTrip}
+                />
+              )}
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <Trips
-                trips={trips}
-                action={"detalles"}
-                handleAction={redirectToTrip}
-              />
+              {trips.length === 0 ? (
+                <EmptyMessage message="Aún no tienes viajes como conductor." />
+              ) : (
+                <Trips
+                  trips={trips}
+                  action={"detalles"}
+                  handleAction={redirectToTrip}
+                />
+              )}
             </TabPanel>
             <TabPanel value={value} index={2}>
-              <List>
-                {pendingPassengers.map((trip) => (
-                  <Box
-                    key={trip.tripId}
-                    sx={{
-                      border: "1px solid #ccc",
-                      borderRadius: "8px",
-                      p: 2,
-                      mb: 2,
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ color: "#226668" }}>
-                      {trip.origin} ➔ {trip.destination}
-                    </Typography>
-                    <List>
-                      {trip.pendingPassengers.map((passenger) => (
-                        <Box key={passenger.tripUserId} sx={{ ml: 2, mt: 1 }}>
-                          <Typography variant="body1" color="textSecondary">
-                            Solicita: {passenger.name} {passenger.surname}
-                          </Typography>
-                          <ListItemText
-                            primary={passenger.email}
-                            sx={{ ml: 2, mb: 1 }}
-                          />
-                          <Button
-                            variant="outlined"
-                            onClick={() =>
-                              handleViewRequest(
-                                passenger.tripUserId,
-                                trip.tripId
-                              )
-                            }
-                          >
-                            Ver más detalles de solicitud
-                          </Button>
-                        </Box>
-                      ))}
-                    </List>
-                  </Box>
-                ))}
-              </List>
+              {pendingPassengers.length === 0 ? (
+                <EmptyMessage message="Aún no hay solicitudes de viajes pendientes." />
+              ) : (
+                <List>
+                  {pendingPassengers.map((trip) => (
+                    <Box
+                      key={trip.tripId}
+                      sx={{
+                        border: "1px solid #ccc",
+                        borderRadius: "8px",
+                        p: 2,
+                        mb: 2,
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ color: "#226668" }}>
+                        {trip.origin} ➔ {trip.destination}
+                      </Typography>
+                      <List>
+                        {trip.pendingPassengers.map((passenger) => (
+                          <Box key={passenger.tripUserId} sx={{ ml: 2, mt: 1 }}>
+                            <Typography variant="body1" color="textSecondary">
+                              Solicita: {passenger.name} {passenger.surname}
+                            </Typography>
+                            <ListItemText
+                              primary={passenger.email}
+                              sx={{ ml: 2, mb: 1 }}
+                            />
+                            <Button
+                              variant="outlined"
+                              onClick={() =>
+                                handleViewRequest(
+                                  passenger.tripUserId,
+                                  trip.tripId
+                                )
+                              }
+                            >
+                              Ver más detalles de solicitud
+                            </Button>
+                          </Box>
+                        ))}
+                      </List>
+                    </Box>
+                  ))}
+                </List>
+              )}
             </TabPanel>
           </>
         )}

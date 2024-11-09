@@ -17,12 +17,19 @@ import {
   SvgIcon,
   Tooltip,
 } from "@mui/material";
-import { AccountCircle, Cancel, CheckCircle, TaskAlt } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Cancel,
+  CheckCircle,
+  TaskAlt,
+} from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { formatDate } from "../../utility/Utility";
 import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
+import gmail from "../../assets/Gmail.svg";
+import markerUser from "../../assets/user-location.svg";
 
 export default function TripDetails({
   pendingSolicitudes,
@@ -226,78 +233,146 @@ export default function TripDetails({
                 {pendingSolicitudes && (
                   <>
                     <Divider sx={{ margin: "20px 0" }} />
-                    <Accordion sx={{ maxWidth: 250 }}>
-                      <AccordionSummary
-                        sx={{ justifyContent: "flex-start" }}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        <AccountCircle />
+                      </ListItemIcon>
+                      <Typography variant="body1">
+                        {trip.name} {trip.surname}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1,
+                        marginLeft: 0.5,
+                      }}
+                    >
+                      <Tooltip
+                        title={
+                          trip.isUserVerified
+                            ? "Usuario verificado"
+                            : "Usuario no verificado"
+                        }
+                        placement="right"
                       >
-                        <ListItemIcon sx={{ minWidth: 40 }}>
-                          <AccountCircle />
-                        </ListItemIcon>
-                        <Typography variant="body1">
-                          {trip.name} {trip.surname}
-                        </Typography>
-                        <Tooltip
-                          title={
-                            trip.isUserVerified
-                              ? "User Verified"
-                              : "User Not Verified"
-                          }
-                          placement="right"
-                        >
-                          {trip.isUserVerified ? (
-                            <CheckCircle
-                              sx={{ color: "green", marginLeft: "10px" }}
-                            />
-                          ) : (
-                            <Cancel sx={{ color: "red", marginLeft: "10px" }} />
-                          )}
-                        </Tooltip>
-                      </AccordionSummary>
-                      <AccordionDetails
+                        {trip.isUserVerified ? (
+                          <CheckCircle
+                            sx={{ color: "green", marginLeft: "10px" }}
+                          />
+                        ) : (
+                          <Cancel sx={{ color: "red", marginLeft: "10px" }} />
+                        )}
+                      </Tooltip>
+                      <Typography variant="body2" color="textSecondary">
+                        {trip.isUserVerified
+                          ? "Usuario verificado"
+                          : "Usuario no verificado"}
+                      </Typography>
+                    </Box>
+
+                    <AccordionDetails
+                      sx={{
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      <Box
                         sx={{
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
                         }}
                       >
-                        <Box>
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          sx={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          <a
+                            href={`mailto:${trip.email}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              textDecoration: "none",
+                              color: "inherit",
+                              display: "flex",
+                              alignItems: "center",
                             }}
                           >
-                            Email: {trip.email}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            Localidad: {trip.locality}, {trip.province}
-                          </Typography>
-                          {pendingSolicitudes && (
-                            <Box sx={{display:"flex", flexDirection:"row", alignItems:"center"}}>
-                            <SvgIcon>
-                              <image href={whatsapp} height="100%" />
+                            <SvgIcon sx={{ marginRight: 1 }}>
+                              <image href={gmail} height="100%" />
                             </SvgIcon>
-                            <Typography variant="body2"
-                            color="textSecondary"
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              Contactar por Email
+                            </Typography>
+                          </a>
+                        </Typography>
+
+                        {pendingSolicitudes && (
+                          <Box
                             sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}>{trip.contact}</Typography>
-                            </Box>
-                          )}
-                        </Box>
-                      </AccordionDetails>
-                    </Accordion>
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            {" "}
+                            <a
+                              href={`https://wa.me/${trip.contact}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                textDecoration: "none",
+                                color: "inherit",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <SvgIcon sx={{ marginRight: 1 }}>
+                                <image href={whatsapp} height="100%" />
+                              </SvgIcon>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                }}
+                              >
+                                Contactar por WhatsApp
+                              </Typography>
+                            </a>
+                          </Box>
+                        )}
+                      </Box>
+                    </AccordionDetails>
                   </>
                 )}
               </>
@@ -312,20 +387,7 @@ export default function TripDetails({
           />
         )}
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          marginTop: "10px",
-          justifyContent: "space-around",
-        }}
-      >
-        <Button color="error" variant="contained">
-          Denegar
-        </Button>
-        <Button variant="contained">Confirmar</Button>
-      </Box>
+
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}
