@@ -5,9 +5,9 @@ class UserService extends BaseService {
     super(axios, apiUrl);
   }
 
-  GetMyTrips(id) {
+  GetMyTrips(id, role) {
     return this.axios({
-      url: `${this.baseUrl}/tripUser/${id}/trips`, //harcode test user
+      url: `${this.baseUrl}/tripUser/${id}/trips?role=${role}`, //harcode test user
       method: "GET",
       headers: this.config.headers,
     });
@@ -21,13 +21,13 @@ class UserService extends BaseService {
     });
   }
 
-  UpdateUser(id,user){
+  UpdateUser(id, user) {
     return this.axios({
       url: `${this.baseUrl}/user/verify/${id}`,
       method: "PATCH",
       headers: this.config.headers,
-      data: user
-    })
+      data: user,
+    });
   }
 }
 

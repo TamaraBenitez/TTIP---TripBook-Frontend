@@ -14,28 +14,47 @@ import {
   AccordionDetails,
   Skeleton,
   Alert,
+  SvgIcon,
+  Tooltip,
 } from "@mui/material";
-import { AccountCircle, TaskAlt } from "@mui/icons-material";
+import {
+  AccountCircle,
+  Cancel,
+  CheckCircle,
+  TaskAlt,
+} from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import { formatDate } from "../../utility/Utility";
 import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
+import whatsapp from "../../assets/Whatsapp.svg";
+import gmail from "../../assets/Gmail.svg";
+import markerUser from "../../assets/user-location.svg";
 
-export default function TripDetails() {
-  const { id } = useParams();
+export default function TripDetails({
+  pendingSolicitudes,
+  tripIdParam = null,
+  tripUserId = null,
+}) {
+  var id;
+  if (!tripIdParam) {
+    const idObj = useParams();
+    id = idObj.id;
+  } else {
+    id = tripIdParam;
+  }
   const store = useContext(StoreContext);
   const [trip, setTrip] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
   const handleClickOpen = (e) => {
     e.stopPropagation();
     setOpen(true);
   };
-
   const handleCloseModal = () => {
     setOpen(false);
   };
@@ -43,90 +62,239 @@ export default function TripDetails() {
   const handleSuscribe = (e) => {
     setLoading(true);
     handleCloseModal();
-    navigate(`/trip/suscribe/${id}`)
-    // store.services.tripService.RegisterUserToTrip(user.id, id)
-    // .then((res) => {
-    //   setLoading(false);
-    //   setIsRegistered(true);
-    //   setShowAlert(true);
-    // });
+    navigate(`/trip/suscribe/${id}`);
+  };
+  const setTripDetails = (res) => {
+    setTrip(res.data);
+    if (!pendingSolicitudes) {
+      const alreadyRegistered = res.data.participants.find(
+        (p) => p.id == user.id
+      );
+      if (alreadyRegistered) setIsRegistered(true);
+    }
+    setLoading(false);
+  };
+  const showMap = () => {
+    //if we are showing pending request the coordinates property name change
+    const showIfPending = pendingSolicitudes && trip.coordinatesConfirmed;
+    const showIfConfirmed = trip.tripCoordinates;
+    return showIfPending || showIfConfirmed;
+  };
+
+  const getCoordinates = () => {
+    if (pendingSolicitudes) {
+      return [trip.coordinates[0], ...trip.coordinatesConfirmed];
+    } else {
+      return trip.tripCoordinates[0];
+    }
+  };
+
+  const getUserMarker = () => {
+    if (pendingSolicitudes) {
+      return [trip.coordinates[0].latitude, trip.coordinates[0].longitude];
+    } else return null;
   };
 
   useEffect(() => {
-    store.services.tripService
-      .GetTrip(id)
-      .then((res) => {
-        debugger;
-        setTrip(res.data);
-        const alreadyRegistered = res.data.participants.find(
-          (p) => p.id == user.id
-        );
-        if(alreadyRegistered)
-        setIsRegistered(true);
-        setLoading(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setLoading(false);
-      });
+    //If is a pending solicitude, show the pending coordinates
+    if (pendingSolicitudes) {
+      store.services.tripService
+        .GetRequest(tripUserId, id)
+        .then(setTripDetails)
+        .catch((e) => {
+          console.log(e);
+          setLoading(false);
+        });
+    } else {
+      store.services.tripService
+        .GetTrip(id)
+        .then(setTripDetails)
+        .catch((e) => {
+          console.log(e);
+          setLoading(false);
+        });
+    }
   }, [id, store.services.tripService, isRegistered]);
 
   return (
     <>
-    <Box sx={{display:"flex", flexDirection: "row", alignItems:"center"}}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
+          <CardContent>
+            {loading ? (
+              <>
+                <Skeleton variant="text" height={40} width="60%" />
+                <Skeleton variant="text" width="40%" />
+                <Skeleton variant="text" />
+                <Skeleton variant="text" />
+                <Skeleton variant="rectangular" height={118} />
+              </>
+            ) : (
+              <>
+                <Typography variant="h4" component="h1" gutterBottom>
+                  Viaje a {trip.destination}
+                </Typography>
+                <Divider />
+                <Typography variant="body1" color="textSecondary">
+                  <strong>Fecha de salida:</strong>{" "}
+                  {formatDate(trip.startDate, true)}
+                </Typography>
+                <Typography variant="body1" color="textSecondary">
+                  <strong>Desde:</strong> {trip.origin}
+                </Typography>
+                {!pendingSolicitudes && (
+                  <Typography variant="body1" color="textSecondary">
+                    <strong>Descripción:</strong> {trip.description}
+                  </Typography>
+                )}
+                {!pendingSolicitudes && (
+                  <Typography variant="body1" color="textSecondary">
+                    <strong>Costo estimado:</strong> ${trip.estimatedCost}
+                  </Typography>
+                )}
 
-      <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
-        <CardContent>
-          {loading ? (
-            <>
-              <Skeleton variant="text" height={40} width="60%" />
-              <Skeleton variant="text" width="40%" />
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
-              <Skeleton variant="rectangular" height={118} />
-            </>
-          ) : (
-            <>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Viaje a {trip.destination}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <strong>Fecha de salida:</strong> {formatDate(trip.startDate, true)}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <strong>Desde:</strong> {trip.origin}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <strong>Descripción:</strong> {trip.description}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
-                <strong>Costo estimado:</strong> ${trip.estimatedCost}
-              </Typography>
+                {!pendingSolicitudes && (
+                  <>
+                    <Divider sx={{ margin: "20px 0" }} />
 
-              <Divider sx={{ margin: "20px 0" }} />
-
-              <Typography variant="h5" component="h2" gutterBottom>
-                Participantes
-              </Typography>
-              {trip.participants?.length > 0 ? (
-                trip.participants.map((user) => (
-                  <Accordion key={user.id} sx={{ maxWidth: 250 }}>
-                    <AccordionSummary
-                      sx={{ justifyContent: "flex-start" }}
-                      aria-controls="panel1-content"
-                      id="panel1-header"
+                    <Typography variant="h5" component="h2" gutterBottom>
+                      Participantes
+                    </Typography>
+                    {trip.participants?.length > 0 ? (
+                      trip.participants.map((user) => (
+                        <Accordion key={user.id} sx={{ maxWidth: 250 }}>
+                          <AccordionSummary
+                            sx={{ justifyContent: "flex-start" }}
+                            aria-controls="panel1-content"
+                            id="panel1-header"
+                          >
+                            <ListItemIcon sx={{ minWidth: 40 }}>
+                              <AccountCircle />
+                            </ListItemIcon>
+                            <Typography variant="body1">
+                              {user.name} {user.surname}
+                            </Typography>
+                          </AccordionSummary>
+                          <AccordionDetails
+                            sx={{
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                            }}
+                          >
+                            <Box>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                Email: {user.email}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                Localidad: {user.locality}, {user.province}
+                              </Typography>
+                            </Box>
+                          </AccordionDetails>
+                        </Accordion>
+                      ))
+                    ) : (
+                      <Typography variant="body1">
+                        No hay participantes registrados aún.
+                      </Typography>
+                    )}
+                    {!isRegistered && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          marginTop: "20px",
+                        }}
                       >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleClickOpen}
+                        >
+                          Unirme al viaje
+                        </Button>
+                      </Box>
+                    )}
+                  </>
+                )}
+                {pendingSolicitudes && (
+                  <>
+                    <Divider sx={{ margin: "20px 0" }} />
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
                       <ListItemIcon sx={{ minWidth: 40 }}>
                         <AccountCircle />
                       </ListItemIcon>
                       <Typography variant="body1">
-                        {user.name} {user.surname}
+                        {trip.name} {trip.surname}
                       </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails
-                      sx={{ WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1,
+                        marginLeft: 0.5,
+                      }}
+                    >
+                      <Tooltip
+                        title={
+                          trip.isUserVerified
+                            ? "Usuario verificado"
+                            : "Usuario no verificado"
+                        }
+                        placement="right"
                       >
-                      <Box>
+                        {trip.isUserVerified ? (
+                          <CheckCircle
+                            sx={{ color: "green", marginLeft: "10px" }}
+                          />
+                        ) : (
+                          <Cancel sx={{ color: "red", marginLeft: "10px" }} />
+                        )}
+                      </Tooltip>
+                      <Typography variant="body2" color="textSecondary">
+                        {trip.isUserVerified
+                          ? "Usuario verificado"
+                          : "Usuario no verificado"}
+                      </Typography>
+                    </Box>
+
+                    <AccordionDetails
+                      sx={{
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
                         <Typography
                           variant="body2"
                           color="textSecondary"
@@ -134,50 +302,92 @@ export default function TripDetails() {
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
+                        >
+                          <a
+                            href={`mailto:${trip.email}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              textDecoration: "none",
+                              color: "inherit",
+                              display: "flex",
+                              alignItems: "center",
+                            }}
                           >
-                          Email: {user.email}
+                            <SvgIcon sx={{ marginRight: 1 }}>
+                              <image href={gmail} height="100%" />
+                            </SvgIcon>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              Contactar por Email
+                            </Typography>
+                          </a>
                         </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
+
+                        {pendingSolicitudes && (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
                           >
-                          Localidad: {user.locality}, {user.province}
-                        </Typography>
+                            {" "}
+                            <a
+                              href={`https://wa.me/${trip.contact}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                textDecoration: "none",
+                                color: "inherit",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              <SvgIcon sx={{ marginRight: 1 }}>
+                                <image href={whatsapp} height="100%" />
+                              </SvgIcon>
+                              <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                sx={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                  },
+                                }}
+                              >
+                                Contactar por WhatsApp
+                              </Typography>
+                            </a>
+                          </Box>
+                        )}
                       </Box>
                     </AccordionDetails>
-                  </Accordion>
-                ))
-              ) : (
-                <Typography variant="body1">
-                  No hay participantes registrados aún.
-                </Typography>
-              )}
-              {!isRegistered && (
-                <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: "20px",
-                }}
-                >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickOpen}
-                    >
-                    Unirme al viaje
-                  </Button>
-                </Box>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-      {trip.tripCoordinates && <MapComponent coordinates={trip.tripCoordinates[0]}/>}
+                  </>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+        {showMap() && (
+          <MapComponent
+            coordinates={getCoordinates()}
+            userMarkerParam={getUserMarker()}
+            width={"65%"}
+          />
+        )}
+      </Box>
+
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}
@@ -185,13 +395,24 @@ export default function TripDetails() {
         title={"Inscripcion al viaje"}
         textParagraph={"¿Esta seguro que desea inscribirse a este viaje?"}
         showCancelButton={true}
-        />
-      {showAlert &&
-        <Alert sx={{maxWidth:500, position:"fixed", left:600, bottom:300, zIndex:3}}onClose={()=>setShowAlert(false)} variant="outlined" icon={<TaskAlt fontSize="inherit" />} severity="success">
-          Te has Inscripto exitosamente a este viaje
+      />
+      {showAlert && (
+        <Alert
+          sx={{
+            maxWidth: 500,
+            position: "fixed",
+            left: 600,
+            bottom: 300,
+            zIndex: 3,
+          }}
+          onClose={() => setShowAlert(false)}
+          variant="outlined"
+          icon={<TaskAlt fontSize="inherit" />}
+          severity="success"
+        >
+          Te has inscripto exitosamente a este viaje
         </Alert>
-      }
-      </Box>
+      )}
     </>
   );
 }

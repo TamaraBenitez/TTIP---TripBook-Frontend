@@ -20,6 +20,7 @@ import Header from "../components/Header/Header";
 import { Toolbar } from "@mui/material";
 import ToolbarAuth from "../components/Auth/ToolbarAuth";
 import TripRegistration from "../components/TripRegistration/TripRegistration";
+import DriverPendingRequest from "../components/Requests/DriverPendingRequest";
 
   const routes = [
     { path: "/home", component: <Home /> },
@@ -31,6 +32,7 @@ import TripRegistration from "../components/TripRegistration/TripRegistration";
     { path: "/profile", component: <Profile /> },
     { path: "/trip", component: <TripCreation /> },
     { path: "/trip/suscribe/:id", component: <TripRegistration /> },
+    { path: "/request", component: <DriverPendingRequest /> },
   ];
 
   const authRoutes = [

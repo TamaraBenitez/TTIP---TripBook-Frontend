@@ -1,11 +1,26 @@
 export const formatDate = (date, time) => {
-    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = new Date(date).toLocaleDateString(undefined, dateOptions);
-    var formattedTime = "";
-    if(time){
-        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-        formattedTime  = new Date(date).toLocaleTimeString(undefined, timeOptions);
-    }
+    const dateObj = new Date(date);
     
-    return `${formattedDate} ${formattedTime}`;
-  };
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+        return "Invalid Date";
+    }
+
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = dateObj.toLocaleDateString(undefined, dateOptions);
+
+    let formattedTime = "";
+    if (time) {
+        const timeObj = new Date(time);
+
+        // Check if time is valid
+        if (isNaN(timeObj.getTime())) {
+            return `${formattedDate} - Invalid Time`;
+        }
+
+        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
+        formattedTime = timeObj.toLocaleTimeString(undefined, timeOptions);
+    }
+
+    return `${formattedDate} ${formattedTime}`.trim();
+};
