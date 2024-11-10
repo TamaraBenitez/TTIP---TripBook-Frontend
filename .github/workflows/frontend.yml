@@ -1,0 +1,36 @@
+name: CI/CD para Frontend React
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Checkout del código fuente
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Paso 2: Configuración de Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+      # Paso 3: Instalación de dependencias
+      - name: Install dependencies
+        run: npm install
+
+      # Paso 4: Ejecutar los tests con Vitest
+      - name: Run tests with Vitest
+        run: npm run test
+        env:
+          CI: true # Evita que Vitest espere input en modo interactivo
+
+      - name: Build
+        run: npm run build
