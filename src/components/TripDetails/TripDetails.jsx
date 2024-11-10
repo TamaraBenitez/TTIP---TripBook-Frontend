@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { AccountCircle, Cancel, CheckCircle, TaskAlt } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
-import { formatDate } from "../../utility/Utility";
+import { formatDate, mapTripCoordinates, sortedCoords } from "../../utility/Utility";
 import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
@@ -58,6 +58,15 @@ export default function TripDetails({
     navigate(`/trip/suscribe/${id}`);
   };
   const setTripDetails = (res) => {
+    let startPoint = res.data.tripCoordinates.find((point) => {
+      return point.isStart});
+    let route = mapTripCoordinates(res.data.tripCoordinates.filter((coord)=>!coord.isStart));
+    //if it's a pending solicitude view, include the requester marker on map
+    if(pendingSolicitudes){
+      route.push([res.data.requesterCoordinates[0].latitude,res.data.requesterCoordinates[0].longitude])
+    }
+    let orderedRoute = sortedCoords([startPoint.latitude, startPoint.longitude], route);
+    res.data.tripCoordinates = orderedRoute;
     setTrip(res.data);
     if (!pendingSolicitudes) {
       const alreadyRegistered = res.data.participants.find(
@@ -68,23 +77,17 @@ export default function TripDetails({
     setLoading(false);
   };
   const showMap = () => {
-    //if we are showing pending request the coordinates property name change
-    const showIfPending = pendingSolicitudes && trip.coordinatesConfirmed;
-    const showIfConfirmed = trip.tripCoordinates;
-    return showIfPending || showIfConfirmed;
+    return trip.tripCoordinates;
   };
 
   const getCoordinates = () => {
-    if (pendingSolicitudes) {
-      return [trip.coordinates[0], ...trip.coordinatesConfirmed];
-    } else {
-      return trip.tripCoordinates[0];
-    }
+      return trip.tripCoordinates;
+    
   };
 
   const getUserMarker = () => {
     if (pendingSolicitudes) {
-      return [trip.coordinates[0].latitude, trip.coordinates[0].longitude];
+      return [trip.requesterCoordinates[0].latitude, trip.requesterCoordinates[0].longitude];
     } else return null;
   };
 

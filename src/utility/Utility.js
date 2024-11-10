@@ -25,7 +25,7 @@ export const formatDate = (date, time) => {
   return `${formattedDate} ${formattedTime}`.trim();
 };
 
-export const sortedCoords = (start, route, mapInstance, newPoint = null) => {
+export const sortedCoordsWithNewPoint = (start, route, mapInstance, newPoint) => {
   var sorted = [];
   var newPointAdded = false;
   for (let point = 0; point < route.length; point++) {
@@ -43,29 +43,46 @@ export const sortedCoords = (start, route, mapInstance, newPoint = null) => {
   return [start, ...sorted];
 };
 
-export const calculateDistance = (map, latlng1, latlng2) => {
+export const calculateMapDistance = (map, latlng1, latlng2) => {
   return map.distance(latlng1, latlng2); // distance in meters
 };
 
 export const isNearest = (point1, point2, objective, map) => {
   return (
-    calculateDistance(map, point1, objective) <
-    calculateDistance(map, point2, objective)
+    calculateMapDistance(map, point1, objective) <
+    calculateMapDistance(map, point2, objective)
   );
 };
+export const calculateDistance = (point1, point2) => {
+  const latDiff = point1[0] - point2[0];
+  const lonDiff = point1[0] - point2[0];
+  return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff);
+};
 
-  // Map list of trip-coordinates entities to array of coordinates
+export const sortedCoords = (start, route) => {
+  // Sort the route based on the distance to the start point
+  const sorted = route.slice().sort((a, b) => {
+    const distanceA = calculateDistance(start, a);
+    const distanceB = calculateDistance(start, b);
+    return distanceA - distanceB; // Sort in ascending order of distance
+  });
+  
+  return [start, ...sorted];
+};
+  // Map list of trip-coordinate entities to array of coordinates
   // returns array of coordinates sorted by start point cercany
 export const mapTripCoordinates = (tripCoords) => {
     let start, end;
     let stops = [];
     if (tripCoords !== undefined) {
       for (let i = 0; i < tripCoords.length; i++) {
-        const coord = coordinates[i];
+        const coord = tripCoords[i];
         if (coord.isStart) start = [parseFloat(coord.latitude), parseFloat(coord.longitude)];
         else if (coord.isEnd) end = [parseFloat(coord.latitude), parseFloat(coord.longitude)];
         else stops.push([parseFloat(coord.latitude), parseFloat(coord.longitude)]);
       }
-      return [start, ...stops, end];
+      if (start){
+        return [start, ...stops, end];
+      } else return [...stops, end];      
     }
 };

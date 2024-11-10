@@ -28,9 +28,7 @@ import {
 import {
   MapContainer,
   TileLayer,
-  useMapEvents,
   Marker,
-  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import licenseHelp from "/images/licenseHelp.png";
@@ -44,9 +42,9 @@ import AlertCustom from "../AlertCustom/AlertCustom";
 import { ErrorOutline } from "@mui/icons-material";
 import MapClickHandler from "../MapComponent/MapClickHandler";
 import CenterMap from "../MapComponent/CenterMap";
-import MapComponent from "../MapComponent/CustomRouteMap";
 import CustomRouteMap from "../MapComponent/CustomRouteMap";
-
+import { ThemeContext } from "@emotion/react";
+import "./TripCreation.css"
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [departure, setDeparture] = useState("");
@@ -73,8 +71,8 @@ const TripCreation = () => {
   const navigate = useNavigate();
   const [errorTrip, setErrorTrip] = useState("");
   const [isErrorTrip, setIsErrorTrip] = useState(false);
-  // const [editRoute, setEditRoute] = useState(false);
   const [route, setRoute] = useState([departureCoords, destinationCoords]);
+  const theme = useContext(ThemeContext);
 
   //Prevent user from leaving
   let blocker = useBlocker(({ currentLocation, nextLocation }) => {
@@ -110,7 +108,8 @@ const TripCreation = () => {
         );
         break;
       case 2:
-        setStepValid(destination.length > 0 && destinationCoords !== null);
+        const sameCoords = destinationCoords[0] == departureCoords[0] && destinationCoords[1] == departureCoords[1]; 
+        setStepValid(destination.length > 0 && destinationCoords !== null && !sameCoords);
         break;
       case 3:
         setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
@@ -123,19 +122,6 @@ const TripCreation = () => {
     }
   };
 
-  useEffect(() => {
-    validateStep(); // Run validation when any relevant state changes
-  }, [
-    activeStep,
-    departure,
-    departureCoords,
-    departureDate,
-    destination,
-    destinationCoords,
-    seats,
-    estimatedCost,
-    photo,
-  ]);
 
   // Function to handle step navigation
   const handleNext = () => {
@@ -178,14 +164,7 @@ const TripCreation = () => {
     setTripConfirmed(true);
     try {
       await store.services.tripService.CreateTrip({
-        startPoint: {
-          latitude: departureCoords[0],
-          longitude: departureCoords[1],
-        },
-        endPoint: {
-          latitude: destinationCoords[0],
-          longitude: destinationCoords[1],
-        },
+        coordinates:route.map((coord) =>{return {latitude:coord[0], longitude:coord[1]}}),
         startDate: departureDate,
         description: notes,
         maxPassengers: parseInt(seats),
@@ -222,7 +201,29 @@ const TripCreation = () => {
     "Establecer asientos y notas",
     "Verificar licencia de conducir",
   ];
-
+  useEffect(() => {
+    validateStep(); // Run validation when any relevant state changes
+  }, [
+    activeStep,
+    departure,
+    departureCoords,
+    departureDate,
+    destination,
+    destinationCoords,
+    seats,
+    estimatedCost,
+    photo,
+  ]);
+  useEffect(()=>{
+    let newRoute = route;
+    newRoute[newRoute.length-1] = destinationCoords; 
+    setRoute(newRoute)
+  },[destinationCoords])
+  useEffect(()=>{
+    var newRoute = route;
+    newRoute[0] = departureCoords;
+    setRoute(newRoute); 
+  },[departureCoords])
   return (
     <>
       {/* <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}> */}
@@ -577,18 +578,16 @@ const TripCreation = () => {
           </Box>
         // </Box>
         ) : ( 
-           <Grid2 container size={12} spacing={4} sx={{flexDirection:"row-reverse", paddingInline:4, justifyContent: "space-around", alignItems: "center"}}> 
-            <Grid2 size={4}>
+           <Grid2 container size={12} columnSpacing={0} rowSpacing={4} sx={{flexDirection:"row-reverse", paddingInline:4, justifyContent: "space-around", alignItems: "center"}}> 
+            <Grid2 size={2} sx={{minWidth:"fit-content"}}>
               <Typography variant="h3" gutterBottom>
                 Confirmacion del viaje
               </Typography>
               <Paper
-              
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 height:"70%",  
-                width:"max-content",
                 alignItems: "flex-start",
                 alignSelf: "center",
                 padding:5
@@ -640,9 +639,17 @@ const TripCreation = () => {
               </Box>
             </Paper>
             </Grid2>
-            <Grid2 size={6}>
-            <Typography>Edita tu ruta</Typography>
-            <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} setRoute/> 
+            <Grid2 size={8} sx={{minWidth:"fit-content", width:"50vw"}}>
+            <div className="folder">
+
+            <Box sx={{height:"fit-content", minWidth:267, marginLeft:2}}>
+              <Typography variant="h4" sx={{color:theme.palette.common.white}}>Edita tu ruta</Typography>
+            </Box>
+            <Box sx={{backgroundColor:theme.palette.primary.main, paddingInline:2,paddingBottom:2,paddingTop:1, minWidth:267}}>
+
+            <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} route={route} setRoute={setRoute}/> 
+            </Box>
+            </div>
             </Grid2>
           </Grid2> 
         )}

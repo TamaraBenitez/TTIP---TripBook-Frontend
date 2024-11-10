@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L, { icon } from "leaflet";
-import { sortedCoords } from "../../utility/Utility";
+import { sortedCoordsWithNewPoint } from "../../utility/Utility";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import greenMarker from "../../assets/greenMarker.svg"
@@ -106,11 +106,12 @@ const RoutingControl = ({ mapInstance, coords, setRoute }) => {
 
 
 const CustomRouteMap = ({
-  startCoord = [-34.6037, -58.3816],
-  endCoord = [4.6037, -58.0089],
+  startCoord,
+  endCoord,
+  route,
+  setRoute
 }) => {
   const [mapInstance, setMapInstance] = useState(null);
-  const [route, setRoute] = useState([startCoord, endCoord]);
   const [coordToAdd, setCoordToAdd] = useState();
 
   function createButton(label, container, className = "") {
@@ -121,7 +122,7 @@ const CustomRouteMap = ({
   }
   const recalculateRoute = (newCoord) => {
     const [start, ...tail] = route;
-    const sorted = sortedCoords(start, tail, mapInstance, newCoord);
+    const sorted = sortedCoordsWithNewPoint(start, tail, mapInstance, newCoord);
     setRoute(sorted);
     mapInstance.closePopup();
   };

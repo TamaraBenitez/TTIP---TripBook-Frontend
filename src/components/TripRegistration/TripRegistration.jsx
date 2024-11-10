@@ -6,6 +6,7 @@ import { useUser } from "../../user/UserContext";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
+import { mapTripCoordinates, sortedCoords } from "../../utility/Utility";
 
 export default function TripRegistration() {
   const [trip, setTrip] = useState({ tripCoordinates: null });
@@ -41,6 +42,11 @@ export default function TripRegistration() {
       store.services.tripService
         .GetTrip(id)
         .then((res) => {
+          let startPoint = res.data.tripCoordinates.find((point) => {
+            return point.isStart});
+          let route = mapTripCoordinates(res.data.tripCoordinates.filter((coord)=>!coord.isStart));
+          let orderedRoute = sortedCoords([startPoint.latitude, startPoint.longitude], route);
+          res.data.tripCoordinates = orderedRoute;
           setTrip(res.data);
           setDepartureCoords([
             res.data.tripCoordinates[0].latitude,
@@ -71,7 +77,7 @@ export default function TripRegistration() {
           <MapComponent
             isRegistering={true}
             proposeNewRoute={proposeNewRoute}
-            coordinates={trip.tripCoordinates[0]}
+            coordinates={trip.tripCoordinates}
           />
         )
       )}

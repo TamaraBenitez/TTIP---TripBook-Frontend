@@ -11,7 +11,7 @@ export default function DriverPendingRequest() {
 
   return (
     <Box paddingInline={5}>
-        <RibbonHeading heading={"Pending Request"} component={"h2"} variant={"h2"}/>
+        <RibbonHeading heading={"Solicitud Pendiente"} component={"h2"} variant={"h2"}/>
 
         <TripDetails pendingSolicitudes={true} tripIdParam={tripId} tripUserId={tripUserId}/>
     </Box>
