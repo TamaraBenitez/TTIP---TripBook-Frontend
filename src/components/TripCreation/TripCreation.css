@@ -1,0 +1,19 @@
+.folder{
+    margin: auto;
+    border-radius: 5px 25px 25px 25px;
+    filter: drop-shadow(0 0 0.75rem grey);
+    background: #226668;
+    position: relative;
+    min-width: 390px;
+  }
+  
+  .folder::before{
+      content:  '';
+      position: absolute;
+      top: -18px;
+      width: 100%;
+      height: 25px;
+      background: #226668;
+      border-radius: 25px 0 0 0;
+      clip-path: path('M 0 0 L 178 0 C 287 -10, 240 21, 294 18 L 0 50 z');
+  }

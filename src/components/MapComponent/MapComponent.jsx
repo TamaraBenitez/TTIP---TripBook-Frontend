@@ -9,6 +9,7 @@ import { Box, Button, Typography } from "@mui/material";
 import CenterMap from "./CenterMap";
 import L from "leaflet"; // Import Leaflet for icon creation
 import location from "../../assets/greenLocation.svg";
+import { sortedCoordsWithNewPoint } from "../../utility/Utility";
 
 
 // Utility function to calculate distance between two points
@@ -77,7 +78,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
     let stops = [];
     if (tripCoords !== undefined) {
       for (let i = 0; i < tripCoords.length; i++) {
-        const coord = coordinates[i];
+        const coord = tripCoords[i];
         if (coord.isStart) start = [parseFloat(coord.latitude), parseFloat(coord.longitude)];
         else if (coord.isEnd) end = [parseFloat(coord.latitude), parseFloat(coord.longitude)];
         else stops.push([parseFloat(coord.latitude), parseFloat(coord.longitude)]);
@@ -87,6 +88,9 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
   };
 
   const editPoint = () => {
+    const markerPosition = coords.indexOf(userMarker);
+    coords.splice(markerPosition,1)
+    setCoords(coords);
     setUserMarker(null);
     setRouteCalculated(false);
   };
@@ -95,27 +99,12 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
     // Add the point and re-sort.
     // Take always from original 'coordinates' to avoid stacking markers on coords state
     setCalculating(true);
-    const [startPoint, ...tail] = mapTripCoordinates(coordinates);
-    const updatedCoords = sortedCoords(startPoint, userMarker, tail);
+    if(!coordinates instanceof Array){
+      coordinates = mapTripCoordinates(coordinates);
+    } 
+    const [startPoint, ...tail] = coordinates;
+    const updatedCoords = sortedCoordsWithNewPoint(startPoint, tail, mapInstance,  userMarker);
     setCoords(updatedCoords);
-  };
-
-  const sortedCoords = (start, newPoint, route) => {
-    var sorted = [];
-    var newPointAdded = false;
-    for (let point = 0; point < route.length; point++) {
-      const currentPoint = route[point];
-      if (isNearest(currentPoint, newPoint, start, mapInstance)) {
-        sorted.push(currentPoint);
-      } else if (!newPointAdded) {
-        sorted.push(newPoint);
-        newPointAdded = true;
-        // Add the remaining points and break out of the loop
-        sorted.push(...route.slice(point));
-        break;
-      }
-    }
-    return [start, ...sorted];
   };
 
   const showMarker = () => coords && userMarker;
@@ -126,7 +115,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
   
   useEffect(() => {
     if (coordinates !== undefined) {
-      setCoords(mapTripCoordinates(coordinates));
+      setCoords(coordinates)
     }
   }, [coordinates]);
 

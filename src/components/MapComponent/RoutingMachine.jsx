@@ -21,7 +21,6 @@ const RoutingMachine = ({
 
   useEffect(() => {
     setCalculating(true);
-
     if (coords) {
       const greenIcon = new L.Icon({
         iconUrl: location,

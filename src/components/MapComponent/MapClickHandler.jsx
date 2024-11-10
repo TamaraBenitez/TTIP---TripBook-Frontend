@@ -5,7 +5,7 @@ export default function MapClickHandler({ handleNewMarker }) {
       click: (e) => {
           const newPoint = [e.latlng.lat, e.latlng.lng];
           handleNewMarker(newPoint);
-      },
+      }
   });
   return null;
 }
