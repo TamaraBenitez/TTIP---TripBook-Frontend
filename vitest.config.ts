@@ -6,4 +6,9 @@ export default defineConfig({
     test: {
       environment: 'happy-dom'
     },
+    server: {
+      fs: {
+        cachedChecks: false
+      }
+    }
   });

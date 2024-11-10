@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { UserProvider, useUser } from "../../../src/user/UserContext";
+import { useUser } from "../../../src/user/UserContext";
 import { store } from "../../store/store";
 import StoreContext from "../../../src/store/storecontext";
 import Profile from "../../../src/components/Profile/Profile";
