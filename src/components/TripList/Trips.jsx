@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Container, IconButton, useTheme } from "@mui/material";
 import TripCard from "./TripCard";
-import {  AddOutlined } from "@mui/icons-material";
+import { AddOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 export default function Trips(props) {
@@ -30,12 +30,21 @@ export default function Trips(props) {
               participantsNumber={trip.registrants}
               maxPassengers={trip.maxPassengers}
               estimatedCost={trip.estimatedCost}
+              status={trip.status}
               action={props.action}
               handleAction={props.handleAction}
             />
           );
         })}
-        <Box sx={{width:345, display:"flex", justifyContent:"center", alignItems:"center", height:250}}>
+        <Box
+          sx={{
+            width: 345,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: 250,
+          }}
+        >
           <IconButton
             sx={{
               height: "100px",
@@ -46,7 +55,7 @@ export default function Trips(props) {
                 color: "white",
               },
             }}
-            onClick={()=>navigate("/trip")}
+            onClick={() => navigate("/trip")}
           >
             <AddOutlined sx={{ fontSize: "-webkit-xxx-large" }} />
           </IconButton>

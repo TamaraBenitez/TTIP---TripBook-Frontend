@@ -16,6 +16,16 @@ import "./TripStyles.css";
 import { NavLink } from "react-router-dom";
 import { formatDate } from "../../utility/Utility";
 
+function mapStatusToSpanish(status) {
+  const statusMap = {
+    pending: "Pendiente",
+    confirmed: "Confirmado",
+    cancelled: "Cancelado",
+    rejected: "Rechazado",
+  };
+  return statusMap[status] || "";
+}
+
 export default function TripCard({
   description,
   startDate,
@@ -26,7 +36,8 @@ export default function TripCard({
   to,
   estimatedCost,
   action,
-  handleAction
+  handleAction,
+  status,
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -36,12 +47,12 @@ export default function TripCard({
   function cleanString(input) {
     // Remove spaces and replace accented vowels
     return input
-      .replace(/\s+/g, '') // Remove all spaces
-      .replace(/[áÁ]/g, 'a')
-      .replace(/[éÉ]/g, 'e')
-      .replace(/[íÍ]/g, 'i')
-      .replace(/[óÓ]/g, 'o')
-      .replace(/[úÚ]/g, 'u')
+      .replace(/\s+/g, "") // Remove all spaces
+      .replace(/[áÁ]/g, "a")
+      .replace(/[éÉ]/g, "e")
+      .replace(/[íÍ]/g, "i")
+      .replace(/[óÓ]/g, "o")
+      .replace(/[úÚ]/g, "u")
       .toLowerCase();
   }
   return (
@@ -84,7 +95,9 @@ export default function TripCard({
                 }}
               >
                 <Container sx={{ display: "flex", justifyContent: "center" }}>
-                  <Typography variant="h6">{"Sale de "+startingPoint}</Typography>
+                  <Typography variant="h6">
+                    {"Sale de " + startingPoint}
+                  </Typography>
                 </Container>
               </Box>
             )}
@@ -95,22 +108,25 @@ export default function TripCard({
               overflow: "hidden",
             }}
           >
-            <Grid2 container size={12} sx={{ display: "flex", paddingLeft: "0px !important" }}>
+            <Grid2
+              container
+              size={12}
+              sx={{ display: "flex", paddingLeft: "0px !important" }}
+            >
               <Grid2 size={6} width={"55%"}>
-
-              <Typography variant="h5" component="div">
-                {destination}
-              </Typography>
+                <Typography variant="h5" component="div">
+                  {destination}
+                </Typography>
               </Grid2>
               {isHovered && (
                 <Grid2
-                size={6}
-                sx={{
-                  display: "flex",
-                  width: "45%",
-                  marginRight: "0px",
-                  justifyContent: "flex-end"
-                }}
+                  size={6}
+                  sx={{
+                    display: "flex",
+                    width: "45%",
+                    marginRight: "0px",
+                    justifyContent: "flex-end",
+                  }}
                 >
                   <Groups className="groupIcon" />
                   <Typography>
@@ -121,6 +137,11 @@ export default function TripCard({
             </Grid2>
 
             <Typography>{formatDate(startDate)}</Typography>
+            {status && (
+              <Typography variant="body2" color="text.secondary">
+                Estado: {mapStatusToSpanish(status)}
+              </Typography>
+            )}
 
             {isHovered && (
               <Typography
@@ -145,7 +166,11 @@ export default function TripCard({
         </CardActionArea>
         {isHovered && (
           <CardActions>
-            <Button size="small" color="primary" onClick={(e)=>handleAction(e, to)}>
+            <Button
+              size="small"
+              color="primary"
+              onClick={(e) => handleAction(e, to)}
+            >
               {action}
             </Button>
           </CardActions>
