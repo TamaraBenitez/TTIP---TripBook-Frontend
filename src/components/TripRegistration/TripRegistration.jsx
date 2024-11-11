@@ -78,6 +78,7 @@ export default function TripRegistration() {
             isRegistering={true}
             proposeNewRoute={proposeNewRoute}
             coordinates={trip.tripCoordinates}
+            maxToleranceDistance={trip.maxTolerableDistance}
           />
         )
       )}
