@@ -28,6 +28,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     dniFile: null,
+    phoneNumber: "",
   };
   const [formData, setFormData] = useState(emptyForm);
 
@@ -37,6 +38,7 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    phoneNumber: "",
   });
   const [isDataLoading, setIsDataLoading] = useState(false);
   const store = useContext(StoreContext);
@@ -52,20 +54,25 @@ const Register = () => {
 
     switch (field) {
       case "name":
-        if (!value) error = "Name is required";
+        if (!value) error = "Nombre es requerido";
         break;
       case "surname":
-        if (!value) error = "Surname is required";
+        if (!value) error = "Apellido es requerido";
         break;
       case "email":
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-          error = "Invalid email address";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Email invalido";
         break;
       case "password":
-        if (value.length < 4) error = "Password must be at least 4 characters";
+        if (value.length < 4)
+          error = "La contraseña debe tener al menos 4 caracteres";
         break;
       case "confirmPassword":
-        if (value !== formData.password) error = "Passwords do not match";
+        if (value !== formData.password) error = "Las contraseñas no coinciden";
+        break;
+      case "phoneNumber":
+        if (!/^\d{13}$/.test(value))
+          error =
+            "El número de teléfono debe tener 13 dígitos (por ejemplo, 5491109876543)";
         break;
       default:
         break;
@@ -105,6 +112,7 @@ const Register = () => {
       formDataToSend.append("birthDate", date);
       formDataToSend.append("password", formData.password);
       formDataToSend.append("dniPhoto", formData.dniFile);
+      formDataToSend.append("phoneNumber", formData.phoneNumber);
       setIsDataLoading(true);
       store.services.authService
         .register(formDataToSend)
@@ -247,7 +255,27 @@ const Register = () => {
               helperText={errors.confirmPassword}
               margin="normal"
             />
+            <FormControl fullWidth>
+              <TextField
+                label="Número de Teléfono"
+                name="phoneNumber"
+                type="text"
+                onChange={handleChange}
+                error={Boolean(errors.phoneNumber)}
+                helperText={errors.phoneNumber}
+                margin="normal"
+              />
+            </FormControl>
           </FormControl>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ marginBottom: "8px" }}
+          >
+            La foto solicitada se utilizará para verificar su identidad al
+            iniciar sesión, comparándola con una imagen tomada en tiempo real.
+            Esto garantiza su seguridad y la integridad de su cuenta.
+          </Typography>
           <FormControl fullWidth margin="normal">
             <Button
               className="boton"
