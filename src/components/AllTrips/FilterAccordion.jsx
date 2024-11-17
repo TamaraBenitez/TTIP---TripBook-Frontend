@@ -8,18 +8,34 @@ import {
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useState } from "react";
 
 function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
+  const [open, setOpen] = useState(false);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
+  const handleReset = () => {
+    resetFilters();
+    setOpen(false);
+  };
+
+  const handleApplyFilters = () => {
+    applyFilters();
+    setOpen(false);
+  };
+
   return (
     <>
-      <Accordion>
+      <Accordion expanded={open}>
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: "#226668" }} />}
+          expandIcon={
+            <Button onClick={() => setOpen(!open)}>
+              <ExpandMoreIcon sx={{ color: "#226668" }} />
+            </Button>
+          }
           aria-controls="filters-content"
           id="filters-header"
         >
@@ -53,10 +69,10 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
               fullWidth
             />
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Button variant="outlined" onClick={resetFilters}>
+              <Button variant="outlined" onClick={handleReset}>
                 Restablecer Filtros
               </Button>
-              <Button variant="contained" onClick={applyFilters}>
+              <Button variant="contained" onClick={handleApplyFilters}>
                 Aplicar Filtros
               </Button>
             </Box>
