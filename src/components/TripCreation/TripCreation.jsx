@@ -647,7 +647,7 @@ const TripCreation = () => {
             </Box>
             <Box sx={{backgroundColor:theme.palette.primary.main, paddingInline:2,paddingBottom:2,paddingTop:1, minWidth:267}}>
 
-            <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} route={route} setRoute={setRoute}/> 
+            {route && <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} route={route} setRoute={setRoute}/>} 
             </Box>
             </div>
             </Grid2>

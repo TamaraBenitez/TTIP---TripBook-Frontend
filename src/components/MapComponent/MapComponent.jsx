@@ -133,6 +133,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
 
   return (
     <>
+      {coords && coords[0] && 
       <MapContainer
         center={coords ? coords[0] : [51.505, -0.09]}
         zoom={5}
@@ -170,7 +171,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
             customCoordinate={userMarker}
           />
         )}
-      </MapContainer>
+      </MapContainer>}
       {isRegistering && (
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%", marginTop: 5 }}>
           {routeCalculated && <Button onClick={editPoint}>Editar Punto</Button>}
