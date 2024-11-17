@@ -25,7 +25,7 @@ export default function Trips(props) {
   };
 
   return (
-    <>
+    <Box sx={{paddingBottom:4, maxWidth:"80vw"}}>
       <Grid2
         className="tripsContainer"
         container 
@@ -105,6 +105,6 @@ export default function Trips(props) {
           color="primary"
         />
       </Box>
-    </>
+    </Box>
   );
 }
