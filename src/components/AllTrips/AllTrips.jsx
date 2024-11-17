@@ -34,7 +34,6 @@ export default function AllTrips() {
     destination: "",
     startDate: "",
   });
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const applyFilters = () => {
     setLoading(true);
@@ -46,11 +45,10 @@ export default function AllTrips() {
       }
     }
     store.services.tripService
-      .GetAllTrips(filteredFilters) // Pasar filtros a la API
+      .GetAllTrips(filteredFilters)
       .then((res) => {
         setTrips(res.data);
         setLoading(false);
-        setIsFilterOpen(false);
       })
       .catch((error) => {
         console.error(error);
@@ -66,7 +64,6 @@ export default function AllTrips() {
       .then((res) => {
         setTrips(res.data);
         setLoading(false);
-        setIsFilterOpen(false);
       })
       .catch((error) => {
         console.error(error);
