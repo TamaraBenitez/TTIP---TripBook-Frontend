@@ -122,21 +122,32 @@ export default function AllTrips() {
           variant="h2"
         />
 
-        <Box sx={{ width: "100%", marginBottom: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "100%",
+            marginBottom: 2,
+          }}
+        >
           <Button
             variant="outlined"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            sx={{ marginBottom: 1 }}
+            sx={{ marginBottom: 1, height: 50 }}
           >
-            {isFilterOpen ? "Ocultar Filtros" : "Mostrar Filtros"}
+            {isFilterOpen ? "Ocultar " : "Filtros"}
           </Button>
           {isFilterOpen && (
-            <FilterAccordion
-              filters={filters}
-              setFilters={setFilters}
-              applyFilters={applyFilters}
-              resetFilters={resetFilters}
-            />
+            <Box sx={{ width: "50%" }}>
+              {" "}
+              {/* Esto asegura que el filtro ocupe solo el 50% */}
+              <FilterAccordion
+                filters={filters}
+                setFilters={setFilters}
+                applyFilters={applyFilters}
+                resetFilters={resetFilters}
+              />
+            </Box>
           )}
         </Box>
         {loading ? (
