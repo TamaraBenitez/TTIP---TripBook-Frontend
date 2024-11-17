@@ -16,50 +16,54 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
   };
 
   return (
-    <Accordion expanded={true}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="filters-content"
-        id="filters-header"
-      >
-        <Typography>Filtros</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            label="Origen"
-            name="origin"
-            value={filters.origin}
-            onChange={handleInputChange}
-            fullWidth
-          />
-          <TextField
-            label="Destino"
-            name="destination"
-            value={filters.destination}
-            onChange={handleInputChange}
-            fullWidth
-          />
-          <TextField
-            label="Fecha de Inicio"
-            name="startDate"
-            type="date"
-            value={filters.startDate}
-            onChange={handleInputChange}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-          />
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" onClick={resetFilters}>
-              Restablecer Filtros
-            </Button>
-            <Button variant="contained" onClick={applyFilters}>
-              Aplicar Filtros
-            </Button>
+    <>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{ color: "#226668" }} />}
+          aria-controls="filters-content"
+          id="filters-header"
+        >
+          <Typography sx={{ color: "#226668", fontWeight: 500 }}>
+            Administrar filtros
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              label="Origen"
+              name="origin"
+              value={filters.origin}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <TextField
+              label="Destino"
+              name="destination"
+              value={filters.destination}
+              onChange={handleInputChange}
+              fullWidth
+            />
+            <TextField
+              label="Fecha de Inicio"
+              name="startDate"
+              type="date"
+              value={filters.startDate}
+              onChange={handleInputChange}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+            />
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Button variant="outlined" onClick={resetFilters}>
+                Restablecer Filtros
+              </Button>
+              <Button variant="contained" onClick={applyFilters}>
+                Aplicar Filtros
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </AccordionDetails>
-    </Accordion>
+        </AccordionDetails>
+      </Accordion>{" "}
+    </>
   );
 }
 

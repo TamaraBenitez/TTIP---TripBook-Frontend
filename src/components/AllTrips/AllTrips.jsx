@@ -50,6 +50,7 @@ export default function AllTrips() {
       .then((res) => {
         setTrips(res.data);
         setLoading(false);
+        setIsFilterOpen(false);
       })
       .catch((error) => {
         console.error(error);
@@ -65,6 +66,7 @@ export default function AllTrips() {
       .then((res) => {
         setTrips(res.data);
         setLoading(false);
+        setIsFilterOpen(false);
       })
       .catch((error) => {
         console.error(error);
@@ -114,7 +116,12 @@ export default function AllTrips() {
   return (
     <>
       <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+        }}
       >
         <RibbonHeading
           heading={"Viajes Disponibles"}
@@ -122,34 +129,15 @@ export default function AllTrips() {
           variant="h2"
         />
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            width: "100%",
-            marginBottom: 2,
-          }}
-        >
-          <Button
-            variant="outlined"
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            sx={{ marginBottom: 1, height: 50 }}
-          >
-            {isFilterOpen ? "Ocultar " : "Filtros"}
-          </Button>
-          {isFilterOpen && (
-            <Box sx={{ width: "50%" }}>
-              {" "}
-              {/* Esto asegura que el filtro ocupe solo el 50% */}
-              <FilterAccordion
-                filters={filters}
-                setFilters={setFilters}
-                applyFilters={applyFilters}
-                resetFilters={resetFilters}
-              />
-            </Box>
-          )}
+        <Box sx={{ width: "35%" }}>
+          <FilterAccordion
+            filters={filters}
+            setFilters={setFilters}
+            applyFilters={applyFilters}
+            resetFilters={resetFilters}
+          />
         </Box>
+
         {loading ? (
           <TripsSkeleton />
         ) : (
