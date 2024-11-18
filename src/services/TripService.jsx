@@ -4,9 +4,10 @@ class TripService extends BaseService {
     super(axios, apiUrl);
   }
 
-  GetAllTrips() {
+  GetAllTrips(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
     return this.axios({
-      url: `${this.baseUrl}/trip`,
+      url: `${this.baseUrl}/trip?${params}`,
       method: "GET",
       headers: this.config.headers,
     });
