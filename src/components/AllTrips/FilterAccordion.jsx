@@ -17,16 +17,6 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  const handleReset = () => {
-    resetFilters();
-    setOpen(false);
-  };
-
-  const handleApplyFilters = () => {
-    applyFilters();
-    setOpen(false);
-  };
-
   return (
     <>
       <Accordion expanded={open}>
@@ -44,7 +34,7 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
             <TextField
               label="Origen"
               name="origin"
@@ -68,11 +58,13 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
               InputLabelProps={{ shrink: true }}
               fullWidth
             />
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Button variant="outlined" onClick={handleReset}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
+            >
+              <Button variant="outlined" onClick={resetFilters}>
                 Restablecer Filtros
               </Button>
-              <Button variant="contained" onClick={handleApplyFilters}>
+              <Button variant="contained" onClick={applyFilters}>
                 Aplicar Filtros
               </Button>
             </Box>

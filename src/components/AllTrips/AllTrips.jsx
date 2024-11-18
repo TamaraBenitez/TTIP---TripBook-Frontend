@@ -16,6 +16,7 @@ import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import TripsSkeleton from "../TripList/TripsSkeleton";
 import FilterAccordion from "./FilterAccordion";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -73,7 +74,7 @@ export default function AllTrips() {
 
   const suscribeButton = (
     <Button onClick={() => navigate(`/trip/suscribe/${tripToSuscribe}`)}>
-      confirmar
+      Confirmar
     </Button>
   );
 
@@ -126,7 +127,7 @@ export default function AllTrips() {
           variant="h2"
         />
 
-        <Box sx={{ width: "35%" }}>
+        <Box>
           <FilterAccordion
             filters={filters}
             setFilters={setFilters}
@@ -137,6 +138,23 @@ export default function AllTrips() {
 
         {loading ? (
           <TripsSkeleton />
+        ) : trips.length === 0 ? (
+          <Box sx={{ textAlign: "center", marginTop: 4 }}>
+            <Alert
+              severity="info"
+              sx={{
+                color: "#226668",
+                fontWeight: 500,
+                backgroundColor: "#ffff",
+                border: "1px solid #226668",
+                "& .MuiAlert-icon": {
+                  color: "#226668 !important",
+                },
+              }}
+            >
+              No se encontraron viajes
+            </Alert>
+          </Box>
         ) : (
           <>
             <Trips
@@ -148,12 +166,13 @@ export default function AllTrips() {
               open={open}
               handleClose={handleCloseModal}
               confirmButton={modalConfirmBtn}
-              title={"Inscripcion al viaje"}
+              title={"Inscripción al viaje"}
               textParagraph={modalMsg}
               showCancelButton={true}
             />
           </>
         )}
+
         {showAlert && (
           <Slide direction="left" in={showAlert} mountOnEnter unmountOnExit>
             <Alert
