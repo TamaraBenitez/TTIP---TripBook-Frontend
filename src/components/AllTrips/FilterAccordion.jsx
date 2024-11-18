@@ -6,11 +6,18 @@ import {
   Button,
   Box,
   Typography,
+  MenuItem,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 
-function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
+function FilterAccordion({
+  filters,
+  setFilters,
+  applyFilters,
+  resetFilters,
+  showStatusFilter = false,
+}) {
   const [open, setOpen] = useState(false);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,6 +65,21 @@ function FilterAccordion({ filters, setFilters, applyFilters, resetFilters }) {
               InputLabelProps={{ shrink: true }}
               fullWidth
             />
+            {showStatusFilter && (
+              <TextField
+                label="Estado"
+                name="status"
+                value={filters.status || ""}
+                onChange={handleInputChange}
+                select
+                fullWidth
+              >
+                <MenuItem value="">Todos</MenuItem>
+                <MenuItem value="pending">Pendiente</MenuItem>
+                <MenuItem value="confirmed">Confirmado</MenuItem>
+                <MenuItem value="canceled">Cancelado</MenuItem>
+              </TextField>
+            )}
             <Box
               sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
             >
