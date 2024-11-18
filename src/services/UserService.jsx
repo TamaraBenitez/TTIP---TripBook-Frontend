@@ -5,11 +5,15 @@ class UserService extends BaseService {
     super(axios, apiUrl);
   }
 
-  GetMyTrips(id, role) {
+  GetMyTrips(id, role, filters = {}) {
     return this.axios({
-      url: `${this.baseUrl}/tripUser/${id}/trips?role=${role}`, //harcode test user
+      url: `${this.baseUrl}/tripUser/${id}/trips`,
       method: "GET",
       headers: this.config.headers,
+      params: {
+        role,
+        ...filters,
+      },
     });
   }
 
