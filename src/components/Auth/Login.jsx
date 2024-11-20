@@ -39,6 +39,7 @@ const Login = () => {
   const canvasRef = useRef(null);
   const [openModalTakePhoto, setOpenModalTakePhoto] = useState(false);
   const [openModalLoading, setOpenModalLoading] = useState(false);
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -102,6 +103,7 @@ const Login = () => {
     setOpenModalTakePhoto(true);
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     videoRef.current.srcObject = stream;
+    setTimeout(() => setIsCanvasReady(true), 300);
   };
 
   const takePicture = () => {
@@ -118,6 +120,7 @@ const Login = () => {
       setIsCameraOn(false);
       // Detener la cámara
       setOpenModalTakePhoto(false);
+      setIsCanvasReady(false);
       const stream = videoRef.current.srcObject;
       const tracks = stream.getTracks();
       tracks.forEach((track) => track.stop());
@@ -144,6 +147,7 @@ const Login = () => {
     setIsCameraOn(false);
     // Detener la cámara
     setOpenModalTakePhoto(false);
+    setIsCanvasReady(false);
     const stream = videoRef.current.srcObject;
     const tracks = stream.getTracks();
     tracks.forEach((track) => track.stop());
@@ -163,7 +167,7 @@ const Login = () => {
           borderRadius: 2,
           boxShadow: 2,
 
-          overflowY: "auto", // Permite el scroll solo dentro del contenedor
+          overflowY: "auto",
         }}
       >
         <CssBaseline />
@@ -243,7 +247,7 @@ const Login = () => {
                   <HelpOutlineIcon sx={{ ml: 1, color: "#226668" }} />
                 </Tooltip>
                 <Typography variant="body2" sx={{ ml: 1, color: "#226668" }}>
-                  Requerido
+                  La foto tomada será utilizada para validar tu identidad.
                 </Typography>
               </Box>
             ) : (
@@ -271,7 +275,11 @@ const Login = () => {
               <DialogCustom
                 open={openModalTakePhoto}
                 confirmButton={
-                  <Button variant="text" onClick={takePicture}>
+                  <Button
+                    variant="text"
+                    onClick={takePicture}
+                    disabled={!isCanvasReady}
+                  >
                     Capturar Imagen
                   </Button>
                 }
