@@ -21,7 +21,6 @@ const DialogCustom = ({
   showCancelButton,
   dialogContent,
 }) => {
-  debugger;
   return (
     <>
       {" "}
