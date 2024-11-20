@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Container, IconButton, useTheme, Pagination, Grid2 } from "@mui/material";
+import { Box, IconButton, useTheme, Pagination, Grid2 } from "@mui/material";
 import TripCard from "./TripCard";
 import { AddOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -10,16 +10,13 @@ export default function Trips(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Calculate total pages
   const totalPages = Math.ceil(props.trips.length / itemsPerPage);
 
-  // Get trips for the current page
   const currentTrips = props.trips.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Handle page change
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
   };
@@ -45,11 +42,11 @@ export default function Trips(props) {
             sx={{
               position: "relative",
               width: 345,
-              height: 250, // Ensure consistent space
+              height: 250,
               transition: "transform 0.3s ease-in-out",
               "&:hover": {
                 transform: "scale(1.05)",
-                zIndex: 2, // Bring the hovered card above others
+                zIndex: 2,
               },
             }}
           >
@@ -68,7 +65,6 @@ export default function Trips(props) {
             />
           </Box>
         ))}
-        {/* Show Add Button only on the last page */}
         {currentPage === totalPages && (
           <Box
             sx={{
@@ -96,7 +92,6 @@ export default function Trips(props) {
           </Box>
         )}
       </Grid2>
-      {/* Pagination controls */}
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
         <Pagination
           count={totalPages}
