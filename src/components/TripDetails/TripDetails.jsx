@@ -29,7 +29,6 @@ import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
 import gmail from "../../assets/Gmail.svg";
-import markerUser from "../../assets/user-location.svg";
 
 export default function TripDetails({
   pendingSolicitudes,

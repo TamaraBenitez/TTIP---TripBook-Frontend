@@ -226,7 +226,6 @@ const TripCreation = () => {
   },[departureCoords])
   return (
     <>
-      {/* <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}> */}
         <RibbonHeading heading={"Nuevo Viaje"} component="h2" variant="h2" />
          {!showConfirmation ? (
           <Box paddingInline={3}>
@@ -421,7 +420,7 @@ const TripCreation = () => {
                       />
                       <Tooltip
                         title="Cuánto estas dispuesto a desviarte? (metros)"
-                        placement="right"
+                        placement="top"
                       >
                         <HelpOutline />
                       </Tooltip>
