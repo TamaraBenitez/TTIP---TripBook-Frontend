@@ -668,12 +668,14 @@ const TripCreation = () => {
                   minWidth: 267,
                 }}
               >
-                <CustomRouteMap
-                  startCoord={departureCoords}
-                  endCoord={destinationCoords}
-                  route={route}
-                  setRoute={setRoute}
-                />
+                {route && (
+                  <CustomRouteMap
+                    startCoord={departureCoords}
+                    endCoord={destinationCoords}
+                    route={route}
+                    setRoute={setRoute}
+                  />
+                )}
               </Box>
             </div>
           </Grid2>
