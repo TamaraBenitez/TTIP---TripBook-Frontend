@@ -38,6 +38,8 @@ export default function TripCard({
   action,
   handleAction,
   status,
+  role,
+  tripUserId,
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -173,6 +175,9 @@ export default function TripCard({
             >
               {action}
             </Button>
+            {status === "confirmed" && role === 0 && (
+              <Button>Cancelar inscripcion </Button>
+            )}
           </CardActions>
         )}
       </Card>

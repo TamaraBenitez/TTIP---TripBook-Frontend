@@ -21,7 +21,7 @@ export default function Trips(props) {
         {props.trips.map((trip) => {
           return (
             <TripCard
-              key={trip.id}
+              key={trip.tripUserId}
               to={trip.id}
               description={trip.description}
               startDate={trip.startDate}
@@ -33,6 +33,8 @@ export default function Trips(props) {
               status={trip.status}
               action={props.action}
               handleAction={props.handleAction}
+              role={props.role}
+              tripUserId={trip.tripUserId}
             />
           );
         })}
