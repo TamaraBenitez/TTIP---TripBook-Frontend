@@ -7,7 +7,6 @@ import {
   TextField,
   IconButton,
   Box,
-  InputAdornment,
   FormHelperText,
   CircularProgress,
   Typography,
@@ -21,15 +20,9 @@ import dayjs from "dayjs";
 import {
   CloudUpload,
   HelpOutline,
-  MyLocation,
-  Search as SearchIcon,
   SwapVert as SwapVertIcon,
 } from "@mui/icons-material";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-} from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 import licenseHelp from "/images/licenseHelp.png";
 import StoreContext from "../../store/storecontext";
@@ -40,26 +33,23 @@ import { useBlocker, useNavigate } from "react-router-dom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { ErrorOutline } from "@mui/icons-material";
-import MapClickHandler from "../MapComponent/MapClickHandler";
-import CenterMap from "../MapComponent/CenterMap";
 import CustomRouteMap from "../MapComponent/CustomRouteMap";
 import { ThemeContext } from "@emotion/react";
 import "./TripCreation.css"
+import MapWithGeocoding from "../MapComponent/MapWithGeocoding";
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [departure, setDeparture] = useState("");
   const [departureDate, setDepartureDate] = useState(dayjs());
-  const [destination, setDestination] = useState("");
   const [seats, setSeats] = useState(1);
   const [estimatedCost, setEstimatedCost] = useState(0);
   const [notes, setNotes] = useState("");
   const [maxTolerableDistance, setMaxTolerableDistance] = useState(2500);
   const [fileMessage, setFileMessage] = useState("");
   const [licenseError, setLicenseError] = useState(null);
-  const [departureCoords, setDepartureCoords] = useState([-34.6037, -58.3816]);
-  const [destinationCoords, setDestinationCoords] = useState([
+  const [departure, setDeparture] = useState({coords:[-34.6037, -58.3816], address:"San Nicolas"});
+  const [destination, setDestination] = useState({coords:[
     -34.6037, -58.3816,
-  ]);
+  ], address: "San Nicolas"});
   const [verifyingLicense, setVerifyingLicense] = useState(false);
   const [stepValid, setStepValid] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -71,7 +61,7 @@ const TripCreation = () => {
   const navigate = useNavigate();
   const [errorTrip, setErrorTrip] = useState("");
   const [isErrorTrip, setIsErrorTrip] = useState(false);
-  const [route, setRoute] = useState([departureCoords, destinationCoords]);
+  const [route, setRoute] = useState([departure, destination]);
   const theme = useContext(ThemeContext);
 
   //Prevent user from leaving
@@ -83,10 +73,6 @@ const TripCreation = () => {
     );
   });
 
-  // Handle map clicks to set departure point
-  const handleMapClick = (handleNewMarker) =>{
-    return <MapClickHandler handleNewMarker={handleNewMarker} />;
-  } 
   const handleChangeDate = (newDate) => {
     setDepartureDate(newDate);
   };
@@ -100,7 +86,7 @@ const TripCreation = () => {
   const validateStep = () => {
     switch (activeStep) {
       case 0:
-        setStepValid(departure.length > 0 && departureCoords !== null);
+        setStepValid(departure.address.length > 0 && departure.coords !== null);
         break;
       case 1:
         setStepValid(
@@ -108,8 +94,8 @@ const TripCreation = () => {
         );
         break;
       case 2:
-        const sameCoords = destinationCoords[0] == departureCoords[0] && destinationCoords[1] == departureCoords[1]; 
-        setStepValid(destination.length > 0 && destinationCoords !== null && !sameCoords);
+        const sameCoords = destination.coords[0] == departure.coords[0] && destination.coords[1] == departure.coords[1]; 
+        setStepValid(destination.address.length > 0 && destination.coords !== null && !sameCoords);
         break;
       case 3:
         setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
@@ -164,13 +150,13 @@ const TripCreation = () => {
     setTripConfirmed(true);
     try {
       await store.services.tripService.CreateTrip({
-        coordinates:route.map((coord) =>{return {latitude:coord[0], longitude:coord[1]}}),
+        coordinates:route.map((point) =>{return {latitude:point.coords[0], longitude:point.coords[1]}}),
         startDate: departureDate,
         description: notes,
         maxPassengers: parseInt(seats),
         estimatedCost: parseInt(estimatedCost),
-        origin: departure,
-        destination: destination,
+        origin: departure.address,
+        destination: destination.address,
         userId: user.id,
         maxTolerableDistance: parseInt(maxTolerableDistance)
       });
@@ -184,12 +170,10 @@ const TripCreation = () => {
   };
 
   const handleSwitchPoints = () => {
-    const temp = departure;
-    const tempCoords = departureCoords;
-    setDeparture(destination);
-    setDepartureCoords(destinationCoords);
-    setDestination(temp);
-    setDestinationCoords(tempCoords);
+    const temp = departure.address;
+    const tempCoords = departure.coords;
+    setDeparture({address:destination.address, coords:destination.coords});
+    setDestination({address: temp, coords:tempCoords});
   };
   const handleSuccessModal = () => {
     navigate("/mytrips");
@@ -206,27 +190,24 @@ const TripCreation = () => {
   }, [
     activeStep,
     departure,
-    departureCoords,
     departureDate,
     destination,
-    destinationCoords,
     seats,
     estimatedCost,
     photo,
   ]);
   useEffect(()=>{
     let newRoute = route;
-    newRoute[newRoute.length-1] = destinationCoords; 
+    newRoute[newRoute.length-1] = destination; 
     setRoute(newRoute)
-  },[destinationCoords])
+  },[destination])
   useEffect(()=>{
     var newRoute = route;
-    newRoute[0] = departureCoords;
+    newRoute[0] = departure;
     setRoute(newRoute); 
-  },[departureCoords])
+  },[departure])
   return (
     <>
-      {/* <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}> */}
         <RibbonHeading heading={"Nuevo Viaje"} component="h2" variant="h2" />
          {!showConfirmation ? (
           <Box paddingInline={3}>
@@ -240,51 +221,7 @@ const TripCreation = () => {
 
             {activeStep === 0 && (
               <Grid2 container spacing={2} padding={10}>
-                <Typography variant="h3">Donde comienza tu viaje?</Typography>
-                <Grid2 xs={6}>
-                  <TextField
-                    label="Especifica una ubicacion"
-                    variant="outlined"
-                    fullWidth
-                    value={departure}
-                    onChange={(e) => setDeparture(e.target.value)}
-                    InputProps={{
-                      endAdornment: (
-                        <Tooltip title="Use current location" placement="right">
-                          <InputAdornment position="end">
-                            <IconButton
-                              color="primary"
-                              onClick={() => {
-                                navigator.geolocation.getCurrentPosition(
-                                  (position) => {
-                                    const coords = [
-                                      position.coords.latitude,
-                                      position.coords.longitude,
-                                    ];
-                                    setDepartureCoords(coords);
-                                  }
-                                );
-                              }}
-                            >
-                              <MyLocation />
-                            </IconButton>
-                          </InputAdornment>
-                        </Tooltip>
-                      ),
-                    }}
-                  />
-                </Grid2>
-
-                <MapContainer
-                  center={[51.505, -0.09]}
-                  zoom={13}
-                  style={{ height: "400px", width: "100%" }}
-                >
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker position={departureCoords || [-34.6037, -58.3816]} />
-                  {handleMapClick(setDepartureCoords)}
-                  <CenterMap coordinates={departureCoords} />
-                </MapContainer>
+                <MapWithGeocoding  point={{address:departure.address, coords:departure.coords, setPoint:setDeparture}} action={"comienza"}/>
               </Grid2>
             )}
 
@@ -314,36 +251,7 @@ const TripCreation = () => {
 
             {activeStep === 2 && (
               <Grid2 container spacing={2} padding={10}>
-                <Typography variant="h3">A dónde vas?</Typography>
-                <Grid2 xs={6}>
-                  <TextField
-                    label="Especifica una ubicacion"
-                    variant="outlined"
-                    fullWidth
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    // InputProps={{
-                    //   endAdornment: (
-                    //     <InputAdornment position="end">
-                    //       <SearchIcon />
-                    //     </InputAdornment>
-                    //   ),
-                    // }}
-                  />
-                </Grid2>
-
-                <MapContainer
-                  center={[-34.6037, -58.3816]}
-                  zoom={13}
-                  style={{ height: "400px", width: "100%" }}
-                >
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker
-                    position={destinationCoords || [-34.6037, -58.3816]}
-                  />
-                  {handleMapClick(setDestinationCoords)}
-                  <CenterMap coordenates={destinationCoords} />
-                </MapContainer>
+                <MapWithGeocoding  point={{address:destination.address, coords:destination.coords, setPoint:setDestination}} action={"termina"}/>
               </Grid2>
             )}
 
@@ -576,10 +484,9 @@ const TripCreation = () => {
               </Button>
             </Box>
           </Box>
-        // </Box>
         ) : ( 
            <Grid2 container size={12} columnSpacing={0} rowSpacing={4} sx={{flexDirection:"row-reverse", paddingInline:4, justifyContent: "space-around", alignItems: "center"}}> 
-            <Grid2 size={2} sx={{minWidth:"fit-content"}}>
+            <Grid2 size={4} >
               <Typography variant="h3" gutterBottom>
                 Confirmacion del viaje
               </Typography>
@@ -597,11 +504,11 @@ const TripCreation = () => {
                 <Box display={"flex"} flexDirection={"column"}>
                   <Box className="summaryRow" display={"flex"}>
                     <Typography variant="h4">
-                      <strong>Origen:</strong> {departure}
+                      <strong>Origen:</strong> {departure.address}
                     </Typography>
                   </Box>
                   <Typography variant="h4">
-                    <strong>Destino:</strong> {destination}
+                    <strong>Destino:</strong> {destination.address}
                   </Typography>
                 </Box>
                 <IconButton onClick={handleSwitchPoints} width="50px">
@@ -647,7 +554,7 @@ const TripCreation = () => {
             </Box>
             <Box sx={{backgroundColor:theme.palette.primary.main, paddingInline:2,paddingBottom:2,paddingTop:1, minWidth:267}}>
 
-            {route && <CustomRouteMap startCoord={departureCoords} endCoord={destinationCoords} route={route} setRoute={setRoute}/>} 
+            {route && <CustomRouteMap startCoord={departure.coords} route={route} setRoute={setRoute}/>} 
             </Box>
             </div>
             </Grid2>

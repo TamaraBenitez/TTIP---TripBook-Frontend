@@ -7,17 +7,18 @@ import RoutingMachine from "./RoutingMachine";
 import MapClickHandler from "./MapClickHandler";
 import { Box, Button, Typography } from "@mui/material";
 import CenterMap from "./CenterMap";
-import L from "leaflet"; // Import Leaflet for icon creation
+import L from "leaflet";
 import location from "../../assets/greenLocation.svg";
 import { sortedCoordsWithNewPoint } from "../../utility/Utility";
+import MapHelper from "./MapHelper";
 
 
 // Utility function to calculate distance between two points
 const calculateDistance = (map, latlng1, latlng2) => {
-  return map.distance(latlng1, latlng2); // distance in meters
+  return map.distance(latlng1, latlng2);
 };
 
-// Utility function to find nearest route segment
+// Utility function to find nearest route segment to the given point
 const findNearestRouteSegment = (mapInstance, route, point) => {
   let minDistance = Infinity;
   for (let i = 0; i < route.length - 1; i++) {
@@ -44,7 +45,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
   const [routeCalculated, setRouteCalculated] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [isPointInRange, setIsPointInRange] = useState(true);
-  // Create a green icon
+
   const greenIcon = new L.Icon({
     iconUrl: location,
     iconSize: [45, 75], // Use array format for icon size
@@ -53,20 +54,6 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
     shadowAnchor: null,
     className: "start-point-icon",
   });
-
-  // Handle map clicks to set departure point
-  const handleMapClick = (handleNewMarker) => {
-    return <MapClickHandler handleNewMarker={handleNewMarker} />;
-  };
-
-  // Helper component to capture map instance
-  const MapHelper = ({ onMapLoad }) => {
-    const map = useMap();
-    useEffect(() => {
-      onMapLoad(map);
-    }, [map, onMapLoad]);
-    return null;
-  };
 
   const handleRouteCoordinates = (coordinates) => {
     setRouteCoordinates(coordinates);
@@ -99,10 +86,11 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
     // Add the point and re-sort.
     // Take always from original 'coordinates' to avoid stacking markers on coords state
     setCalculating(true);
-    if(!coordinates instanceof Array){
+    if(!(coordinates instanceof Array)){
       coordinates = mapTripCoordinates(coordinates);
     } 
     const [startPoint, ...tail] = coordinates;
+    debugger;
     const updatedCoords = sortedCoordsWithNewPoint(startPoint, tail, mapInstance,  userMarker);
     setCoords(updatedCoords);
   };
@@ -160,7 +148,7 @@ const MapComponent = ({ width, coordinates, maxToleranceDistance = 2000, isRegis
             <CenterMap coordinates={userMarker} />
           </>
         )}
-        {canAddMarker() && handleMapClick(handleNewMarker)}
+        {canAddMarker() && <MapClickHandler handleNewMarker={handleNewMarker}/>}
         {coords && (
           <RoutingMachine
             coordinates={coords}

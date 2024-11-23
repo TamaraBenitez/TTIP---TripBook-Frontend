@@ -1,36 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import L, { icon } from "leaflet";
-import { sortedCoordsWithNewPoint } from "../../utility/Utility";
+import L, { icon, point } from "leaflet";
+import { areCoordsEqual, calculateMapDistance, sortedCoords,reverseGeocode, sortedCoordsWithNewPoint } from "../../utility/Utility";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import greenMarker from "../../assets/greenMarker.svg"
-const MapHelper = ({ onMapLoad }) => {
-  const map = useMap();
-  useEffect(() => {
-    onMapLoad(map);
-  }, [map, onMapLoad]);
-  return null;
-};
-
-const RoutingControl = ({ mapInstance, coords, setRoute }) => {
+import MapHelper from "./MapHelper";
+const RoutingControl = ({ mapInstance, points, setRoute, setCoordToAdd }) => {
+  const [calculatedRoute, setCalculatedRoute] = useState([]);
 
   useEffect(() => {
-    // Check if there's already a routing control layer and remove it
+    const geocoder = L.Control.geocoder({
+      defaultMarkGeocode: false,
+    })
+      .on("markgeocode", (e) => {
+        const latLng = e.geocode.center;
+
+   
+        setCoordToAdd({address:e.geocode.properties.display_name, coords:[latLng.lat, latLng.lng]})
+
+
+        mapInstance.setView(latLng, 13);
+      })
+      .addTo(mapInstance);
+
     if (mapInstance._routingControl) {
       mapInstance.removeControl(mapInstance._routingControl);
     }
 
-    // Create a new routing control and assign it to the map
     const routingControl = L.Routing.control({
-      waypoints: coords,
+      waypoints: points.map((point)=>point.coords),
       routeWhileDragging: true,
       geocoder: L.Control.Geocoder.nominatim(),
       lineOptions: {
-        styles: [{ color: "blue", weight: 2 }], // Style of the route line
+        styles: [{ color: "blue", weight: 2 }], 
       },
       router: L.Routing.osrmv1({
-        serviceUrl: `https://router.project-osrm.org/route/v1`, // OSRM public routing service
+        serviceUrl: `https://router.project-osrm.org/route/v1`, 
       }),
       createMarker: (i, waypoint) => {
         const customMarker = new L.Icon({
@@ -45,39 +51,72 @@ const RoutingControl = ({ mapInstance, coords, setRoute }) => {
         const draggableMarker = L.marker(waypoint.latLng, { draggable: true})
         var marker;
         const container = L.DomUtil.create("div");
-        if(i!==0 && i !== (coords.length - 1)){
+        const address = points[i].address;
+
+        //all points are draggable except start and end
+        if(i!==0 && i !== (points.length - 1)){
           marker = draggableMarker;
+          const draggableMarkerText = L.DomUtil.create("p", "", container);
+          draggableMarkerText.innerHTML= address;
+
           const deleteBtn = L.DomUtil.create("button", "", container);
           deleteBtn.innerHTML = "Borrar";
+
           deleteBtn.onclick = () => {
-          // Remove this marker's coordinates from the route
-          const newRoute = coords.filter((_, index) => index !== i);
-          setRoute(newRoute);
-
-          // Remove marker from map
-          mapInstance.removeLayer(marker);
-        };
-
-
-        } else{
-          const staticMarkerText = L.DomUtil.create("p", "", container);
-          staticMarkerText.innerHTML = "Para cambiar este punto haz click en 'EDITAR VIAJE'";
-          marker = staticMarker;
-        }
-        marker.bindPopup(container);
-        
+            const newRoute = points.filter((_, index) => index !== i);
+            setRoute(newRoute);
+            mapInstance.removeLayer(marker);
+          };
+          marker.on('drag', (e)=>{
+            mapInstance._userInteracted = true
+           })
+  
+      } else{
+        const adrdressText = L.DomUtil.create("p", "", container);
+        adrdressText.innerHTML =address;
+        const disclaimerText = L.DomUtil.create("p", "", container);
+        disclaimerText.innerHTML ="Para cambiar este punto haz click en 'EDITAR VIAJE'";
+        marker = staticMarker;
+      }
+      marker.bindPopup(container);
         return marker;
       },
     }).addTo(mapInstance);
 
     routingControl.on("routesfound", (e) => {
-      // Update the route state only when the user interacts, not during initial render
+      //Since route recalculation may change a bit the pin positions(if user has placed pin on unreachable place)
+      //We get the start point by closeness to the original start point(points[0])
       if (mapInstance._userInteracted) {
-        const newWaypoints = e.routes[0].waypoints.map((wp) => [
-          wp.latLng.lat,
-          wp.latLng.lng,
-        ]);
-        setRoute(newWaypoints);
+        for (let index = 0; index < e.routes[0].waypoints.length; index++) {
+          const wp = e.routes[0].waypoints[index];
+          let geocoder = L.Control.Geocoder.nominatim();
+          let {lat, lng} = wp.latLng;
+          var filtered = [];
+          reverseGeocode(geocoder,lat,lng,
+                  (result) => {
+                    ;
+                    if(!filtered.find((point)=>areCoordsEqual(point.coords,result.coords))){
+                      filtered.push(result);
+                    }
+   
+                    if(index == (e.routes[0].waypoints.length - 1) && filtered.length == e.routes[0].waypoints.length){
+                      let start = filtered.reduce((closestPoint, currentPoint) => {
+                        const currentDistance = calculateMapDistance(mapInstance, points[0].coords, currentPoint.coords);
+                    
+                        if (!closestPoint || currentDistance < closestPoint.distance) {
+                          return { point: currentPoint, distance: currentDistance };
+                        }
+                    
+                        return closestPoint;
+                      }, null)?.point;
+                      let tail = filtered.filter((point)=>!areCoordsEqual(start.coords, point.coords,3));
+                      const sorted = sortedCoords(start, tail);
+                      setRoute(sorted);
+                    }
+                  },true   
+          );
+          
+        }     
       }
     });
 
@@ -85,13 +124,13 @@ const RoutingControl = ({ mapInstance, coords, setRoute }) => {
     mapInstance._userInteracted = false;
 
     return () => {
-      // Clean up the routing control when the component unmounts or dependencies change
       if (mapInstance._routingControl) {
         mapInstance.removeControl(mapInstance._routingControl);
         mapInstance._routingControl = null;
       }
+      mapInstance.removeControl(geocoder);
     };
-  }, [coords]);
+  }, [points]);
 
   useEffect(() => {
     if (mapInstance && mapInstance._routingControl) {
@@ -99,8 +138,12 @@ const RoutingControl = ({ mapInstance, coords, setRoute }) => {
         mapInstance._userInteracted = true;
       });
     }
-  }, [coords]);
-
+  }, [points]);
+  useEffect(()=>{
+    if(calculatedRoute.length){
+      setRoute(calculatedRoute)
+    }
+  },[calculatedRoute])
   return null;
 };
 
@@ -111,8 +154,7 @@ const CustomRouteMap = ({
   setRoute
 }) => {
   const [mapInstance, setMapInstance] = useState(null);
-  const [coordToAdd, setCoordToAdd] = useState();
-
+  const [coordToAdd, setCoordToAdd] = useState({});
   function createButton(label, container, className = "") {
     var btn = L.DomUtil.create("button", className, container);
     btn.setAttribute("type", "button");
@@ -130,21 +172,33 @@ const CustomRouteMap = ({
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
-
+  
       mapInstance.on("click", (e) => {
+        const latLng = e.latlng;
+  
         const container = L.DomUtil.create("div");
         const addPinBtn = createButton("Agregar pin", container);
-        L.popup().setContent(container).setLatLng(e.latlng).openOn(mapInstance);
-
+  
+        L.popup().setContent(container).setLatLng(latLng).openOn(mapInstance);
+  
+        const geocoder = L.Control.Geocoder.nominatim();
+        var mapAdress;
+        geocoder.reverse(latLng, mapInstance.options.crs.scale(mapInstance.getZoom()), (results) => {
+          if (results.length > 0) {
+            const address = results[0].name || "Direccion no disponible";
+            mapAdress = address;
+          }
+        });
+  
         L.DomEvent.on(addPinBtn, "click", () => {
-          setCoordToAdd([e.latlng.lat, e.latlng.lng]);
+          setCoordToAdd({coords: [latLng.lat, latLng.lng], address:mapAdress});
         });
       });
     }
   }, [mapInstance]);
 
   useEffect(() => {
-    if (coordToAdd) {
+    if (Object.keys(coordToAdd).length > 0) {
       recalculateRoute(coordToAdd);
     }
   }, [coordToAdd]);
@@ -161,7 +215,8 @@ const CustomRouteMap = ({
           <RoutingControl
             mapInstance={mapInstance}
             setRoute={setRoute}
-            coords={route}
+            points={route}
+            setCoordToAdd={setCoordToAdd}
           />
         </>
       )}
