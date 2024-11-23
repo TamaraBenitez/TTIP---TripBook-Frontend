@@ -130,50 +130,13 @@ export default function DriverPendingRequest() {
 
   return (
     <Box paddingInline={5}>
-      <RibbonHeading
-        heading={"Solicitud de pasajero"}
-        component={"h2"}
-        variant={"h2"}
-      />
-
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          maxWidth: 400,
-          marginLeft: 5,
-        }}
-      >
-        <SvgIcon
-          sx={{
-            marginRight: 1,
-            fontSize: 50,
-          }}
-        >
-          <image href={markerUser} height="100%" />
-        </SvgIcon>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          fontSize="1rem"
-          sx={{
-            whiteSpace: "normal",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          El punto de partida de la solicitud está marcado con el siguiente
-          marcador
-        </Typography>
-      </Box>
 
       <TripDetails
         pendingSolicitudes={true}
         tripIdParam={tripId}
         tripUserId={tripUserId}
+        heading={"Solicitud de pasajero"}
+        markerUser={markerUser}
       />
 
       <Box
