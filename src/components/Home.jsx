@@ -6,6 +6,7 @@ import people from "../assets/people.webp";
 import ahorro from "../assets/ahorro.webp";
 import { useUser } from "../user/UserContext";
 import { useEffect } from "react";
+
 const images = [
   {
     imgPath: markersImages,
@@ -26,13 +27,13 @@ const images = [
 ];
 
 const Home = () => {
-  const {user, setUser} = useUser()
-  useEffect(()=>{
-    if(!user){
-      console.log("SETUSER NULL")
-      setUser(undefined)
+  const { user, setUser } = useUser();
+  useEffect(() => {
+    if (!user) {
+      console.log("SETUSER NULL");
+      setUser(undefined);
     }
-  },[])
+  }, []);
 
   return (
     <Box
