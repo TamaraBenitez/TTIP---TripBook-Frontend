@@ -55,6 +55,14 @@ class TripService extends BaseService {
     });
   }
 
+  CancelRequest(tripUserId) {
+    return this.axios({
+      url: `${this.baseUrl}/tripUser/cancelRequest/${tripUserId}`,
+      method: "POST",
+      headers: this.config.headers,
+    });
+  }
+
   CreateTrip(tripData) {
     return this.axios({
       url: `${this.baseUrl}/trip`,

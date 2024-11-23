@@ -207,6 +207,7 @@ export default function MyTrips() {
                   trips={trips}
                   action={"detalles"}
                   handleAction={redirectToTrip}
+                  role={value}
                 />
               )}
             </TabPanel>
