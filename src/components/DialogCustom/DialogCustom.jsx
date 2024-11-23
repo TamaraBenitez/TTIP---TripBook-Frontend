@@ -11,7 +11,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const DialogCustom = ({ open, handleClose, title, textParagraph, handleConfirm, confirmButton, showCancelButton }) => {
+const DialogCustom = ({
+  open,
+  handleClose,
+  title,
+  textParagraph,
+  handleConfirm,
+  confirmButton,
+  showCancelButton,
+}) => {
   return (
     <>
       {" "}
@@ -21,6 +29,12 @@ const DialogCustom = ({ open, handleClose, title, textParagraph, handleConfirm, 
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
+        sx={{
+          "& .MuiDialog-paper": {
+            padding: "10px",
+            boxShadow: `0px 4px 10px 2px rgba(34, 102, 104, 0.5)`,
+          },
+        }}
       >
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
@@ -28,9 +42,13 @@ const DialogCustom = ({ open, handleClose, title, textParagraph, handleConfirm, 
             {textParagraph}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{paddingBlock:3}}>
-          { confirmButton ? confirmButton : <Button onClick={handleConfirm}>Confirmar</Button>}
-          { showCancelButton && <Button onClick={handleClose}>Cancelar</Button> }
+        <DialogActions>
+          {confirmButton ? (
+            confirmButton
+          ) : (
+            <Button onClick={handleConfirm}>Confirmar</Button>
+          )}
+          {showCancelButton && <Button onClick={handleClose}>Cancelar</Button>}
         </DialogActions>
       </Dialog>
     </>
