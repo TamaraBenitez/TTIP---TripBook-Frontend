@@ -41,6 +41,7 @@ import CenterMap from "../MapComponent/CenterMap";
 import CustomRouteMap from "../MapComponent/CustomRouteMap";
 import { ThemeContext } from "@emotion/react";
 import "./TripCreation.css";
+import ImageSelectionStep from "./ImageTrip";
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [departure, setDeparture] = useState("");
@@ -201,6 +202,7 @@ const TripCreation = () => {
     "Elija el punto de destino",
     "Establecer asientos y notas",
     "Verificar licencia de conducir",
+    "Establecer imagen de viaje",
   ];
   useEffect(() => {
     validateStep(); // Run validation when any relevant state changes
@@ -286,6 +288,7 @@ const TripCreation = () => {
                 {handleMapClick(setDepartureCoords)}
                 <CenterMap coordinates={departureCoords} />
               </MapContainer>
+              <ImageSelectionStep />
             </Grid2>
           )}
 
@@ -554,6 +557,7 @@ const TripCreation = () => {
               )}
             </Box>
           )}
+
           <Box
             sx={{
               display: "flex",

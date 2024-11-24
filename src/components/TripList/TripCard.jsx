@@ -45,6 +45,7 @@ export default function TripCard({
   status,
   role,
   tripUserId,
+  imageUrl,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const store = useContext(StoreContext);
@@ -114,8 +115,8 @@ export default function TripCard({
       >
         <CardActionArea component={NavLink} to={`/trips/${to}`}>
           <CardMedia
-            sx={{ height: 140, position: "relative" }}
-            image={`/images/${cleanString(destination)}.jpg`}
+            sx={{ height: 190, position: "relative" }}
+            image={imageUrl ?? "https://i.imgur.com/9LHXy5H.jpg"}
             title="road"
           >
             {isHovered && (
@@ -251,4 +252,5 @@ TripCard.propTypes = {
   status: PropTypes.string,
   role: PropTypes.string,
   tripUserId: PropTypes.string,
+  imageUrl: PropTypes.string,
 };

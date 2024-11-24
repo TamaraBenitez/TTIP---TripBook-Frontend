@@ -80,6 +80,7 @@ export default function Trips(props) {
               handleAction={props.handleAction}
               role={props.role}
               tripUserId={trip.tripUserId}
+              imageUrl={trip.imageUrl}
             />
           </Box>
         ))}
