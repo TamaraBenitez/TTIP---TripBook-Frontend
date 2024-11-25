@@ -1,1 +1,2 @@
 export const MAP_MAX_ZOOM = 67108864
+export const DEFAULT_TOLERABLE_DISTANCE = 5000

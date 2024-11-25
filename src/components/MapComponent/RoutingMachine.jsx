@@ -8,9 +8,9 @@ const RoutingMachine = ({
   coordinates,
   customCoordinate,
   setRouteCoordinates = () => {},
-  setCalculating = () => {},
-  setRouteCalculated = () => {},
-  manualCalculation = false
+  // setCalculating = () => {},
+  // setRouteCalculated = () => {},
+  // manualCalculation = false
 }) => {
   const map = useMap(); // Get the map instance from react-leaflet
   const [coords, setCoords] = useState(coordinates);
@@ -20,7 +20,7 @@ const RoutingMachine = ({
   }, [coordinates]);
 
   useEffect(() => {
-    setCalculating(true);
+    // setCalculating(true);
     if (coords) {
       const greenIcon = new L.Icon({
         iconUrl: location,
@@ -62,10 +62,10 @@ const RoutingMachine = ({
           ]);
           if (setRouteCoordinates) {
             setRouteCoordinates(routeCoords);
-            setCalculating(false);
-            if (manualCalculation) {
-              setRouteCalculated(true);
-            }
+            // setCalculating(false);
+            // if (manualCalculation) {
+            //   setRouteCalculated(true);
+            // }
           }
         })
         .addTo(map);

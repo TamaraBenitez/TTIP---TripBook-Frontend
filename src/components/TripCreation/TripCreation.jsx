@@ -221,7 +221,7 @@ const TripCreation = () => {
 
             {activeStep === 0 && (
               <Grid2 container spacing={2} padding={10}>
-                <MapWithGeocoding  point={{address:departure.address, coords:departure.coords, setPoint:setDeparture}} action={"comienza"}/>
+                <MapWithGeocoding  point={{address:departure.address, coords:departure.coords, setPoint:setDeparture}} subtitle={"¿Dónde comienza tu viaje?"}/>
               </Grid2>
             )}
 
@@ -251,7 +251,7 @@ const TripCreation = () => {
 
             {activeStep === 2 && (
               <Grid2 container spacing={2} padding={10}>
-                <MapWithGeocoding  point={{address:destination.address, coords:destination.coords, setPoint:setDestination}} action={"termina"}/>
+                <MapWithGeocoding  point={{address:destination.address, coords:destination.coords, setPoint:setDestination}} subtitle={"¿A dónde vas?"}/>
               </Grid2>
             )}
 

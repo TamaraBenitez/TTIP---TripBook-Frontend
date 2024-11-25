@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Circle } from "react-leaflet";
 import "leaflet-control-geocoder";
 import L from "leaflet";
 import {
@@ -8,47 +8,77 @@ import {
   InputAdornment,
   IconButton,
   Typography,
-  Autocomplete,
   Paper,
   List,
   ListItem,
   ListItemButton,
-  Box,
   Grid2,
 } from "@mui/material";
+import greenMarker from "../../assets/greenLocation.svg";
+import defaultMarker from "../../assets/defaultmarker.svg";
 import MyLocation from "@mui/icons-material/MyLocation";
 import MapClickHandler from "./MapClickHandler";
 import MapHelper from "./MapHelper";
 import CenterMap from "./CenterMap";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { Search } from "@mui/icons-material";
-import { reverseGeocode } from "../../utility/Utility";
+import { calculateMapDistance, reverseGeocode } from "../../utility/Utility";
+import RoutingMachineGeocoder from "./RoutingMachineGeocoder";
+import { DEFAULT_TOLERABLE_DISTANCE } from "../../utility/Constants";
 
-const MapWithGeocoding = ({ point, action }) => {
+const MapWithGeocoding = ({
+  point,
+  subtitle,
+  //ragistering to trip additions
+  isRegistering = false,
+  route = null,
+  setRoute = () => {},
+  userMarker = null,
+  maxTolerableDistance = DEFAULT_TOLERABLE_DISTANCE,
+  isPointInRange = null,
+  setIsPointInRange = ()=>{},
+  routeCalculated = null,
+  setRouteCalculated = ()=>{},
+  setMapInstanceProp
+}) => {
   const { address, coords, setPoint } = point;
   const [mapInstance, setMapInstance] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [calculating, setCalculating] = useState(false);
+  const [routingMachineCalulatedCoordinates, setRoutingMachineCalulatedCoordinates] = useState([]);
+  
   const suggestionsRef = useRef(null);
   const alertMsg =
     "No pudimos encontrar la ubicacion. Intenta nuevamente con mas zoom";
-
+  const greenMarkerIcon = new L.Icon({
+    iconUrl: greenMarker,
+    iconSize: [45, 75], 
+    iconAnchor: [22.5, 75],
+    shadowUrl: null,
+    shadowAnchor: null,
+    className: "start-point-icon",
+  });
   const handleReverseGeocode = (lat, lng) => {
     const geocoder = L.Control.Geocoder.nominatim();
-    reverseGeocode(geocoder,lat,lng,
-      (point)=>{
-        setPoint(point);
-        if(!point.address){
-          setShowAlert(true);
-          setTimeout(() => {
-            setShowAlert(false);
-          }, 6000);
-        }
+    reverseGeocode(geocoder, lat, lng, (point) => {
+      setPoint(point);
+      if (!point.address) {
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 6000);
       }
-    )
+    });
   };
-
+  const handleLoadMap = (map) =>{
+    setMapInstance(map)
+    if(setMapInstanceProp){
+      setMapInstanceProp(map)
+    }
+  }
   const handleMapClick = (point) => {
+    if(isRegistering && routeCalculated) return;
     handleReverseGeocode(point[0], point[1]);
   };
 
@@ -60,17 +90,17 @@ const MapWithGeocoding = ({ point, action }) => {
         if (results.length > 0) {
           const formattedResults = results.map((result) => {
             var label = "";
-            if(result.properties?.address?.city){
-              label = result.properties.address.city
-            } else if(result.properties.address.state_district){
-              label = `${result.properties.address.state_district}, ${result.properties.address.state}`
+            if (result.properties?.address?.city) {
+              label = result.properties.address.city;
+            } else if (result.properties.address.state_district) {
+              label = `${result.properties.address.state_district}, ${result.properties.address.state}`;
             }
             return {
               address: result.name,
-              label: label, 
+              label: label,
               coords: [result.center.lat, result.center.lng],
-            }
-        });
+            };
+          });
           setSuggestions(formattedResults);
         } else {
           setSuggestions([]);
@@ -86,9 +116,33 @@ const MapWithGeocoding = ({ point, action }) => {
   };
   const handleSelectSuggestion = (selected) => {
     setPoint({ address: selected.label, coords: selected.coords });
-    setSuggestions([]); // Clear suggestions
+    setSuggestions([]);
   };
+  const handleDragMarker = (event) => {
+    setTimeout(() => {
+      event.noInertia = false
+    const marker = event.target;
+    const position = marker.getLatLng();
+    setPoint({...point, coords:[position.lat,position.lng]})
+    }, 200);
+  }
+  // Utility function to find nearest route segment to the given point
+  const findNearestRouteSegment = (mapInstance, route, point) => {
+  let minDistance = Infinity;
+  for (let i = 0; i < route.length - 1; i++) {
+    const closestPointOnSegment = L.GeometryUtil.closestOnSegment(mapInstance, point, route[i], route[i + 1]);
+    const segmentPointDistance = calculateMapDistance(mapInstance, closestPointOnSegment, point);
 
+    if (segmentPointDistance < minDistance) {
+      minDistance = segmentPointDistance;
+    }
+  }
+  return minDistance;
+  };
+  
+  const canEditPoint = () =>{
+    return !routeCalculated
+  }
   useEffect(() => {
     //Close the suggestion box with "Escape" or click outside box
     const handleClickOutside = (event) => {
@@ -114,13 +168,20 @@ const MapWithGeocoding = ({ point, action }) => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
+  useEffect(() => {
+    if (isRegistering && userMarker.length && mapInstance && routingMachineCalulatedCoordinates.length > 0) {
+      const distanceToRoute = findNearestRouteSegment(mapInstance, routingMachineCalulatedCoordinates, userMarker);
+      setIsPointInRange(distanceToRoute <= maxTolerableDistance);
+    }
+  }, [userMarker, mapInstance, routingMachineCalulatedCoordinates]);
 
   return (
     <>
       <Grid2 container size={12} sx={{ alignItems: "center" }}>
-        <Grid2 item size={5} sx={{minWidth:""}}>
-          <Typography variant="h3" sx={{wordWrap:"break-word"}}>¿Dónde {action} tu viaje?</Typography>
+        <Grid2 item size={5}>
+          <Typography variant="h3" sx={{ wordWrap: "break-word" }}>
+            {subtitle}
+          </Typography>
         </Grid2>
         <Grid2 item size={6} position={"relative"} alignSelf={"flex-end"}>
           <TextField
@@ -128,6 +189,7 @@ const MapWithGeocoding = ({ point, action }) => {
             variant="outlined"
             fullWidth
             value={address}
+            disabled={!canEditPoint()}
             onChange={handleSetAddress}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleGeocode();
@@ -139,11 +201,8 @@ const MapWithGeocoding = ({ point, action }) => {
               endAdornment: (
                 <Tooltip title="Buscar" placement="top">
                   <InputAdornment position="end">
-                  <IconButton
-                    color="primary"
-                    onClick={handleGeocode}
-                  >
-                    <Search />
+                    <IconButton color="primary" disabled={!canEditPoint()} onClick={handleGeocode}>
+                      <Search />
                     </IconButton>
                   </InputAdornment>
                 </Tooltip>
@@ -175,21 +234,26 @@ const MapWithGeocoding = ({ point, action }) => {
             </Paper>
           )}
         </Grid2>
-        <Grid2 item size={1} sx={{ paddingLeft: "2%", alignSelf:"flex-end", marginBottom:"5px" }}>
+        <Grid2
+          item
+          size={1}
+          sx={{ paddingLeft: "2%", alignSelf: "flex-end", marginBottom: "5px" }}
+        >
           <Tooltip title="Usar ubicacion actual" placement="top">
-          <IconButton
-            color="primary"
-            onClick={() => {
-              navigator.geolocation.getCurrentPosition((position) => {
-                handleReverseGeocode(
-                  position.coords.latitude,
-                  position.coords.longitude
-                );
-              });
-            }}
-          >
-            <MyLocation />
-          </IconButton>
+            <IconButton
+              color="primary"
+              disabled={!canEditPoint()}
+              onClick={() => {
+                navigator.geolocation.getCurrentPosition((position) => {
+                  handleReverseGeocode(
+                    position.coords.latitude,
+                    position.coords.longitude
+                  );
+                });
+              }}
+            >
+              <MyLocation />
+            </IconButton>
           </Tooltip>
         </Grid2>
       </Grid2>
@@ -199,14 +263,46 @@ const MapWithGeocoding = ({ point, action }) => {
         style={{ height: "400px", width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MapHelper onMapLoad={setMapInstance} />
-        {coords && (
-          <>
-            <MapClickHandler handleNewMarker={handleMapClick} />
-            <Marker position={coords} />
+        <MapHelper onMapLoad={handleLoadMap} />
+        <MapClickHandler handleNewMarker={handleMapClick} />
+        {coords.length && (<>
+          {
+          isRegistering ?
+           (<Marker 
+              position={coords}
+              draggable={canEditPoint()} 
+              eventHandlers={{dragend: handleDragMarker}} 
+              riseOnHover={true}
+              icon={greenMarkerIcon} />) :
+              <Marker position={coords} />
+          }
+            
+            {isRegistering && (
+              <Circle
+                center={userMarker}
+                radius={maxTolerableDistance}
+                pathOptions={{ color: isPointInRange ? "green" : "red" }}
+                fillOpacity={0.2}
+              />
+            )}
             <CenterMap coordinates={coords} />
-          </>
-        )}
+            
+          </> )
+          }
+        {isRegistering && route && mapInstance && (
+              <RoutingMachineGeocoder
+                mapInstance={mapInstance}
+                points={route}
+                setRoute={setRoute}
+                setCalculating={setCalculating}
+                setRouteCalculated={setRouteCalculated}
+                manualCalculation={calculating}
+                setCoordToAdd={setPoint}
+                isRegistering={isRegistering}
+                setRoutingMachineCalulatedCoordinates={setRoutingMachineCalulatedCoordinates}
+                userPickPoint={userMarker}
+              />
+            )}
       </MapContainer>
       <AlertCustom
         inProp={showAlert}
