@@ -79,6 +79,14 @@ class TripService extends BaseService {
       headers: this.config.headers,
     });
   }
+
+  GetImagesUrls() {
+    return this.axios({
+      url: `${this.baseUrl}/trip/imagesUrls`,
+      method: "GET",
+      headers: this.config.headers,
+    });
+  }
 }
 
 export default TripService;
