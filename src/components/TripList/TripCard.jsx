@@ -20,6 +20,7 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { TaskAlt } from "@mui/icons-material";
 import PropTypes from "prop-types";
+import defaultImage from "../../assets/tripImage.png";
 
 function mapStatusToSpanish(status) {
   const statusMap = {
@@ -116,7 +117,7 @@ export default function TripCard({
         <CardActionArea component={NavLink} to={`/trips/${to}`}>
           <CardMedia
             sx={{ height: 190, position: "relative" }}
-            image={imageUrl ?? "https://i.imgur.com/9LHXy5H.jpg"}
+            image={imageUrl ?? defaultImage}
             title="road"
           >
             {isHovered && (

@@ -202,7 +202,6 @@ const TripCreation = () => {
     "Elija el punto de destino",
     "Establecer asientos y notas",
     "Verificar licencia de conducir",
-    "Establecer imagen de viaje",
   ];
   useEffect(() => {
     validateStep(); // Run validation when any relevant state changes

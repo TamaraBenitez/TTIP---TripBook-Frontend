@@ -3,6 +3,7 @@ import { Button, Grid, Typography, IconButton } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import Skeleton from "@mui/material/Skeleton";
 import StoreContext from "../../store/storecontext";
+import defaultImage from "../../assets/tripImage.png";
 
 export default function ImageSelectionStep() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -17,7 +18,11 @@ export default function ImageSelectionStep() {
     store.services.tripService
       .GetImagesUrls()
       .then((response) => {
-        setImages(response.data);
+        const imagesWithDefault = [
+          { imageUrl: defaultImage },
+          ...response.data,
+        ];
+        setImages(imagesWithDefault);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -62,7 +67,7 @@ export default function ImageSelectionStep() {
 
   return (
     <div>
-      <Grid justifyContent={"center"} alignItems={"center"}>
+      <Grid>
         <Typography variant="h6" gutterBottom>
           Selecciona o sube una imagen
         </Typography>
