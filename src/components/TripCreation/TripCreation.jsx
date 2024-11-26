@@ -22,7 +22,7 @@ import {
   HelpOutline,
   SwapVert as SwapVertIcon,
 } from "@mui/icons-material";
-
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import licenseHelp from "/images/licenseHelp.png";
 import StoreContext from "../../store/storecontext";
@@ -37,6 +37,7 @@ import CustomRouteMap from "../MapComponent/CustomRouteMap";
 import { ThemeContext } from "@emotion/react";
 import "./TripCreation.css"
 import MapWithGeocoding from "../MapComponent/MapWithGeocoding";
+import "./TripCreation.css";
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [departureDate, setDepartureDate] = useState(dayjs());
@@ -73,6 +74,10 @@ const TripCreation = () => {
     );
   });
 
+  // Handle map clicks to set departure point
+  const handleMapClick = (handleNewMarker) => {
+    return <MapClickHandler handleNewMarker={handleNewMarker} />;
+  };
   const handleChangeDate = (newDate) => {
     setDepartureDate(newDate);
   };
@@ -94,8 +99,12 @@ const TripCreation = () => {
         );
         break;
       case 2:
-        const sameCoords = destination.coords[0] == departure.coords[0] && destination.coords[1] == departure.coords[1]; 
-        setStepValid(destination.address.length > 0 && destination.coords !== null && !sameCoords);
+        const sameCoords =
+          destinationCoords[0] == departureCoords[0] &&
+          destinationCoords[1] == departureCoords[1];
+        setStepValid(
+          destination.length > 0 && destinationCoords !== null && !sameCoords
+        );
         break;
       case 3:
         setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
@@ -107,7 +116,6 @@ const TripCreation = () => {
         setStepValid(true);
     }
   };
-
 
   // Function to handle step navigation
   const handleNext = () => {
@@ -135,8 +143,8 @@ const TripCreation = () => {
         .catch((error) => {
           setVerifyingLicense(false);
           setLicenseError({
-            title: "License Expired",
-            message: "The license might be expired or invalid.",
+            title: "Licencia invalida",
+            message: "La licencia podría estar vencida o ser inválida.",
           });
         });
     } else {
@@ -158,7 +166,7 @@ const TripCreation = () => {
         origin: departure.address,
         destination: destination.address,
         userId: user.id,
-        maxTolerableDistance: parseInt(maxTolerableDistance)
+        maxTolerableDistance: parseInt(maxTolerableDistance),
       });
 
       setShowSuccessModal(true); // Mostrar modal de éxito
@@ -196,7 +204,7 @@ const TripCreation = () => {
     estimatedCost,
     photo,
   ]);
-  useEffect(()=>{
+  useEffect(() => {
     let newRoute = route;
     newRoute[newRoute.length-1] = destination; 
     setRoute(newRoute)
@@ -225,29 +233,29 @@ const TripCreation = () => {
               </Grid2>
             )}
 
-            {activeStep === 1 && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: 5,
-                }}
-              >
-                <Typography variant="h3">Cuándo te vas?</Typography>
-                <Paper sx={{ width: "max-content" }}>
-                  <StaticDateTimePicker
-                    sx={{ width: "50vw" }}
-                    label="Fecha de salida"
-                    value={departureDate}
-                    onChange={handleChangeDate}
-                    slotProps={{
-                      actionBar: { actions: [] },
-                    }}
-                  />
-                </Paper>
-              </Box>
-            )}
+          {activeStep === 1 && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <Typography variant="h3">Cuándo te vas?</Typography>
+              <Paper sx={{ width: "max-content" }}>
+                <StaticDateTimePicker
+                  sx={{ width: "50vw" }}
+                  label="Fecha de salida"
+                  value={departureDate}
+                  onChange={handleChangeDate}
+                  slotProps={{
+                    actionBar: { actions: [] },
+                  }}
+                />
+              </Paper>
+            </Box>
+          )}
 
             {activeStep === 2 && (
               <Grid2 container spacing={2} padding={10}>
@@ -255,249 +263,261 @@ const TripCreation = () => {
               </Grid2>
             )}
 
-            {activeStep === 3 && (
-              <Grid2 container spacing={2} padding={10}>
-                <Grid2 size={12}>
-                  <Typography variant="h3">Detalles de tu viaje</Typography>
-                </Grid2>
-                <Paper sx={{ width: "100%", height: "100%" }}>
-                  <Grid2 container size={12} spacing={5} padding={5}>
-                    <Grid2
-                      size={4}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TextField
-                        label="Cantidad de asientos"
-                        type="number"
-                        variant="outlined"
-                        fullWidth
-                        value={seats}
-                        onChange={(e) => setSeats(e.target.value)}
-                        sx={{ marginRight: 2 }}
-                      />
-                      <Tooltip
-                        title="Asientos disponibles en tu vehiculo"
-                        placement="right"
-                      >
-                        <HelpOutline />
-                      </Tooltip>
-                    </Grid2>
-                    <Grid2
-                      size={4}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TextField
-                        label="Costo estimado"
-                        type="number"
-                        variant="outlined"
-                        fullWidth
-                        value={estimatedCost}
-                        onChange={(e) => setEstimatedCost(e.target.value)}
-                        sx={{ marginRight: 2 }}
-                      />
-                      <Tooltip
-                        title="Costo estimado por pasajero"
-                        placement="right"
-                      >
-                        <HelpOutline />
-                      </Tooltip>
-                    </Grid2>
-                    <Grid2
-                      size={4}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TextField
-                        label="Tolerancia maxima"
-                        type="number"
-                        variant="outlined"
-                        fullWidth
-                        value={maxTolerableDistance}
-                        onChange={(e) => setMaxTolerableDistance(e.target.value)}
-                        sx={{ marginRight: 2 }}
-                      />
-                      <Tooltip
-                        title="Cuánto estas dispuesto a desviarte? (metros)"
-                        placement="right"
-                      >
-                        <HelpOutline />
-                      </Tooltip>
-                    </Grid2>
-                    <Grid2 size={12}>
-                      <TextField
-                        label="Notas adicionales"
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                      />
-                    </Grid2>
-                  </Grid2>
-                </Paper>
+          {activeStep === 3 && (
+            <Grid2 container spacing={2} padding={10}>
+              <Grid2 size={12}>
+                <Typography variant="h3">Detalles de tu viaje</Typography>
               </Grid2>
-            )}
-
-            {activeStep === 4 && (
-              <Box
-                mb={2}
-                textAlign="center"
-                justifyContent={"center"}
-                padding={10}
-                display={"flex"}
-                flexDirection={"column"}
-              >
-                {verifyingLicense ? (
-                  <>
-                    <CircularProgress />
-                    <Typography variant="h6">
-                      Verificando tu licencia...
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <Typography variant="h3" marginBottom={5}>
-                      Valida tu licencia
-                    </Typography>
-                    <Typography
-                      variant="subtitle2"
-                      fontSize={18}
-                      marginBottom={3}
+              <Paper sx={{ width: "100%", height: "100%" }}>
+                <Grid2 container size={12} spacing={5} padding={5}>
+                  <Grid2
+                    size={4}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextField
+                      label="Cantidad de asientos"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={seats}
+                      onChange={(e) => setSeats(e.target.value)}
+                      sx={{ marginRight: 2 }}
+                    />
+                    <Tooltip
+                      title="Asientos disponibles en tu vehiculo"
+                      placement="right"
                     >
-                      Como último paso, necesitamos asegurarnos que tenés
-                      permiso para conducir.
-                    </Typography>
-                    <Box
+                      <HelpOutline />
+                    </Tooltip>
+                  </Grid2>
+                  <Grid2
+                    size={4}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextField
+                      label="Costo estimado"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={estimatedCost}
+                      onChange={(e) => setEstimatedCost(e.target.value)}
+                      sx={{ marginRight: 2 }}
+                    />
+                    <Tooltip
+                      title="Costo estimado por pasajero"
+                      placement="right"
+                    >
+                      <HelpOutline />
+                    </Tooltip>
+                  </Grid2>
+                  <Grid2
+                    size={4}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TextField
+                      label="Tolerancia maxima"
+                      type="number"
+                      variant="outlined"
+                      fullWidth
+                      value={maxTolerableDistance}
+                      onChange={(e) => setMaxTolerableDistance(e.target.value)}
+                      sx={{ marginRight: 2 }}
+                    />
+                    <Tooltip
+                      title="Cuánto estas dispuesto a desviarte? (metros)"
+                      placement="right"
+                    >
+                      <HelpOutline />
+                    </Tooltip>
+                  </Grid2>
+                  <Grid2 size={12}>
+                    <TextField
+                      label="Notas adicionales"
+                      variant="outlined"
+                      fullWidth
+                      multiline
+                      rows={4}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                    />
+                  </Grid2>
+                </Grid2>
+              </Paper>
+            </Grid2>
+          )}
+
+          {activeStep === 4 && (
+            <Box
+              mb={2}
+              textAlign="center"
+              justifyContent={"center"}
+              padding={10}
+              display={"flex"}
+              flexDirection={"column"}
+            >
+              {verifyingLicense ? (
+                <>
+                  <CircularProgress />
+                  <Typography variant="h6">
+                    Verificando tu licencia...
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Typography variant="h3" marginBottom={5}>
+                    Valida tu licencia
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    fontSize={18}
+                    marginBottom={3}
+                  >
+                    Como último paso, necesitamos asegurarnos que tenés permiso
+                    para conducir.
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignSelf: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Paper
                       sx={{
                         display: "flex",
-                        flexDirection: "row",
                         alignSelf: "center",
+                        flexDirection: "row",
+                        justifyContent: "center",
                         alignItems: "center",
+                        maxWidth: "500px",
+                        height: "60px",
+                        marginRight: 2,
                       }}
                     >
-                      <Paper
-                        sx={{
-                          display: "flex",
-                          alignSelf: "center",
-                          flexDirection: "row",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          maxWidth: "500px",
-                          height: "60px",
-                          marginRight: 2,
-                        }}
+                      <Typography>
+                        Por favor, subí una foto del CODIGO DE BARRAS de tu
+                        carnet DIGITAL
+                      </Typography>
+                      <Button
+                        className="boton"
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        startIcon={<CloudUpload />}
                       >
-                        <Typography>
-                          Por favor, subí una foto del CODIGO DE BARRAS de tu
-                          carnet DIGITAL
-                        </Typography>
-                        <Button
-                          className="boton"
-                          component="label"
-                          role={undefined}
-                          variant="contained"
-                          tabIndex={-1}
-                          startIcon={<CloudUpload />}
-                        >
-                          Subir foto
-                          <TextField
-                            type="file"
-                            sx={{ display: "none" }}
-                            onChange={(e) => {
-                              handleUploadPhoto(e);
-                              if (e.target.files.length > 0) {
-                                setFileMessage(
-                                  `Archivo seleccionado: ${e.target.files[0].name}`
-                                );
-                              } else {
-                                setFileMessage("");
-                              }
-                            }}
-                          />
-                        </Button>
-                      </Paper>
-                      <Tooltip
-                        title={
-                          <img
-                            src={licenseHelp}
-                            style={{ width: "-webkit-fill-available" }}
-                          />
-                        }
-                        placement="right"
-                      >
-                        <HelpOutline fontSize="large" color="action" />
-                      </Tooltip>
-                    </Box>
-                    <FormHelperText sx={{ alignSelf: "center" }}>
-                      {fileMessage}
-                    </FormHelperText>
-                    {licenseError && (
-                      <Alert
-                        severity="error"
-                        sx={{
-                          mt: 2,
-                          width: "20vw",
-                          alignSelf: "center",
-                          textAlign: "start",
-                        }}
-                      >
-                        <AlertTitle sx={{ alignSelf: "start" }}>
-                          Licencia Invalida
-                        </AlertTitle>
-                        {licenseError.message}
-                      </Alert>
-                    )}
-                  </>
-                )}
-              </Box>
-            )}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginTop: 3,
-                marginBottom:3
-              }}
-            >
-              <Button disabled={activeStep === 0} onClick={handleBack}>
-                Atras
-              </Button>
-
-              <Button
-                variant="contained"
-                onClick={handleNext}
-                disabled={!stepValid}
-              >
-                Siguiente
-              </Button>
+                        Subir foto
+                        <TextField
+                          type="file"
+                          sx={{ display: "none" }}
+                          onChange={(e) => {
+                            handleUploadPhoto(e);
+                            if (e.target.files.length > 0) {
+                              setFileMessage(
+                                `Archivo seleccionado: ${e.target.files[0].name}`
+                              );
+                            } else {
+                              setFileMessage("");
+                            }
+                          }}
+                        />
+                      </Button>
+                    </Paper>
+                    <Tooltip
+                      title={
+                        <img
+                          src={licenseHelp}
+                          style={{ width: "-webkit-fill-available" }}
+                        />
+                      }
+                      placement="right"
+                    >
+                      <HelpOutline fontSize="large" color="action" />
+                    </Tooltip>
+                  </Box>
+                  <FormHelperText sx={{ alignSelf: "center" }}>
+                    {fileMessage}
+                  </FormHelperText>
+                  {licenseError && (
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mt: 2,
+                        width: "20vw",
+                        alignSelf: "center",
+                        textAlign: "start",
+                      }}
+                    >
+                      <AlertTitle sx={{ alignSelf: "start" }}>
+                        Licencia Invalida
+                      </AlertTitle>
+                      {licenseError.message}
+                    </Alert>
+                  )}
+                </>
+              )}
             </Box>
+          )}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: 3,
+              marginBottom: 3,
+            }}
+          >
+            <Button disabled={activeStep === 0} onClick={handleBack}>
+              Atras
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              disabled={!stepValid}
+            >
+              Siguiente
+            </Button>
           </Box>
-        ) : ( 
-           <Grid2 container size={12} columnSpacing={0} rowSpacing={4} sx={{flexDirection:"row-reverse", paddingInline:4, justifyContent: "space-around", alignItems: "center"}}> 
-            <Grid2 size={4} >
-              <Typography variant="h3" gutterBottom>
-                Confirmacion del viaje
-              </Typography>
-              <Paper
+        </Box>
+      ) : (
+        // </Box>
+        <Grid2
+          container
+          size={12}
+          columnSpacing={0}
+          rowSpacing={4}
+          sx={{
+            flexDirection: "row-reverse",
+            paddingInline: 4,
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
+          <Grid2 size={4} sx={{ minWidth: "fit-content" }}>
+            <Typography variant="h3" gutterBottom>
+              Confirmacion del viaje
+            </Typography>
+            <Paper
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                height:"70%",  
+                height: "70%",
                 alignItems: "flex-start",
                 alignSelf: "center",
-                padding:5
+                padding: 5,
               }}
             >
               <Box display={"flex"}>
@@ -545,21 +565,37 @@ const TripCreation = () => {
                 </Button>
               </Box>
             </Paper>
-            </Grid2>
-            <Grid2 size={8} sx={{minWidth:"fit-content", width:"50vw"}}>
+          </Grid2>
+          <Grid2 size={8} sx={{ minWidth: "fit-content", width: "50vw" }}>
             <div className="folder">
-
-            <Box sx={{height:"fit-content", minWidth:267, marginLeft:2}}>
-              <Typography variant="h4" sx={{color:theme.palette.common.white}}>Edita tu ruta</Typography>
-            </Box>
-            <Box sx={{backgroundColor:theme.palette.primary.main, paddingInline:2,paddingBottom:2,paddingTop:1, minWidth:267}}>
-
-            {route && <CustomRouteMap startCoord={departure.coords} route={route} setRoute={setRoute}/>} 
-            </Box>
+              <Box sx={{ height: "fit-content", minWidth: 267, marginLeft: 2 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ color: theme.palette.common.white }}
+                >
+                  Edita tu ruta
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  paddingInline: 2,
+                  paddingBottom: 2,
+                  paddingTop: 1,
+                  minWidth: 267,
+                }}
+              >
+                <CustomRouteMap
+                  startCoord={departureCoords}
+                  endCoord={destinationCoords}
+                  route={route}
+                  setRoute={setRoute}
+                />
+              </Box>
             </div>
-            </Grid2>
-          </Grid2> 
-        )}
+          </Grid2>
+        </Grid2>
+      )}
 
       {
         <DialogCustom
