@@ -18,6 +18,7 @@ import {
   Paper,
 } from "@mui/material";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import {
   CloudUpload,
   HelpOutline,
@@ -60,7 +61,7 @@ const TripCreation = () => {
   const [verifyingLicense, setVerifyingLicense] = useState(false);
   const [stepValid, setStepValid] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [photo, setPhoto] = useState();
+  const [licensePhoto, setLicensePhoto] = useState();
   const [tripConfirmed, setTripConfirmed] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const store = useContext(StoreContext);
@@ -70,7 +71,9 @@ const TripCreation = () => {
   const [isErrorTrip, setIsErrorTrip] = useState(false);
   const [route, setRoute] = useState([departureCoords, destinationCoords]);
   const theme = useContext(ThemeContext);
+  const [tripPhoto, setTripPhoto] = useState(null);
 
+  dayjs.extend(utc);
   //Prevent user from leaving
   let blocker = useBlocker(({ currentLocation, nextLocation }) => {
     return (
@@ -88,12 +91,11 @@ const TripCreation = () => {
     setDepartureDate(newDate);
   };
 
-  const handleUploadPhoto = (event) => {
-    setPhoto(event.target.files[0]);
+  const handleUploadLicensePhoto = (event) => {
+    setLicensePhoto(event.target.files[0]);
     setLicenseError(null);
   };
 
-  // Function to handle step validation
   const validateStep = () => {
     switch (activeStep) {
       case 0:
@@ -116,21 +118,23 @@ const TripCreation = () => {
         setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
         break;
       case 4:
-        setStepValid(photo !== undefined);
+        setStepValid((tripPhoto !== null) && tripPhoto.path);
+        break;
+      case 5:
+        setStepValid(licensePhoto !== undefined);
         break;
       default:
         setStepValid(true);
     }
   };
 
-  // Function to handle step navigation
   const handleNext = () => {
-    if (activeStep === 4) {
+    if (activeStep === 5) {
       setVerifyingLicense(true);
       setLicenseError(null);
       const formDataToSend = new FormData();
       formDataToSend.append("userId", user.id);
-      formDataToSend.append("file", photo);
+      formDataToSend.append("file", licensePhoto);
       store.services.authService
         .verifyLicense(formDataToSend)
         .then((response) => {
@@ -162,22 +166,27 @@ const TripCreation = () => {
 
   const createTrip = async () => {
     setTripConfirmed(true);
+    let mappedC =  route.map((coord) => {
+      return { latitude: coord[0], longitude: coord[1] };
+    })
+    const formDataToSend = new FormData();
+    formDataToSend.append("coordinates",JSON.stringify(mappedC));
+    formDataToSend.append("startDate", dayjs.utc(departureDate).toISOString());
+    formDataToSend.append("description", notes);
+    formDataToSend.append("maxPassengers", seats);
+    formDataToSend.append("estimatedCost", estimatedCost);
+    formDataToSend.append("origin", departure);
+    formDataToSend.append("destination", destination);
+    formDataToSend.append("userId", user.id);
+    formDataToSend.append("maxTolerableDistance",maxTolerableDistance);
+    if(tripPhoto.file){
+      formDataToSend.append("image", tripPhoto.file);
+    } else {
+      formDataToSend.append("imageUrl", tripPhoto.path);
+    }
     try {
-      await store.services.tripService.CreateTrip({
-        coordinates: route.map((coord) => {
-          return { latitude: coord[0], longitude: coord[1] };
-        }),
-        startDate: departureDate,
-        description: notes,
-        maxPassengers: parseInt(seats),
-        estimatedCost: parseInt(estimatedCost),
-        origin: departure,
-        destination: destination,
-        userId: user.id,
-        maxTolerableDistance: parseInt(maxTolerableDistance),
-      });
-
-      setShowSuccessModal(true); // Mostrar modal de éxito
+      await store.services.tripService.CreateTrip(formDataToSend);
+      setShowSuccessModal(true);
     } catch (error) {
       setIsErrorTrip(true);
       console.error("Error al crear el viaje:", error);
@@ -201,10 +210,11 @@ const TripCreation = () => {
     "Elija la fecha de salida",
     "Elija el punto de destino",
     "Establecer asientos y notas",
+    "Elija una foto",
     "Verificar licencia de conducir",
   ];
   useEffect(() => {
-    validateStep(); // Run validation when any relevant state changes
+    validateStep()
   }, [
     activeStep,
     departure,
@@ -214,7 +224,8 @@ const TripCreation = () => {
     destinationCoords,
     seats,
     estimatedCost,
-    photo,
+    licensePhoto,
+    tripPhoto
   ]);
   useEffect(() => {
     let newRoute = route;
@@ -287,7 +298,7 @@ const TripCreation = () => {
                 {handleMapClick(setDepartureCoords)}
                 <CenterMap coordinates={departureCoords} />
               </MapContainer>
-              <ImageSelectionStep />
+              
             </Grid2>
           )}
 
@@ -452,6 +463,20 @@ const TripCreation = () => {
               display={"flex"}
               flexDirection={"column"}
             >
+              <>
+                <ImageSelectionStep setTripPhoto={setTripPhoto} />
+              </>
+            </Box>
+          )}
+          {activeStep === 5 && (
+            <Box
+              mb={2}
+              textAlign="center"
+              justifyContent={"center"}
+              padding={10}
+              display={"flex"}
+              flexDirection={"column"}
+            >
               {verifyingLicense ? (
                 <>
                   <CircularProgress />
@@ -509,7 +534,7 @@ const TripCreation = () => {
                           type="file"
                           sx={{ display: "none" }}
                           onChange={(e) => {
-                            handleUploadPhoto(e);
+                            handleUploadLicensePhoto(e);
                             if (e.target.files.length > 0) {
                               setFileMessage(
                                 `Archivo seleccionado: ${e.target.files[0].name}`
@@ -556,7 +581,6 @@ const TripCreation = () => {
               )}
             </Box>
           )}
-
           <Box
             sx={{
               display: "flex",
@@ -633,6 +657,9 @@ const TripCreation = () => {
               </Typography>
               <Typography variant="h4">
                 <strong>Notas:</strong> {notes || "No hay notas adicionales"}
+              </Typography>
+              <Typography variant="h4">
+                <strong>Imagen:</strong> {tripPhoto.path.replace(/^.*[\\/]/, "")}
               </Typography>
 
               <Box sx={{ mt: 2 }}>

@@ -69,7 +69,7 @@ export default function TripCard({
         setShowAlert(true);
       })
       .finally(() => {
-        setOpenDialog(false); // Cerrar el diálogo
+        setOpenDialog(false);
       });
   };
 

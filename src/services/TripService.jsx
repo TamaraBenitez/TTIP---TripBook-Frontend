@@ -67,7 +67,7 @@ class TripService extends BaseService {
     return this.axios({
       url: `${this.baseUrl}/trip`,
       method: "POST",
-      headers: this.config.headers,
+      headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
       data: tripData,
     });
   }

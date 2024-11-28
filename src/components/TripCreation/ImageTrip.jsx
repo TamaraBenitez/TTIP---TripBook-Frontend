@@ -5,40 +5,26 @@ import Skeleton from "@mui/material/Skeleton";
 import StoreContext from "../../store/storecontext";
 import defaultImage from "../../assets/tripImage.png";
 
-export default function ImageSelectionStep() {
-  const [uploadedImage, setUploadedImage] = useState(null);
+export default function ImageSelectionStep({setTripPhoto}) {
+  const [uploadedImage, setUploadedImage] = useState({name:null});
   const [selectedMockImage, setSelectedMockImage] = useState(null);
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 4;
-  const store = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    store.services.tripService
-      .GetImagesUrls()
-      .then((response) => {
-        const imagesWithDefault = [
-          { imageUrl: defaultImage },
-          ...response.data,
-        ];
-        setImages(imagesWithDefault);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const store = useContext(StoreContext);
+  const itemsPerPage = 4;
 
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0] || null;
     if (file) {
-      setUploadedImage(file);
+      setUploadedImage(file)
       setSelectedMockImage(null);
+    } else {
     }
   };
 
   const handleMockImageSelect = (url) => {
     setSelectedMockImage(url === selectedMockImage ? null : url);
-    setUploadedImage(null);
   };
 
   // Calcular las imágenes para mostrar según la página actual
@@ -64,6 +50,38 @@ export default function ImageSelectionStep() {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  useEffect(() => {
+    store.services.tripService
+      .GetImagesUrls()
+      .then((response) => {
+        const imagesWithDefault = [
+          { imageUrl: defaultImage },
+          ...response.data,
+        ];
+        const uniqueImages = imagesWithDefault.reduce((acc, current) => {
+          if (!acc.some((item) => item.imageUrl === current.imageUrl)) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+
+        setImages(uniqueImages);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  useEffect(()=>{
+    if(selectedMockImage) {
+      setTripPhoto({path:selectedMockImage,file:null});
+    }
+    else if(uploadedImage !== null){
+      setTripPhoto({path:uploadedImage.name,file:uploadedImage});
+    } else {
+      setTripPhoto({path:null, file:null});
+    }
+  },[uploadedImage, selectedMockImage]);
 
   return (
     <div>
@@ -91,7 +109,8 @@ export default function ImageSelectionStep() {
                 onChange={handleImageUpload}
               />
             </Button>
-            {uploadedImage && (
+            {!selectedMockImage && 
+                uploadedImage.name &&(
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -185,9 +204,9 @@ export default function ImageSelectionStep() {
           </Typography>
           {getFinalImageValue() && (
             <Typography variant="body2">
-              {uploadedImage
-                ? `Archivo subido: ${uploadedImage.name}`
-                : `URL seleccionada: ${selectedMockImage}`}
+              {selectedMockImage
+                ? `URL seleccionada: ${selectedMockImage}`
+                : uploadedImage.name ? `Archivo subido: ${uploadedImage.name}` : ""}
             </Typography>
           )}
         </Grid>
