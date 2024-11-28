@@ -107,7 +107,6 @@ const RoutingControl = ({ mapInstance, coords, setRoute }) => {
 
 const CustomRouteMap = ({
   startCoord,
-  endCoord,
   route,
   setRoute
 }) => {
