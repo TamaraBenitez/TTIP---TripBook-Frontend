@@ -16,6 +16,7 @@ import {
   Alert,
   SvgIcon,
   Tooltip,
+  Grid2,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -33,12 +34,14 @@ import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
 import gmail from "../../assets/Gmail.svg";
-import markerUser from "../../assets/user-location.svg";
+import RibbonHeading from "../RibbonHeading/RibbonHeading";
 
 export default function TripDetails({
   pendingSolicitudes,
   tripIdParam = null,
   tripUserId = null,
+  markerUser = null,
+  heading = "Detalles del Viaje",
 }) {
   var id;
   if (!tripIdParam) {
@@ -136,9 +139,51 @@ export default function TripDetails({
 
   return (
     <>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-        <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
-          <CardContent>
+    <RibbonHeading
+        heading={heading}
+        component={"h2"}
+        variant={"h2"}
+      />
+      <Grid2 container size={12} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <Grid2 item size={4} display={"flex"} flexDirection={"column"}>
+
+        
+          {pendingSolicitudes &&
+          <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          maxWidth: 400,
+          marginLeft: 5,
+        }}
+      >
+        <SvgIcon
+          sx={{
+            marginRight: 1,
+            fontSize: 50,
+          }}
+        >
+          <image href={markerUser} height="100%" />
+        </SvgIcon>
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          fontSize="1rem"
+          sx={{
+            whiteSpace: "normal",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          El punto de partida de la solicitud está marcado con el siguiente
+          marcador
+        </Typography>
+          </Box>}
+          <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
+            <CardContent>
             {loading ? (
               <>
                 <Skeleton variant="text" height={40} width="60%" />
@@ -395,16 +440,20 @@ export default function TripDetails({
                 )}
               </>
             )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Grid2>
         {showMap() && (
+        <Grid2  item size={8}> 
+
           <MapComponent
             coordinates={getCoordinates()}
             userMarkerParam={getUserMarker()}
-            width={"65%"}
-          />
+            width={"95%"}
+            />
+            </Grid2>
         )}
-      </Box>
+      </Grid2>
       <DialogCustom
         open={open}
         handleClose={handleCloseModal}

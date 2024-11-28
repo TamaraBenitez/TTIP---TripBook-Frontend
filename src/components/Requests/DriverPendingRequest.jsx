@@ -19,6 +19,7 @@ import StoreContext from "../../store/storecontext";
 import { useContext, useState } from "react";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { TaskAlt } from "@mui/icons-material";
+import DialogCustom from "../DialogCustom/DialogCustom";
 
 export default function DriverPendingRequest() {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -129,50 +130,13 @@ export default function DriverPendingRequest() {
 
   return (
     <Box paddingInline={5}>
-      <RibbonHeading
-        heading={"Solicitud de pasajero"}
-        component={"h2"}
-        variant={"h2"}
-      />
-
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          maxWidth: 400,
-          marginLeft: 5,
-        }}
-      >
-        <SvgIcon
-          sx={{
-            marginRight: 1,
-            fontSize: 50,
-          }}
-        >
-          <image href={markerUser} height="100%" />
-        </SvgIcon>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          fontSize="1rem"
-          sx={{
-            whiteSpace: "normal",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          El punto de partida de la solicitud está marcado con el siguiente
-          marcador
-        </Typography>
-      </Box>
 
       <TripDetails
         pendingSolicitudes={true}
         tripIdParam={tripId}
         tripUserId={tripUserId}
+        heading={"Solicitud de pasajero"}
+        markerUser={markerUser}
       />
 
       <Box
@@ -191,43 +155,41 @@ export default function DriverPendingRequest() {
           Confirmar
         </Button>
       </Box>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Rechazar solicitud</DialogTitle>
-        <DialogContent>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isReasonEnabled}
-                onChange={handleCheckboxChange}
-                color="primary"
-              />
-            }
-            label="Agregar motivo de rechazo"
-          />
-          <TextField
-            label="Motivo"
-            fullWidth
-            multiline
-            rows={3}
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-            disabled={!isReasonEnabled}
-            sx={{ mt: 2 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleRejectRequest}
-            color="primary"
-            variant="contained"
-          >
-            Enviar respuesta de solicitud
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DialogCustom
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        title={"Rechazar solicitud"}
+        dialogContent={<>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isReasonEnabled}
+                  onChange={handleCheckboxChange}
+                  color="primary"
+                />
+              }
+              label="Agregar motivo de rechazo"
+            />
+            <TextField
+              label="Motivo"
+              fullWidth
+              multiline
+              rows={3}
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              disabled={!isReasonEnabled}
+              sx={{ mt: 2 }}
+            />
+          </>}
+        showCancelButton={true}
+        confirmButton={<><Button
+          onClick={handleRejectRequest}
+          color="primary"
+          variant="contained"
+        >
+          Enviar respuesta de solicitud
+        </Button></>}
+      />
       <AlertCustom
         inProp={alert.inProp}
         timeout={500}
@@ -237,26 +199,13 @@ export default function DriverPendingRequest() {
         severity={alert.severity}
       />
 
-      <Dialog open={confirmDialogOpen} onClose={handleCloseConfirmDialog}>
-        <DialogTitle>Confirmar solicitud</DialogTitle>
-        <DialogContent>
-          <Typography>
-            ¿Estás seguro que quieres confirmar esta solicitud?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmDialog} color="secondary">
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleConfirmRequest}
-            color="primary"
-            variant="contained"
-          >
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DialogCustom 
+                  open={confirmDialogOpen} 
+                  handleClose={handleCloseConfirmDialog} 
+                  title={"Confirmar solicitud"}
+                  textParagraph={"¿Estás seguro que quieres confirmar esta solicitud?"}
+                  showCancelButton={true}
+                  handleConfirm={handleConfirmRequest}/>
     </Box>
   );
 }

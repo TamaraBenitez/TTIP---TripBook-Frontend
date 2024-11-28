@@ -239,17 +239,16 @@ const TripCreation = () => {
   }, [departureCoords]);
   return (
     <>
-      {/* <Box sx={{ width: "100%", display: "grid", justifyContent: "center" }}> */}
-      <RibbonHeading heading={"Nuevo Viaje"} component="h2" variant="h2" />
-      {!showConfirmation ? (
-        <Box paddingInline={3}>
-          <Stepper activeStep={activeStep} sx={{ marginBottom: 3 }}>
-            {steps.map((label, index) => (
-              <Step key={index}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+        <RibbonHeading heading={"Nuevo Viaje"} component="h2" variant="h2" />
+         {!showConfirmation ? (
+          <Box paddingInline={3}>
+            <Stepper activeStep={activeStep} sx={{ marginBottom: 3 }}>
+              {steps.map((label, index) => (
+                <Step key={index}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
 
           {activeStep === 0 && (
             <Grid2 container spacing={2} padding={10}>
@@ -433,7 +432,7 @@ const TripCreation = () => {
                     />
                     <Tooltip
                       title="Cuánto estas dispuesto a desviarte? (metros)"
-                      placement="right"
+                      placement="top"
                     >
                       <HelpOutline />
                     </Tooltip>

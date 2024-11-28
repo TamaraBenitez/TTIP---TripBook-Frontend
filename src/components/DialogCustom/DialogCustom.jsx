@@ -19,6 +19,7 @@ const DialogCustom = ({
   handleConfirm,
   confirmButton,
   showCancelButton,
+  dialogContent,
 }) => {
   return (
     <>
@@ -38,15 +39,19 @@ const DialogCustom = ({
       >
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            {textParagraph}
-          </DialogContentText>
+          {dialogContent ? (
+            dialogContent
+          ) : (
+            <DialogContentText id="alert-dialog-slide-description">
+              {textParagraph}
+            </DialogContentText>
+          )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ paddingBlock: 3 }}>
           {confirmButton ? (
             confirmButton
           ) : (
-            <Button onClick={handleConfirm}>Confirmar</Button>
+            <Button onClick={handleConfirm} color="primary" variant="contained">Confirmar</Button>
           )}
           {showCancelButton && <Button onClick={handleClose}>Cancelar</Button>}
         </DialogActions>

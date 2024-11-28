@@ -44,7 +44,7 @@ export default function Trips(props) {
         container
         columnGap={4}
         padding={10}
-        rowGap={6}
+        rowGap={12}
         sx={{
           display: "flex",
           justifyContent: "center",
@@ -67,6 +67,7 @@ export default function Trips(props) {
             }}
           >
             <TripCard
+              key={trip.tripUserId}
               to={trip.id}
               description={trip.description}
               startDate={trip.startDate}
@@ -84,7 +85,6 @@ export default function Trips(props) {
             />
           </Box>
         ))}
-        {/* Ícono "+" */}
         {currentPage === totalPages || currentTrips.length < itemsPerPage ? (
           <Box
             sx={{

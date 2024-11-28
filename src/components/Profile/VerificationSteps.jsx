@@ -17,12 +17,21 @@ import {
   Select,
   MenuItem,
   FormControl,
+  Tooltip,
+  FormHelperText,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useUser } from "../../user/UserContext";
 import StoreContext from "../../store/storecontext";
-import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import {
+  CheckCircleOutline,
+  CloudUpload,
+  ErrorOutline,
+  HelpOutline,
+} from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
+import tramiteHelp from "/images/nroTramite.png";
+import barcode from "/images/barcode.png";
 
 const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const { user, setUser } = useUser();
@@ -40,7 +49,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const [verifiedDni, setVerifiedDni] = useState(user.isUserVerified);
   const [showBarcodeError, setShowBarcodeError] = useState(false);
   const [barcodeError, setBarcodeError] = useState("");
-
+  const [fileMessage, setFileMessage] = useState("")
   useEffect(() => {
     if (!user.isEmailVerified) {
       const interval = setInterval(async () => {
@@ -116,7 +125,15 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   };
 
   const handleUploadPhoto = (event) => {
+
     setPhoto(event.target.files[0]);
+                  if (event.target.files.length > 0) {
+                    setFileMessage(`Archivo subido: ${event.target.files[0].name}`);
+                  } else {
+                    setFileMessage("");
+                  }
+                
+    
   };
   const handleClose = () => {
     if (user.isEmailVerified && user.isUserVerified) {
@@ -130,10 +147,12 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
 
   const verifyDniData = (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append("userId", user.id);
-    formDataToSend.append("file", photo);
-    store.services.authService
+    if(photo){
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("userId", user.id);
+      formDataToSend.append("file", photo);
+      store.services.authService
       .verifyDNI(formDataToSend)
       .then(() => {
         setVerifiedDni(true);
@@ -145,6 +164,13 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
           setShowBarcodeError(false);
         }, 5000);
       });
+    } else { 
+      setBarcodeError("Por favor, sube una foto del codigo de barras de tu DNI");
+      setShowBarcodeError(true);
+      setTimeout(() => {
+        setShowBarcodeError(false)
+      }, 5000);
+    }
   };
   const isEmailAccordionGreen = user.isEmailVerified
     ? "success"
@@ -234,7 +260,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                 </Stepper>
                 {step === 0 && (
                   <>
-                    <Box mb={2}>
+                    <Box mb={2} display={"flex"} alignItems={"center"}>
                       {" "}
                       <TextField
                         label="DNI"
@@ -244,8 +270,14 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                         error={!!dniError}
                         helperText={dniError}
                       />
+                      <Tooltip
+                        title="Numero de DNI, sin puntos"
+                        placement="right"
+                      >
+                        <HelpOutline fontSize="large" color="action" />
+                      </Tooltip>
                     </Box>
-                    <Box mb={2}>
+                    <Box mb={2} display={"flex"} alignItems={"center"}>
                       <TextField
                         label="Tramite"
                         value={tramite}
@@ -254,7 +286,19 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                         error={!!tramiteError}
                         helperText={tramiteError}
                       />
+                      <Tooltip
+                        title={
+                          <img
+                            src={tramiteHelp}
+                            style={{ width: "-webkit-fill-available" }}
+                          />
+                        }
+                        placement="right"
+                      >
+                        <HelpOutline fontSize="large" color="action" />
+                      </Tooltip>
                     </Box>
+
                     <Box mb={2}>
                       <FormControl fullWidth>
                         <Select
@@ -282,12 +326,38 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
                 )}
                 {step === 1 && (
                   <>
-                    <Box mb={2}>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleUploadPhoto}
-                      />
+                    <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent:"center", mt: 2, mb:4, }}>
+                      <Box sx={{display:"flex", flexDirection: "column"}}>
+                      
+                      <Button
+                        className="boton"                     
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        startIcon={<CloudUpload />}
+                        tabIndex={-1}
+                      >
+                        Subir foto
+                        <TextField
+                          type="file"
+                          sx={{ display: "none" }}
+                          onChange={handleUploadPhoto}
+                          multiple
+                        />
+                      </Button>
+                      <FormHelperText>{fileMessage}</FormHelperText>
+                      </Box>
+                      <Tooltip
+                        title={
+                          <img
+                            src={barcode}
+                            style={{ width: "-webkit-fill-available" }}
+                          />
+                        }
+                        placement="right"
+                      >
+                        <HelpOutline fontSize="large" color="action" />
+                      </Tooltip>
                     </Box>
                     <Button variant="contained" onClick={verifyDniData}>
                       Enviar
