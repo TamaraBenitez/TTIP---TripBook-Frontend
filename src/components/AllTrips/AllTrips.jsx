@@ -72,11 +72,7 @@ export default function AllTrips() {
       });
   };
 
-  const suscribeButton = (
-    <Button onClick={() => navigate(`/trip/suscribe/${tripToSuscribe}`)}>
-      Confirmar
-    </Button>
-  );
+  const suscribeButton = <Button variant="contained" onClick={()=>navigate(`/trip/suscribe/${tripToSuscribe}`)}>confirmar</Button>;
 
   const [modalConfirmBtn, setModalConfirmBtn] = useState(suscribeButton);
 

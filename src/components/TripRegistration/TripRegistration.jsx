@@ -2,10 +2,21 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import StoreContext from "../../store/storecontext";
 import { useUser } from "../../user/UserContext";
-import { Box, Button, CircularProgress, Grid2, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid2,
+  Typography,
+} from "@mui/material";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
-import { mapTripCoordinates, reverseGeocode, sortedCoords, sortedCoordsWithNewPoint } from "../../utility/Utility";
+import {
+  mapTripCoordinates,
+  reverseGeocode,
+  sortedCoords,
+  sortedCoordsWithNewPoint,
+} from "../../utility/Utility";
 import MapWithGeocoding from "../MapComponent/MapWithGeocoding";
 import L from "leaflet";
 
@@ -20,10 +31,10 @@ export default function TripRegistration() {
   const [modalTitle, setModalTitle] = useState("Propuesta enviada");
   const [modalMsg, setModalMsg] = useState("Hemos notificado al conductor.");
   const [route, setRoute] = useState([]);
-  const [isPointInRange, setIsPointInRange] = useState(true);
+  const [isPointInRange, setIsPointInRange] = useState(null);
   const [calculating, setCalculating] = useState(false);
   const [routeCalculated, setRouteCalculated] = useState(false);
-  const [mapInstance, setMapInstance] = useState(null)
+  const [mapInstance, setMapInstance] = useState(null);
   const navigate = useNavigate();
   const proposeNewRoute = (pickPoint) => {
     let requestBody = {
@@ -49,38 +60,42 @@ export default function TripRegistration() {
     setCalculating(true);
 
     const [startPoint, ...tail] = route;
-    const updatedCoords = sortedCoordsWithNewPoint(startPoint, tail, mapInstance,  pickPoint);
+    const updatedCoords = sortedCoordsWithNewPoint(
+      startPoint,
+      tail,
+      mapInstance,
+      pickPoint
+    );
     setRoute(updatedCoords);
+    setRouteCalculated(true)
   };
-  const reverseRouteGeocode = (routeParam) =>{
-    let geocoder = L.Control.Geocoder.nominatim();;
-    var geocoded=[];
-    routeParam.forEach((coord,i)=>{
-      return reverseGeocode(geocoder,coord[0],coord[1],
-        (result)=>{
-          geocoded.push(result);
-          if(i == (routeParam.length-1)){
-            setRoute(geocoded);
-            setLoading(false);
-          }
-      })
-    })
-  }
+  const reverseRouteGeocode = (routeParam) => {
+    let geocoder = L.Control.Geocoder.nominatim();
+    var geocoded = [];
+    routeParam.forEach((coord, i) => {
+      return reverseGeocode(geocoder, coord[0], coord[1], (result) => {
+        geocoded.push(result);
+        if (i == routeParam.length - 1) {
+          setRoute(geocoded);
+          setLoading(false);
+        }
+      });
+    });
+  };
 
   const editPoint = () => {
-    const filteredRoute = route.filter((point)=>point.coords !== pickPoint.coords); 
+    const filteredRoute = route.filter(
+      (point) => point.coords !== pickPoint.coords
+    );
     setRoute(filteredRoute);
     setPickPoint({ address: "", coords: [] });
+    setIsPointInRange(null);
     setRouteCalculated(false);
   };
 
-  const disableCalculate = () =>{
-    if(routeCalculated){
-      return !isPointInRange 
-    } else {
-     return !pickPoint.coords.length  
-    } 
-  }
+  const enableCalculate = () => {
+    return !calculating && pickPoint.coords.length > 0 && isPointInRange;
+  };
   useEffect(() => {
     if (!trip.tripCoordinates && !userDataLoading) {
       store.services.tripService
@@ -92,7 +107,7 @@ export default function TripRegistration() {
           let coordinates = mapTripCoordinates(
             res.data.tripCoordinates.filter((coord) => !coord.isStart)
           );
-          
+
           let orderedRoute = sortedCoords(
             [startPoint.latitude, startPoint.longitude],
             coordinates
@@ -125,9 +140,21 @@ export default function TripRegistration() {
         <Box sx={{ display: "flex", justifyContent: "center", height: "100%" }}>
           <CircularProgress />
         </Box>
-      ) : 
-        !loading && 
-        (
+      ) : loading ? (
+        <Box
+          sx={{
+            mt: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress sx={{ mb: 3 }} />
+          <Typography variant="h5" color="primary" fontWeight="bold">
+            Cargando Mapa
+          </Typography>
+        </Box>
+      ) : (
         <Grid2 container size={12} spacing={2} padding={8}>
           <MapWithGeocoding
             isRegistering={true}
@@ -142,9 +169,9 @@ export default function TripRegistration() {
             isPointInRange={isPointInRange}
             setIsPointInRange={setIsPointInRange}
             routeCalculated={routeCalculated}
-            setRouteCalculated={setRouteCalculated}
             route={route}
             setMapInstanceProp={setMapInstance}
+            setCalculating={setCalculating}
           />
 
           <Box
@@ -162,24 +189,27 @@ export default function TripRegistration() {
             <Button
               variant="contained"
               onClick={
-                routeCalculated
+                pickPoint.coords.length > 0 && routeCalculated
                   ? () => proposeNewRoute(pickPoint.coords)
                   : calculateNewRoute
               }
-              disabled={disableCalculate()}
+              disabled={!enableCalculate()}
             >
               {routeCalculated ? "Proponer" : "Calcular"} Ruta
             </Button>
           </Box>
 
-          {!isPointInRange && (
+          {isPointInRange == false && ( //Equal false because when is null it shouldn't render
+            <Box sx={{display:"flex", justifyContent:"center", width:"100%"}}>
+            
             <Typography
-              variant="body2"
-              color="error"
-              sx={{ textAlign: "center", marginTop: 2 }}
+            variant="body2"
+            color="error"
+            sx={{ textAlign: "center", marginTop: 2}}
             >
-              El punto está fuera de la distancia máxima tolerable.
+            El punto está fuera de la distancia máxima tolerable.
             </Typography>
+              </Box>
           )}
         </Grid2>
       )}

@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, IconButton, useTheme, Pagination, Grid2 } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  useTheme,
+  Pagination,
+  Grid2,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import TripCard from "./TripCard";
 import { AddOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +16,8 @@ export default function Trips(props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [itemsPerPage, setItemsPerPage] = useState(6); // Valor por defecto: 6
+  const [selectedItems, setSelectedItems] = useState(false); // Controla si el usuario seleccionó una opción
 
   const totalPages = Math.ceil(props.trips.length / itemsPerPage);
 
@@ -21,14 +30,21 @@ export default function Trips(props) {
     setCurrentPage(page);
   };
 
+  const handleItemsPerPageChange = (event) => {
+    const value = event.target.value;
+    setSelectedItems(true); // Marca que el usuario seleccionó algo
+    setItemsPerPage(value); // Actualiza la cantidad de elementos por página
+    setCurrentPage(1); // Reinicia a la primera página
+  };
+
   return (
-    <Box sx={{paddingBottom:4, maxWidth:"80vw"}}>
+    <Box sx={{ paddingBottom: 4, maxWidth: "80vw" }}>
       <Grid2
         className="tripsContainer"
-        container 
+        container
         columnGap={4}
         padding={10}
-        rowGap={6}
+        rowGap={12}
         sx={{
           display: "flex",
           justifyContent: "center",
@@ -65,10 +81,11 @@ export default function Trips(props) {
               handleAction={props.handleAction}
               role={props.role}
               tripUserId={trip.tripUserId}
+              imageUrl={trip.imageUrl}
             />
           </Box>
         ))}
-        {currentPage === totalPages && (
+        {currentPage === totalPages || currentTrips.length < itemsPerPage ? (
           <Box
             sx={{
               width: 345,
@@ -93,15 +110,51 @@ export default function Trips(props) {
               <AddOutlined sx={{ fontSize: "-webkit-xxx-large" }} />
             </IconButton>
           </Box>
-        )}
+        ) : null}
       </Grid2>
-      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
-        />
+
+      {/* Contenedor para la paginación con el select a la derecha */}
+      <Box sx={{ position: "relative", marginTop: 1 }}>
+        {" "}
+        {/* Ajuste margen superior */}
+        {/* Paginación centrada */}
+        <Box
+          sx={{ display: "flex", justifyContent: "center", marginBottom: 0 }}
+        >
+          {" "}
+          {/* Menor espacio con el ícono "+" */}
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Box>
+        {/* Select alineado a la derecha */}
+        <Box sx={{ position: "absolute", top: 0, right: 0 }}>
+          <Select
+            value={selectedItems ? itemsPerPage : ""}
+            onChange={handleItemsPerPageChange}
+            displayEmpty
+            sx={{
+              minWidth: 100, // Más pequeño
+              fontSize: "0.85rem", // Texto más pequeño
+              marginTop: "-10px", // Movido hacia arriba
+            }}
+            renderValue={(value) =>
+              value ? `${value} por página` : "Seleccionar"
+            }
+          >
+            <MenuItem disabled value="">
+              Seleccionar
+            </MenuItem>
+            {[2, 5, 6, 10, 15].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option} por página
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
       </Box>
     </Box>
   );

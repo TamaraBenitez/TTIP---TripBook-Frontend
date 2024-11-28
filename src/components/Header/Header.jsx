@@ -75,7 +75,7 @@ export default function Header() {
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <SvgIcon sx={{ fill: "white" }}>
+          <SvgIcon sx={{ fill: "white", display: { xs: "none", md: "flex" } }}>
             <image href={Compass} height="100%" />
           </SvgIcon>
           <Typography
@@ -136,7 +136,9 @@ export default function Header() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+          <SvgIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1, fill:"white" }}>
+            <image href={Compass} height="100%" />
+          </SvgIcon>
           <Typography
             variant="h5"
             noWrap
@@ -148,12 +150,11 @@ export default function Header() {
               flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            LOGO
+            TripBook
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (

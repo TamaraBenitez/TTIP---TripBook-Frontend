@@ -15,19 +15,14 @@ const RoutingMachineGeocoder = ({
   points,
   setRoute,
   setCoordToAdd,
-  setRouteCalculated,
   setCalculating,
   manualCalculation,
   isRegistering,
   setRoutingMachineCalulatedCoordinates,
   userPickPoint,
 }) => {
-  const [calculatedRoute, setCalculatedRoute] = useState([]);
 
   useEffect(() => {
-    if(setCalculating){
-      setCalculating(true);
-    }
     var geocoder;
     if(!isRegistering){
        geocoder = L.Control.geocoder({
@@ -99,12 +94,15 @@ const RoutingMachineGeocoder = ({
               mapInstance._userInteracted = true;
             });
           } else {
+            const disclaimerText = L.DomUtil.create("p", "", container);
             const adrdressText = L.DomUtil.create("p", "", container);
             adrdressText.innerHTML = address;
-            if (isRegistering) {
-              const disclaimerText = L.DomUtil.create("p", "", container);
+            
+            if (!isRegistering) {
               disclaimerText.innerHTML =
                 "Para cambiar este punto haz click en 'EDITAR VIAJE'";
+            } else {
+              disclaimerText.innerHTML = `Punto de ${i == 0 ? "partida" : "llegada"}`
             }
             marker = staticMarker;
           }
@@ -162,9 +160,6 @@ const RoutingMachineGeocoder = ({
                 const sorted = sortedCoords(start, tail);
                 setRoute(sorted);
                 setCalculating(false);
-                if (manualCalculation) {
-                  setRouteCalculated(true);
-                }
               }
             },
             true
@@ -199,11 +194,6 @@ const RoutingMachineGeocoder = ({
       });
     }
   }, [points]);
-  useEffect(() => {
-    if (calculatedRoute.length) {
-      setRoute(calculatedRoute);
-    }
-  }, [calculatedRoute]);
   return null;
 };
 

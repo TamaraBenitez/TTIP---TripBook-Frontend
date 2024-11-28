@@ -20,6 +20,7 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import { TaskAlt } from "@mui/icons-material";
 import PropTypes from "prop-types";
+import defaultImage from "../../assets/tripImage.png";
 
 function mapStatusToSpanish(status) {
   const statusMap = {
@@ -45,6 +46,7 @@ export default function TripCard({
   status,
   role,
   tripUserId,
+  imageUrl,
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const store = useContext(StoreContext);
@@ -67,7 +69,7 @@ export default function TripCard({
         setShowAlert(true);
       })
       .finally(() => {
-        setOpenDialog(false); // Cerrar el diálogo
+        setOpenDialog(false);
       });
   };
 
@@ -114,8 +116,8 @@ export default function TripCard({
       >
         <CardActionArea component={NavLink} to={`/trips/${to}`}>
           <CardMedia
-            sx={{ height: 140, position: "relative" }}
-            image={`/images/${cleanString(destination)}.jpg`}
+            sx={{ height: 190, position: "relative" }}
+            image={imageUrl ?? defaultImage}
             title="road"
           >
             {isHovered && (
@@ -251,4 +253,5 @@ TripCard.propTypes = {
   status: PropTypes.string,
   role: PropTypes.string,
   tripUserId: PropTypes.string,
+  imageUrl: PropTypes.string,
 };

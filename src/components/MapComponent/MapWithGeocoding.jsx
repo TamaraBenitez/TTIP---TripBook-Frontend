@@ -15,7 +15,6 @@ import {
   Grid2,
 } from "@mui/material";
 import greenMarker from "../../assets/greenLocation.svg";
-import defaultMarker from "../../assets/defaultmarker.svg";
 import MyLocation from "@mui/icons-material/MyLocation";
 import MapClickHandler from "./MapClickHandler";
 import MapHelper from "./MapHelper";
@@ -38,14 +37,13 @@ const MapWithGeocoding = ({
   isPointInRange = null,
   setIsPointInRange = ()=>{},
   routeCalculated = null,
-  setRouteCalculated = ()=>{},
+  setCalculating = ()=>{},
   setMapInstanceProp
 }) => {
   const { address, coords, setPoint } = point;
   const [mapInstance, setMapInstance] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [calculating, setCalculating] = useState(false);
   const [routingMachineCalulatedCoordinates, setRoutingMachineCalulatedCoordinates] = useState([]);
   
   const suggestionsRef = useRef(null);
@@ -295,8 +293,7 @@ const MapWithGeocoding = ({
                 points={route}
                 setRoute={setRoute}
                 setCalculating={setCalculating}
-                setRouteCalculated={setRouteCalculated}
-                manualCalculation={calculating}
+                manualCalculation={true}
                 setCoordToAdd={setPoint}
                 isRegistering={isRegistering}
                 setRoutingMachineCalulatedCoordinates={setRoutingMachineCalulatedCoordinates}

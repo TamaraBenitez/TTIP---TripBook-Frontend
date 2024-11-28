@@ -17,12 +17,12 @@ import {
   Paper,
 } from "@mui/material";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import {
   CloudUpload,
   HelpOutline,
   SwapVert as SwapVertIcon,
 } from "@mui/icons-material";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import licenseHelp from "/images/licenseHelp.png";
 import StoreContext from "../../store/storecontext";
@@ -38,6 +38,7 @@ import { ThemeContext } from "@emotion/react";
 import "./TripCreation.css"
 import MapWithGeocoding from "../MapComponent/MapWithGeocoding";
 import "./TripCreation.css";
+import ImageSelectionStep from "./ImageTrip";
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [departureDate, setDepartureDate] = useState(dayjs());
@@ -54,7 +55,7 @@ const TripCreation = () => {
   const [verifyingLicense, setVerifyingLicense] = useState(false);
   const [stepValid, setStepValid] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [photo, setPhoto] = useState();
+  const [licensePhoto, setLicensePhoto] = useState();
   const [tripConfirmed, setTripConfirmed] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const store = useContext(StoreContext);
@@ -64,7 +65,9 @@ const TripCreation = () => {
   const [isErrorTrip, setIsErrorTrip] = useState(false);
   const [route, setRoute] = useState([departure, destination]);
   const theme = useContext(ThemeContext);
+  const [tripPhoto, setTripPhoto] = useState(null);
 
+  dayjs.extend(utc);
   //Prevent user from leaving
   let blocker = useBlocker(({ currentLocation, nextLocation }) => {
     return (
@@ -74,20 +77,15 @@ const TripCreation = () => {
     );
   });
 
-  // Handle map clicks to set departure point
-  const handleMapClick = (handleNewMarker) => {
-    return <MapClickHandler handleNewMarker={handleNewMarker} />;
-  };
   const handleChangeDate = (newDate) => {
     setDepartureDate(newDate);
   };
 
-  const handleUploadPhoto = (event) => {
-    setPhoto(event.target.files[0]);
+  const handleUploadLicensePhoto = (event) => {
+    setLicensePhoto(event.target.files[0]);
     setLicenseError(null);
   };
 
-  // Function to handle step validation
   const validateStep = () => {
     switch (activeStep) {
       case 0:
@@ -99,32 +97,30 @@ const TripCreation = () => {
         );
         break;
       case 2:
-        const sameCoords =
-          destinationCoords[0] == departureCoords[0] &&
-          destinationCoords[1] == departureCoords[1];
-        setStepValid(
-          destination.length > 0 && destinationCoords !== null && !sameCoords
-        );
+        const sameCoords = destination.coords[0] == departure.coords[0] && destination.coords[1] == departure.coords[1]; 
+        setStepValid(destination.address.length > 0 && destination.coords !== null && !sameCoords);
         break;
       case 3:
         setStepValid(seats > 0 && estimatedCost && estimatedCost >= 0);
         break;
       case 4:
-        setStepValid(photo !== undefined);
+        setStepValid((tripPhoto !== null) && tripPhoto.path);
+        break;
+      case 5:
+        setStepValid(licensePhoto !== undefined);
         break;
       default:
         setStepValid(true);
     }
   };
 
-  // Function to handle step navigation
   const handleNext = () => {
-    if (activeStep === 4) {
+    if (activeStep === 5) {
       setVerifyingLicense(true);
       setLicenseError(null);
       const formDataToSend = new FormData();
       formDataToSend.append("userId", user.id);
-      formDataToSend.append("file", photo);
+      formDataToSend.append("file", licensePhoto);
       store.services.authService
         .verifyLicense(formDataToSend)
         .then((response) => {
@@ -156,20 +152,27 @@ const TripCreation = () => {
 
   const createTrip = async () => {
     setTripConfirmed(true);
+    let mappedC =  route.map((coord) => {
+      return { latitude: coord[0], longitude: coord[1] };
+    })
+    const formDataToSend = new FormData();
+    formDataToSend.append("coordinates",JSON.stringify(mappedC));
+    formDataToSend.append("startDate", dayjs.utc(departureDate).toISOString());
+    formDataToSend.append("description", notes);
+    formDataToSend.append("maxPassengers", seats);
+    formDataToSend.append("estimatedCost", estimatedCost);
+    formDataToSend.append("origin", departure.address);
+    formDataToSend.append("destination", destination.address);
+    formDataToSend.append("userId", user.id);
+    formDataToSend.append("maxTolerableDistance",maxTolerableDistance);
+    if(tripPhoto.file){
+      formDataToSend.append("image", tripPhoto.file);
+    } else {
+      formDataToSend.append("imageUrl", tripPhoto.path);
+    }
     try {
-      await store.services.tripService.CreateTrip({
-        coordinates:route.map((point) =>{return {latitude:point.coords[0], longitude:point.coords[1]}}),
-        startDate: departureDate,
-        description: notes,
-        maxPassengers: parseInt(seats),
-        estimatedCost: parseInt(estimatedCost),
-        origin: departure.address,
-        destination: destination.address,
-        userId: user.id,
-        maxTolerableDistance: parseInt(maxTolerableDistance),
-      });
-
-      setShowSuccessModal(true); // Mostrar modal de éxito
+      await store.services.tripService.CreateTrip(formDataToSend);
+      setShowSuccessModal(true);
     } catch (error) {
       setIsErrorTrip(true);
       console.error("Error al crear el viaje:", error);
@@ -191,10 +194,11 @@ const TripCreation = () => {
     "Elija la fecha de salida",
     "Elija el punto de destino",
     "Establecer asientos y notas",
+    "Elija una foto",
     "Verificar licencia de conducir",
   ];
   useEffect(() => {
-    validateStep(); // Run validation when any relevant state changes
+    validateStep()
   }, [
     activeStep,
     departure,
@@ -202,7 +206,8 @@ const TripCreation = () => {
     destination,
     seats,
     estimatedCost,
-    photo,
+    licensePhoto,
+    tripPhoto
   ]);
   useEffect(() => {
     let newRoute = route;
@@ -337,7 +342,7 @@ const TripCreation = () => {
                     />
                     <Tooltip
                       title="Cuánto estas dispuesto a desviarte? (metros)"
-                      placement="right"
+                      placement="top"
                     >
                       <HelpOutline />
                     </Tooltip>
@@ -359,6 +364,20 @@ const TripCreation = () => {
           )}
 
           {activeStep === 4 && (
+            <Box
+              mb={2}
+              textAlign="center"
+              justifyContent={"center"}
+              padding={10}
+              display={"flex"}
+              flexDirection={"column"}
+            >
+              <>
+                <ImageSelectionStep setTripPhoto={setTripPhoto} />
+              </>
+            </Box>
+          )}
+          {activeStep === 5 && (
             <Box
               mb={2}
               textAlign="center"
@@ -424,7 +443,7 @@ const TripCreation = () => {
                           type="file"
                           sx={{ display: "none" }}
                           onChange={(e) => {
-                            handleUploadPhoto(e);
+                            handleUploadLicensePhoto(e);
                             if (e.target.files.length > 0) {
                               setFileMessage(
                                 `Archivo seleccionado: ${e.target.files[0].name}`
@@ -493,7 +512,6 @@ const TripCreation = () => {
           </Box>
         </Box>
       ) : (
-        // </Box>
         <Grid2
           container
           size={12}
@@ -548,6 +566,9 @@ const TripCreation = () => {
               <Typography variant="h4">
                 <strong>Notas:</strong> {notes || "No hay notas adicionales"}
               </Typography>
+              <Typography variant="h4">
+                <strong>Imagen:</strong> {tripPhoto.path.replace(/^.*[\\/]/, "")}
+              </Typography>
 
               <Box sx={{ mt: 2 }}>
                 <Button
@@ -585,12 +606,7 @@ const TripCreation = () => {
                   minWidth: 267,
                 }}
               >
-                <CustomRouteMap
-                  startCoord={departureCoords}
-                  endCoord={destinationCoords}
-                  route={route}
-                  setRoute={setRoute}
-                />
+                 {route && <CustomRouteMap startCoord={departure.coords} route={route} setRoute={setRoute}/>} 
               </Box>
             </div>
           </Grid2>

@@ -292,7 +292,7 @@ const Register = () => {
                 onChange={(e) => {
                   setFormData({ ...formData, dniFile: e.target.files[0] });
                   if (e.target.files.length > 0) {
-                    setFileMessage(`Selected file: ${e.target.files[0].name}`);
+                    setFileMessage(`Archivo subido: ${e.target.files[0].name}`);
                   } else {
                     setFileMessage("");
                   }
