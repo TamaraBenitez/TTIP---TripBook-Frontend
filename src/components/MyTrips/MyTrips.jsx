@@ -19,6 +19,7 @@ import Tab from "@mui/material/Tab";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItem";
+import FilterAccordion from "../AllTrips/FilterAccordion";
 
 export default function MyTrips() {
   const [trips, setTrips] = useState([]);
@@ -28,6 +29,13 @@ export default function MyTrips() {
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [pendingPassengers, setPendingPassengers] = useState([]);
+  const [filters, setFilters] = useState({
+    origin: "",
+    destination: "",
+    startDate: "",
+    status: "",
+  });
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -66,6 +74,57 @@ export default function MyTrips() {
     }
   }, [userDataLoading, value]);
 
+  // Función para aplicar filtros
+  const applyFilters = () => {
+    setLoading(true);
+    setFiltersApplied(true);
+    const role = value === 0 ? "passenger" : "driver";
+
+    const filteredFilters = {};
+    for (let key in filters) {
+      if (filters[key]) {
+        // Solo agregar los filtros con valor
+        filteredFilters[key] = filters[key];
+      }
+    }
+
+    store.services.userService
+      .GetMyTrips(user.id, role, filteredFilters)
+      .then((res) => {
+        setTrips(res.data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.error(e);
+        setLoading(false);
+      });
+  };
+
+  const resetFilters = () => {
+    const newFilters = {
+      origin: "",
+      destination: "",
+      startDate: "",
+      status: "",
+    };
+    setFilters(newFilters);
+    setLoading(true);
+    setFiltersApplied(false);
+
+    const role = value === 0 ? "passenger" : "driver";
+
+    store.services.userService
+      .GetMyTrips(user.id, role, {})
+      .then((res) => {
+        setTrips(res.data);
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.error(e);
+        setLoading(false);
+      });
+  };
+
   const redirectToTrip = (e, to) => {
     navigate(`/trips/${to}`);
   };
@@ -99,6 +158,16 @@ export default function MyTrips() {
       >
         <RibbonHeading heading={"Mis Viajes"} component="h2" variant="h2" />
 
+        {value != 2 && (
+          <FilterAccordion
+            filters={filters}
+            setFilters={setFilters}
+            applyFilters={applyFilters}
+            resetFilters={resetFilters}
+            showStatusFilter
+          />
+        )}
+
         <Box
           sx={{
             borderBottom: 1,
@@ -126,18 +195,31 @@ export default function MyTrips() {
           <>
             <TabPanel value={value} index={0}>
               {trips.length === 0 ? (
-                <EmptyMessage message="Aún no tienes viajes como pasajero." />
+                filtersApplied ? (
+                  <EmptyMessage message="No se encontraron viajes con los filtros aplicados." />
+                ) : (
+                  <EmptyMessage
+                    message={`Aún no tienes viajes como pasajero.`}
+                  />
+                )
               ) : (
                 <Trips
                   trips={trips}
                   action={"detalles"}
                   handleAction={redirectToTrip}
+                  role={value}
                 />
               )}
             </TabPanel>
             <TabPanel value={value} index={1}>
               {trips.length === 0 ? (
-                <EmptyMessage message="Aún no tienes viajes como conductor." />
+                filtersApplied ? (
+                  <EmptyMessage message="No se encontraron viajes con los filtros aplicados." />
+                ) : (
+                  <EmptyMessage
+                    message={`Aún no tienes viajes como conductor.`}
+                  />
+                )
               ) : (
                 <Trips
                   trips={trips}

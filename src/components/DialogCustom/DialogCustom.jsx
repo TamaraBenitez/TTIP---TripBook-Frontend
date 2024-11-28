@@ -30,6 +30,12 @@ const DialogCustom = ({
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
+        sx={{
+          "& .MuiDialog-paper": {
+            padding: "10px",
+            boxShadow: `0px 4px 10px 2px rgba(34, 102, 104, 0.5)`,
+          },
+        }}
       >
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>

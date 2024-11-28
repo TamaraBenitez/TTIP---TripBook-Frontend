@@ -25,7 +25,11 @@ import {
   TaskAlt,
 } from "@mui/icons-material";
 import DialogCustom from "../DialogCustom/DialogCustom";
-import { formatDate, mapTripCoordinates, sortedCoords } from "../../utility/Utility";
+import {
+  formatDate,
+  mapTripCoordinates,
+  sortedCoords,
+} from "../../utility/Utility";
 import MapComponent from "../MapComponent/MapComponent";
 import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
@@ -69,13 +73,22 @@ export default function TripDetails({
   };
   const setTripDetails = (res) => {
     let startPoint = res.data.tripCoordinates.find((point) => {
-      return point.isStart});
-    let route = mapTripCoordinates(res.data.tripCoordinates.filter((coord)=>!coord.isStart));
+      return point.isStart;
+    });
+    let route = mapTripCoordinates(
+      res.data.tripCoordinates.filter((coord) => !coord.isStart)
+    );
     //if it's a pending solicitude view, include the requester marker on map
-    if(pendingSolicitudes){
-      route.push([res.data.requesterCoordinates[0].latitude,res.data.requesterCoordinates[0].longitude])
+    if (pendingSolicitudes) {
+      route.push([
+        res.data.requesterCoordinates[0].latitude,
+        res.data.requesterCoordinates[0].longitude,
+      ]);
     }
-    let orderedRoute = sortedCoords([startPoint.latitude, startPoint.longitude], route);
+    let orderedRoute = sortedCoords(
+      [startPoint.latitude, startPoint.longitude],
+      route
+    );
     res.data.tripCoordinates = orderedRoute;
     setTrip(res.data);
     if (!pendingSolicitudes) {
@@ -91,13 +104,15 @@ export default function TripDetails({
   };
 
   const getCoordinates = () => {
-      return trip.tripCoordinates;
-    
+    return trip.tripCoordinates;
   };
 
   const getUserMarker = () => {
     if (pendingSolicitudes) {
-      return [trip.requesterCoordinates[0].latitude, trip.requesterCoordinates[0].longitude];
+      return [
+        trip.requesterCoordinates[0].latitude,
+        trip.requesterCoordinates[0].longitude,
+      ];
     } else return null;
   };
 

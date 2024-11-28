@@ -4,9 +4,10 @@ class TripService extends BaseService {
     super(axios, apiUrl);
   }
 
-  GetAllTrips() {
+  GetAllTrips(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
     return this.axios({
-      url: `${this.baseUrl}/trip`,
+      url: `${this.baseUrl}/trip?${params}`,
       method: "GET",
       headers: this.config.headers,
     });
@@ -49,6 +50,14 @@ class TripService extends BaseService {
   AcceptRequest(tripUserId) {
     return this.axios({
       url: `${this.baseUrl}/tripUser/acceptRequest/${tripUserId}`,
+      method: "POST",
+      headers: this.config.headers,
+    });
+  }
+
+  CancelRequest(tripUserId) {
+    return this.axios({
+      url: `${this.baseUrl}/tripUser/cancelRequest/${tripUserId}`,
       method: "POST",
       headers: this.config.headers,
     });
