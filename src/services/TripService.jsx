@@ -67,7 +67,7 @@ class TripService extends BaseService {
     return this.axios({
       url: `${this.baseUrl}/trip`,
       method: "POST",
-      headers: this.config.headers,
+      headers: {...this.config.headers, 'Content-Type': 'multipart/form-data'},
       data: tripData,
     });
   }
@@ -75,6 +75,14 @@ class TripService extends BaseService {
   GetRequest(tripUserId, tripId) {
     return this.axios({
       url: `${this.baseUrl}/tripUser/requestDetails/${tripUserId}/${tripId}`,
+      method: "GET",
+      headers: this.config.headers,
+    });
+  }
+
+  GetImagesUrls() {
+    return this.axios({
+      url: `${this.baseUrl}/trip/imagesUrls`,
       method: "GET",
       headers: this.config.headers,
     });
