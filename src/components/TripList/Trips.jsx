@@ -42,9 +42,9 @@ export default function Trips(props) {
       <Grid2
         className="tripsContainer"
         container
-        columnGap={4}
+        columnGap={8}
         padding={10}
-        rowGap={6}
+        rowGap={18}
         sx={{
           display: "flex",
           justifyContent: "center",
