@@ -92,7 +92,7 @@ const MapWithGeocoding = ({
               label = result.properties.address.city;
             } else if (result.properties.address.state_district) {
               label = `${result.properties.address.state_district}, ${result.properties.address.state}`;
-            }
+            } else label = result.properties.display_name;
             return {
               address: result.name,
               label: label,
