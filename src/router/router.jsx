@@ -22,56 +22,59 @@ import ToolbarAuth from "../components/Auth/ToolbarAuth";
 import TripRegistration from "../components/TripRegistration/TripRegistration";
 import DriverPendingRequest from "../components/Requests/DriverPendingRequest";
 
-  const routes = [
-    { path: "/home", component: <Home /> },
-    { path: "/trips", component: <AllTrips /> },
-    { path: "/trips/:id", component: <TripDetails /> },
-    { path: "/trip", component: <TripCreation /> },
-    { path: "/mytrips", component: <MyTrips /> },
-    { path: "/verify-email", component: <VerifyEmail /> },
-    { path: "/profile", component: <Profile /> },
-    { path: "/trip", component: <TripCreation /> },
-    { path: "/trip/suscribe/:id", component: <TripRegistration /> },
-    { path: "/request", component: <DriverPendingRequest /> },
-  ];
+const routes = [
+  { path: "/", component: <Home /> },
+  { path: "/home", component: <Home /> },
+  { path: "/trips", component: <AllTrips /> },
+  { path: "/trips/:id", component: <TripDetails /> },
+  { path: "/trip", component: <TripCreation /> },
+  { path: "/mytrips", component: <MyTrips /> },
+  { path: "/verify-email", component: <VerifyEmail /> },
+  { path: "/profile", component: <Profile /> },
+  { path: "/trip", component: <TripCreation /> },
+  { path: "/trip/suscribe/:id", component: <TripRegistration /> },
+  { path: "/request", component: <DriverPendingRequest /> },
+];
 
-  const authRoutes = [
-    { path:"/login", component:<Login />},
-    { path:"/register", component:<Register />}
-  ]
+const authRoutes = [
+  { path: "/login", component: <Login /> },
+  { path: "/register", component: <Register /> },
+];
 
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <>
-        
-        {authRoutes.map(({path, component},i)=>(
-          <Route
-            key={path}
-            path={path}
-            element={
-              <>
-              <ToolbarAuth titleButton={i == 0 ? "Registro" : "Iniciar Sesion"} navigateTo={i == 0 ?  "/register" : "/login"}/>
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      {authRoutes.map(({ path, component }, i) => (
+        <Route
+          key={path}
+          path={path}
+          element={
+            <>
+              <ToolbarAuth
+                titleButton={i == 0 ? "Registro" : "Iniciar Sesion"}
+                navigateTo={i == 0 ? "/register" : "/login"}
+              />
               {component}
-              </>
-            }/>
-        ))}
-        <Route path="/" element={<Home />} />
-          <Route index element={<Navigate to="/home" />} />
-          {routes.map(({ path, component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={<RouteCustom>
-                <Header />
-                <Toolbar sx={{ height: "90px" }} />
-                {component}
-                </RouteCustom>}
-            />
-        ))}
-          
-      </>
-    )
-  );
+            </>
+          }
+        />
+      ))}
 
-  export default router;
+      {routes.map(({ path, component }) => (
+        <Route
+          key={path}
+          path={path}
+          element={
+            <RouteCustom>
+              <Header />
+              <Toolbar sx={{ height: "90px" }} />
+              {component}
+            </RouteCustom>
+          }
+        />
+      ))}
+    </>
+  )
+);
 
+export default router;
