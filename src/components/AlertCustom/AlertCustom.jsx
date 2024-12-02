@@ -11,7 +11,7 @@ export default function AlertCustom({
   severity,
 }) {
   return (
-    <Fade in={inProp} timeout={timeout}>
+    <Fade in={inProp} timeout={{exit:timeout}}>
       <Alert
         sx={{
           maxWidth: 500,

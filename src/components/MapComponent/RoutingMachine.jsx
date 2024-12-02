@@ -8,9 +8,9 @@ const RoutingMachine = ({
   coordinates,
   customCoordinate,
   setRouteCoordinates = () => {},
-  setCalculating = () => {},
-  setRouteCalculated = () => {},
-  manualCalculation = false
+  // setCalculating = () => {},
+  // setRouteCalculated = () => {},
+  // manualCalculation = false
 }) => {
   const map = useMap(); // Get the map instance from react-leaflet
   const [coords, setCoords] = useState(coordinates);
@@ -20,12 +20,12 @@ const RoutingMachine = ({
   }, [coordinates]);
 
   useEffect(() => {
-    setCalculating(true);
+    // setCalculating(true);
     if (coords) {
       const greenIcon = new L.Icon({
         iconUrl: location,
-        iconSize: [45, 75], // Use array format for icon size
-        iconAnchor: [22.5, 75], // Set anchor point at the bottom center
+        iconSize: [45, 75],
+        iconAnchor: [22.5, 75],
         shadowUrl: null,
         shadowAnchor: null,
         className: "start-point-icon",
@@ -34,10 +34,10 @@ const RoutingMachine = ({
       const routingControl = L.Routing.control({
         waypoints: coords.map((coord) => L.latLng(coord[0], coord[1])),
         lineOptions: {
-          styles: [{ color: "blue", weight: 4 }], // Style of the route line
+          styles: [{ color: "blue", weight: 4 }],
         },
         router: L.Routing.osrmv1({
-          serviceUrl: `https://router.project-osrm.org/route/v1`, // OSRM public routing service
+          serviceUrl: `https://router.project-osrm.org/route/v1`,
         }),
         addWaypoints: false,
         draggableWaypoints: false,
@@ -62,22 +62,21 @@ const RoutingMachine = ({
           ]);
           if (setRouteCoordinates) {
             setRouteCoordinates(routeCoords);
-            setCalculating(false);
-            if (manualCalculation) {
-              setRouteCalculated(true);
-            }
+            // setCalculating(false);
+            // if (manualCalculation) {
+            //   setRouteCalculated(true);
+            // }
           }
         })
         .addTo(map);
 
       return () => {
-        // Remove the routing control when the component is unmounted
         map.removeControl(routingControl);
       };
     }
   }, [map, coords, customCoordinate]);
 
-  return null; // This component doesn't render anything itself
+  return null; 
 };
 
 export default RoutingMachine;

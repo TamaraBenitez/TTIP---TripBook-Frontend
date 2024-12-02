@@ -30,7 +30,6 @@ const Home = () => {
   const { user, setUser } = useUser();
   useEffect(() => {
     if (!user) {
-      console.log("SETUSER NULL");
       setUser(undefined);
     }
   }, []);
