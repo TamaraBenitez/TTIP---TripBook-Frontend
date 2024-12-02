@@ -22,10 +22,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
   const [licensePlate, setLicensePlate] = useState("");
   const [color, setColor] = useState();
   const store = useContext(StoreContext);
-  debugger;
   useEffect(() => {
-    debugger;
-    console.log("VehicleCreation: ", showCreateCar)
     if (showCreateCar) {
       fetchVehicleData();
     }

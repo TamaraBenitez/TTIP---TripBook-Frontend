@@ -26,8 +26,6 @@ const Profile = () => {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [vehicles, setVehicles] = useState([]);
-  
-  const [vehicleToAdd, setVehicleToAdd] = useState();
   const [alertMsg, setAlertMsg] = useState("Su cuenta ha sido verificada con exito")
   const { user, userDataLoading } = useUser();
 

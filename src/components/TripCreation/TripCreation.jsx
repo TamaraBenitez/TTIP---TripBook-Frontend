@@ -39,6 +39,7 @@ import "./TripCreation.css"
 import MapWithGeocoding from "../MapComponent/MapWithGeocoding";
 import "./TripCreation.css";
 import ImageSelectionStep from "./ImageTrip";
+import MyVehicles from "../MyVehicles/MyVehicles";
 const TripCreation = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [departureDate, setDepartureDate] = useState(dayjs());
@@ -59,7 +60,7 @@ const TripCreation = () => {
   const [tripConfirmed, setTripConfirmed] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const store = useContext(StoreContext);
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const [errorTrip, setErrorTrip] = useState("");
   const [isErrorTrip, setIsErrorTrip] = useState(false);
@@ -150,10 +151,14 @@ const TripCreation = () => {
 
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
+  const handleAddVehicle = (vehicle) =>{
+    setUser({...user, vehicles: [...user.vehicles, vehicle]})
+  }
+
   const createTrip = async () => {
     setTripConfirmed(true);
     let mappedC =  route.map((coord) => {
-      return { latitude: coord[0], longitude: coord[1] };
+      return { latitude: coord.coords[0], longitude: coord.coords[1] };
     })
     const formDataToSend = new FormData();
     formDataToSend.append("coordinates",JSON.stringify(mappedC));
@@ -470,6 +475,10 @@ const TripCreation = () => {
                   <FormHelperText sx={{ alignSelf: "center" }}>
                     {fileMessage}
                   </FormHelperText>
+                  <Paper>
+                    <Typography variant="h5">En qué vehículo vas a viajar?</Typography>
+                    <MyVehicles vehicles={user.vehicles} onSave={handleAddVehicle} userId={user.id} />
+                  </Paper>
                   {licenseError && (
                     <Alert
                       severity="error"
