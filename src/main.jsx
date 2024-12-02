@@ -16,6 +16,7 @@ import AuthService from "./services/AuthService.jsx";
 import { UserProvider } from "./user/UserContext.jsx";
 import { RouterProvider } from "react-router-dom";
 import router from "./router/router.jsx";
+import VehicleService from "./services/VehicleService.jsx";
 
 const theme = createTheme({
   palette: {
@@ -35,6 +36,7 @@ const store = {
     tripService: new TripService(httpClient, baseUrl),
     userService: new UserService(httpClient, baseUrl),
     authService: new AuthService(httpClient, baseUrl),
+    vehicleService: new VehicleService(httpClient, baseUrl)
   },
 };
 

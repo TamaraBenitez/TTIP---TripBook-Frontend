@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useContext } from "react";
-import StoreContext from "../../store/storecontext";
 import {
   Avatar,
   Box,
   Typography,
-  Grid,
   CircularProgress,
   Tooltip,
   Button,
   Alert,
-  Grid2,
   Paper,
+  Tabs,
+  Tab,
+  Grid2,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -18,17 +18,23 @@ import { useUser } from "../../user/UserContext";
 import VerificationSteps from "./VerificationSteps";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
+import MyVehicles from "../MyVehicles/MyVehicles";
 
 const Profile = () => {
   const [verifyingUser, setVerifyingUser] = useState(false);
-  const { user, setUser, userDataLoading } = useUser();
   const [isAccountVerified, setIsAccountVerified] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const store = useContext(StoreContext);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [vehicles, setVehicles] = useState([]);
+  
+  const [vehicleToAdd, setVehicleToAdd] = useState();
+  const [alertMsg, setAlertMsg] = useState("Su cuenta ha sido verificada con exito")
+  const { user, userDataLoading } = useUser();
 
   useEffect(() => {
     if (!userDataLoading) {
       setIsAccountVerified(user.isUserVerified && user.isEmailVerified);
+      setVehicles(user.vehicles)
     }
   }, [userDataLoading]);
 
@@ -38,11 +44,21 @@ const Profile = () => {
     }
   }, [user]);
 
+
   const getInitials = (name, surname) => {
     return `${name.charAt(0).toUpperCase()}${surname.charAt(0).toUpperCase()}`;
   };
 
   const handleNull = (value) => value || "Sin información aun";
+
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
+  const handleCreateVehicle = (vehicle) =>{
+    setAlertMsg("Vehiculo registrado exitosamente")
+    setShowSuccessAlert(true);
+    setVehicles([...vehicles, vehicle])
+  }
 
   return (
     <>
@@ -60,7 +76,7 @@ const Profile = () => {
             justifyContent: "space-around",
           }}
         >
-          <RibbonHeading variant={"h2"} heading={"Profile"}/>
+          <RibbonHeading variant={"h2"} heading={"Profile"} />
           {!isAccountVerified && (
             <Alert
               variant="outlined"
@@ -81,8 +97,17 @@ const Profile = () => {
               </Button>
             </Alert>
           )}
-          {/* <Box sx={{display:"flex", flexDirection:"row", marginTop:3}}> */}
-          <Paper sx={{mr:5, minWidth:600}}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleTabChange}
+            sx={{ marginBottom: 3 }}
+            aria-label="profile tabs"
+          >
+            <Tab label="Información Personal" />
+            <Tab label="Mis Vehículos" />
+          </Tabs>
+          {tabIndex === 0 && (
+            <Paper sx={{mr:5, minWidth:600}}>
             <Box>
               <Box
                 sx={{
@@ -230,9 +255,19 @@ const Profile = () => {
               </Grid2>
               
             </Box>
-          </Paper>
-         
-          {/* </Box> */}
+            </Paper>
+          )}
+          {tabIndex === 1 && (
+            <Paper sx={{ mr: 5, minWidth: 600, padding: 3 }}>
+               
+                <MyVehicles
+                  vehicles={vehicles}
+                  onSave={(vehicle)=>handleCreateVehicle(vehicle)}
+                  userId={user.id}    
+                />
+              
+            </Paper>
+          )}
         </Box>
       )}
       {verifyingUser && (
@@ -248,7 +283,7 @@ const Profile = () => {
         <AlertCustom
           inProp={showSuccessAlert}
           timeout={500}
-          msg={"Su cuenta ha sido verificada con exito"}
+          msg={alertMsg}
           icon={<CheckCircleIcon />}
           severity={"success"}
         />

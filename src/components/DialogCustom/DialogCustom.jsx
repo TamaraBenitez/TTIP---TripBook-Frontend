@@ -21,6 +21,10 @@ const DialogCustom = ({
   showCancelButton,
   dialogContent,
 }) => {
+  React.useEffect(()=>{
+    debugger;
+    console.log(open)
+  },[open])
   return (
     <>
       {" "}
