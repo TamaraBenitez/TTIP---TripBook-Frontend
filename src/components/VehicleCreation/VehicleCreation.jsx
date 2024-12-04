@@ -12,7 +12,7 @@ import { getCarColors } from "../../utility/Utility";
 
 const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
   const [loading, setLoading] = useState(true);
-  const [vehicleData, setVehicleData] = useState([]);
+  const [vehicleData, setVehicleData] = useState();
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
   const [years, setYears] = useState([]);
@@ -28,108 +28,145 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
     }
   }, [showCreateCar]);
 
+  useEffect(() => {
+    if (vehicleData) {
+      const uniqueMakes = Array.from(
+        new Set(vehicleData.map((record) => record.fields.make))
+      ).map((make) => ({ label: make }));
+      setMakes(uniqueMakes);
+    }
+  }, [vehicleData]);
+
+  useEffect(() => {
+    if (selectedMake) {
+      const uniqueModels = Array.from(
+        new Set(
+          vehicleData
+            .filter((record) => record.fields.make === selectedMake.label)
+            .map((record) => record.fields.model)
+        )
+      ).map((model) => ({ label: model }));
+      setModels(uniqueModels);
+    }
+  }, [selectedMake]);
+
+  useEffect(() => {
+    if (selectedModel) {
+      const sortedYears = Array.from(
+        new Set(
+          vehicleData
+            .filter(
+              (record) =>
+                record.fields.make === selectedMake.label &&
+                record.fields.model === selectedModel.label
+            )
+            .map((record) => record.fields.year)
+        )
+      )
+        .sort((a, b) => b - a)
+        .map((year) => ({ label: year }));
+      setYears(sortedYears);
+    }
+  }, [selectedModel]);
+
   const fetchVehicleData = async () => {
     setLoading(true);
     try {
-      const response  = await store.services.vehicleService.GetVehicleData();
+      const response = await store.services.vehicleService.GetVehicleData();
       const records = response.data.records || [];
 
-      const uniqueMakes = Array.from(
-        new Set(records.map((record) => record.fields.make))
-      ).map((make) => ({ label: make }));
-      setMakes(uniqueMakes);
-
-      setVehicleData(records); 
+      setVehicleData(records);
     } catch (error) {
       console.error("Error fetching vehicle data:", error);
     } finally {
       setLoading(false);
     }
   };
+  const disableBtn = () =>{
+    return loading ||
+    !selectedMake ||
+    !selectedModel ||
+    !licensePlate ||
+    !color
+  }
 
-  const handleMakeChange = (event, value) => {
-    setSelectedMake(value);
-    setSelectedModel(null); 
-    setSelectedYear(null);
-
-    if (value) {
-      const filteredModels = Array.from(
-        new Set(
-          vehicleData
-            .filter((record) => record.fields.make === value.label)
-            .map((record) => record.fields.model)
-        )
-      ).map((model) => ({ label: model }));
-      setModels(filteredModels);
-
-      const filteredYears = Array.from(
-        new Set(
-          vehicleData
-            .filter((record) => record.fields.make === value.label)
-            .map((record) => record.fields.year)
-        )
-      ).map((year) => ({ label: year }));
-      setYears(filteredYears);
-    } else {
-      setModels([]);
-      setYears([]);
-    }
-  };
-
+  const handleMakeChange = (value) =>{
+    setSelectedMake(value)
+  }
   const handleSave = () => {
+    debugger;
     setLoading(true);
     const vehicleData = {
       model: selectedMake.label + " " + selectedModel?.label,
       year: parseInt(selectedYear.label),
       plateNumber: licensePlate,
       color: color.label,
-      ownerId: userId
+      ownerId: userId,
     };
-    // store.services.vehicleService.CreateVehicle(vehicleData)
-    // .then(()=>{
-        onSave(vehicleData);
-        setLoading(false);
-        handleClose();
-      // });
+    store.services.vehicleService.CreateVehicle(vehicleData).then((res) => {
+      onSave(res.data);
+      setLoading(false);
+      handleClose();
+    });
   };
 
   const dialogContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2}}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
       {loading ? (
-        <CircularProgress sx={{alignSelf:"center"}}/>
+        <CircularProgress sx={{ alignSelf: "center" }} />
       ) : (
         <>
           <Autocomplete
             options={makes}
             getOptionLabel={(option) => option.label || ""}
             renderInput={(params) => (
-              <TextField {...params} label="Marca" variant="outlined" />
+              <TextField
+                {...params}
+                label="Marca"
+                variant="outlined"
+              />
             )}
-            value={selectedMake}
-            onChange={handleMakeChange}
-            isOptionEqualToValue={(option, value) => option.label === value.label}
+            
+            onChange={(event, value) => handleMakeChange(value)}
+            onInputChange={(event, value) => handleMakeChange({label:value})}
+            isOptionEqualToValue={(option, value) =>
+              option.label === value.label
+            }
+            freeSolo
           />
           <Autocomplete
             options={models}
             getOptionLabel={(option) => option.label || ""}
             renderInput={(params) => (
-              <TextField {...params} label="Modelo" variant="outlined" />
+              <TextField
+                {...params}
+                label="Modelo"
+                variant="outlined"
+              />
             )}
-            value={selectedModel}
             onChange={(event, value) => setSelectedModel(value)}
-            isOptionEqualToValue={(option, value) => option.label === value.label}
-            disabled={!selectedMake}
+            onInputChange={(event, value) => setSelectedModel({label:value})}
+            isOptionEqualToValue={(option, value) =>
+              option.label === value.label
+            }
+            freeSolo
           />
           <Autocomplete
             options={years}
             getOptionLabel={(option) => option.label || ""}
             renderInput={(params) => (
-              <TextField {...params} label="Año" variant="outlined" />
+              <TextField
+                {...params}
+                label="Año"
+                variant="outlined"
+              />
             )}
-            value={selectedYear}
-            onChange={(event, value) => setSelectedYear(value)}
-            isOptionEqualToValue={(option, value) => option.label === value.label}
-            disabled={!selectedMake}
+            onChange={(event, value) => setSelectedYear(value.label)}
+            onInputChange={(event, value) => setSelectedYear({label:value})}
+            isOptionEqualToValue={(option, value) =>
+              option.label === value.label
+            }
+            freeSolo
           />
           <TextField
             label="Placa"
@@ -144,8 +181,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
               <TextField {...params} label="Color" variant="outlined" />
             )}
             renderOption={(props, option) => (
-              <li {...props} style={{ display: 'flex', alignItems: 'center' }}>
-                {/* Colored square */}
+              <li {...props} style={{ display: "flex", alignItems: "center" }}>
                 <span
                   style={{
                     width: 16,
@@ -153,16 +189,18 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
                     backgroundColor: option?.hex || "white",
                     borderRadius: 2,
                     marginRight: 8,
-                    border: '1px solid #ccc',
+                    border: "1px solid #ccc",
                   }}
                 ></span>
                 {option.label}
               </li>
             )}
-            value={color}
             onChange={(event, value) => setColor(value)}
-            isOptionEqualToValue={(option, value) => option.label === value.label}
-            disabled={!selectedMake}
+            onInputChange={(event, value) => setColor({label:value})}
+            isOptionEqualToValue={(option, value) =>
+              option.label === value.label
+            }
+            freeSolo
           />
         </>
       )}
@@ -181,11 +219,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
           color="primary"
           variant="contained"
           disabled={
-            loading ||
-            !selectedMake ||
-            !selectedModel ||
-            !selectedYear ||
-            !licensePlate
+            disableBtn()
           }
         >
           Guardar

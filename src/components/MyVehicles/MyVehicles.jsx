@@ -6,19 +6,16 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import VehicleCreation from '../VehicleCreation/VehicleCreation';
 
 
-const MyVehicles = ({vehicles, onSave, userId, isSelecting}) => {
+const MyVehicles = ({vehicles, onSave, userId, selectedVehicle = {} , setSelectedVehicle = ()=>{}}) => {
     const [showCreateCar, setShowCreateCar] = useState(false);
-    const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+    
 
     const handleAddVehicle = () =>{
         setShowCreateCar(true)
     }
-    const handleSelectVehicle = (vehicleId) => {
-        setSelectedVehicleId(vehicleId);
+    const handleSelectVehicle = (vehicle) => {
+        setSelectedVehicle(vehicle);
       };
-    const getVehicleBorder=(selectedVehicleId, currentId) =>{
-        return selectedVehicleId === currentId ? "2px solid green" : "1px solid transparent"
-    }
 
   return (
     <>
@@ -46,7 +43,7 @@ const MyVehicles = ({vehicles, onSave, userId, isSelecting}) => {
       ) :
     (<Box sx={{ maxWidth: 400, margin: "0 auto", padding: 2 }}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Vehículos
+          Mis Vehículos
         </Typography>
         <List sx={{ bgcolor: "background.paper", borderRadius: 1 }}>
           {vehicles?.map((vehicle, i) => (
@@ -54,14 +51,14 @@ const MyVehicles = ({vehicles, onSave, userId, isSelecting}) => {
               key={vehicle.id || "vehicle_" + i}
               disablePadding
               sx={{
-                bgcolor: selectedVehicleId === vehicle.id ? "green.50" : "grey.100",
+                bgcolor: selectedVehicle?.id === vehicle.id ? "green.50" : "grey.100",
                 borderRadius: 1,
-                border: getVehicleBorder(selectedVehicleId, vehicle.id),
+                border: selectedVehicle?.id=== vehicle.id ? "2px solid green" : "1px solid transparent",
                 marginBottom: 1,
-                "&:hover": { bgcolor: selectedVehicleId === vehicle.id ? "green.100" : "grey.200" },
+                "&:hover": { bgcolor: selectedVehicle?.id === vehicle.id ? "green.100" : "grey.200" },
               }}
             >
-              <ListItemButton onClick={() => handleSelectVehicle(vehicle.id)}>
+              <ListItemButton onClick={() => handleSelectVehicle(vehicle)}>
                 <ListItemText
                   primary={
                     <Typography fontWeight="bold" variant="body1">
@@ -70,7 +67,7 @@ const MyVehicles = ({vehicles, onSave, userId, isSelecting}) => {
                   }
                   secondary={vehicle.color}
                 />
-                {selectedVehicleId === vehicle.id && (
+                {selectedVehicle.id === vehicle.id && (
                   <IconButton disableRipple sx={{ color: "green" }}>
                     <CheckCircleIcon />
                   </IconButton>

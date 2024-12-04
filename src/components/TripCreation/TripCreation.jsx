@@ -67,6 +67,7 @@ const TripCreation = () => {
   const [route, setRoute] = useState([departure, destination]);
   const theme = useContext(ThemeContext);
   const [tripPhoto, setTripPhoto] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState({});
 
   dayjs.extend(utc);
   //Prevent user from leaving
@@ -108,7 +109,7 @@ const TripCreation = () => {
         setStepValid((tripPhoto !== null) && tripPhoto.path);
         break;
       case 5:
-        setStepValid(licensePhoto !== undefined);
+        setStepValid(selectedVehicle.id && (licensePhoto !== undefined));
         break;
       default:
         setStepValid(true);
@@ -148,7 +149,9 @@ const TripCreation = () => {
       setActiveStep((prevStep) => prevStep + 1);
     }
   };
-
+  const handleSelectVehicle = (vehicle) => {
+    setSelectedVehicle(vehicle)
+  }
   const handleBack = () => setActiveStep((prevStep) => prevStep - 1);
 
   const handleAddVehicle = (vehicle) =>{
@@ -170,6 +173,7 @@ const TripCreation = () => {
     formDataToSend.append("destination", destination.address);
     formDataToSend.append("userId", user.id);
     formDataToSend.append("maxTolerableDistance",maxTolerableDistance);
+    formDataToSend.append("vehicleId",selectedVehicle.id);
     if(tripPhoto.file){
       formDataToSend.append("image", tripPhoto.file);
     } else {
@@ -200,7 +204,7 @@ const TripCreation = () => {
     "Elija el punto de destino",
     "Establecer asientos y notas",
     "Elija una foto",
-    "Verificar licencia de conducir",
+    "Licencia y vehiculo",
   ];
   useEffect(() => {
     validateStep()
@@ -399,7 +403,9 @@ const TripCreation = () => {
                   </Typography>
                 </>
               ) : (
-                <>
+                <Box display={"flex"} sx={{flexDirection:"row-reverse", justifyContent:"space-around"}}>
+                <Box display={"flex"} sx={{ flexDirection:"column",alignContent:"center"}}>
+
                   <Typography variant="h3" marginBottom={5}>
                     Valida tu licencia
                   </Typography>
@@ -407,7 +413,7 @@ const TripCreation = () => {
                     variant="subtitle2"
                     fontSize={18}
                     marginBottom={3}
-                  >
+                    >
                     Como último paso, necesitamos asegurarnos que tenés permiso
                     para conducir.
                   </Typography>
@@ -418,7 +424,7 @@ const TripCreation = () => {
                       alignSelf: "center",
                       alignItems: "center",
                     }}
-                  >
+                    >
                     <Paper
                       sx={{
                         display: "flex",
@@ -428,11 +434,11 @@ const TripCreation = () => {
                         alignItems: "center",
                         maxWidth: "500px",
                         height: "60px",
-                        marginRight: 2,
+                        marginRight: 2
                       }}
-                    >
-                      <Typography>
-                        Por favor, subí una foto del CODIGO DE BARRAS de tu
+                      >
+                      <Typography padding={1}>
+                        Subí una foto del CODIGO DE BARRAS de tu
                         carnet DIGITAL
                       </Typography>
                       <Button
@@ -442,7 +448,7 @@ const TripCreation = () => {
                         variant="contained"
                         tabIndex={-1}
                         startIcon={<CloudUpload />}
-                      >
+                        >
                         Subir foto
                         <TextField
                           type="file"
@@ -463,22 +469,26 @@ const TripCreation = () => {
                     <Tooltip
                       title={
                         <img
-                          src={licenseHelp}
-                          style={{ width: "-webkit-fill-available" }}
+                        src={licenseHelp}
+                        style={{ width: "-webkit-fill-available" }}
                         />
                       }
-                      placement="right"
-                    >
+                      placement="top"
+                      >
                       <HelpOutline fontSize="large" color="action" />
                     </Tooltip>
                   </Box>
                   <FormHelperText sx={{ alignSelf: "center" }}>
                     {fileMessage}
                   </FormHelperText>
-                  <Paper>
-                    <Typography variant="h5">En qué vehículo vas a viajar?</Typography>
-                    <MyVehicles vehicles={user.vehicles} onSave={handleAddVehicle} userId={user.id} />
+                  </Box>
+                  
+                  <Box>
+                  <Typography variant="h3">En qué vehículo vas a viajar?</Typography>
+                  <Paper sx={{padding:2}}>
+                    <MyVehicles vehicles={user.vehicles} onSave={handleAddVehicle} userId={user.id} selectedVehicle={selectedVehicle} setSelectedVehicle={handleSelectVehicle} />
                   </Paper>
+                  </Box>
                   {licenseError && (
                     <Alert
                       severity="error"
@@ -495,7 +505,7 @@ const TripCreation = () => {
                       {licenseError.message}
                     </Alert>
                   )}
-                </>
+                </Box>
               )}
             </Box>
           )}
@@ -577,6 +587,9 @@ const TripCreation = () => {
               </Typography>
               <Typography variant="h4">
                 <strong>Imagen:</strong> {tripPhoto.path.replace(/^.*[\\/]/, "")}
+              </Typography>
+              <Typography variant="h4">
+                <strong>Vehiculo:</strong> {selectedVehicle.model + " " + selectedVehicle.color}
               </Typography>
 
               <Box sx={{ mt: 2 }}>
