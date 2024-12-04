@@ -114,7 +114,7 @@ export default function Trips(props) {
       </Grid2>
 
       {/* Contenedor para la paginación con el select a la derecha */}
-      <Box sx={{ position: "relative", marginTop: 1 }}>
+      <Box sx={{ position: "relative", marginTop: 5 }}>
         {" "}
         {/* Ajuste margen superior */}
         {/* Paginación centrada */}
