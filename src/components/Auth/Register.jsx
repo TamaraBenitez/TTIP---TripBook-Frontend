@@ -16,9 +16,6 @@ import { CloudUpload, ErrorOutline } from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import Stack from "@mui/material/Stack";
 
 const Register = () => {
   const emptyForm = {
@@ -30,6 +27,8 @@ const Register = () => {
     confirmPassword: "",
     dniFile: null,
     phoneNumber: "",
+    locality: "",
+    province: "",
   };
   const [formData, setFormData] = useState(emptyForm);
 
@@ -100,11 +99,17 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(formData);
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
+    console.log("pasa el validate");
     let date = dayjs(formData.birthDate.$d).toISOString();
     if (
       Object.values(errors).every((error) => error === "") &&
-      Object.values(formData).every((field) => field !== "")
+      Object.keys(formData).every((field) => {
+        return (
+          field === "locality" || field === "province" || formData[field] !== ""
+        );
+      })
     ) {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
@@ -114,6 +119,10 @@ const Register = () => {
       formDataToSend.append("password", formData.password);
       formDataToSend.append("dniPhoto", formData.dniFile);
       formDataToSend.append("phoneNumber", formData.phoneNumber);
+      formDataToSend.append("locality", formData.locality);
+      formDataToSend.append("province", formData.province);
+      console.log("entra al if");
+
       setIsDataLoading(true);
       store.services.authService
         .register(formDataToSend)
@@ -278,6 +287,24 @@ const Register = () => {
                 placeholder="54911..."
               />
             </FormControl>
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              label="Localidad"
+              name="locality"
+              onChange={handleChange}
+              value={formData.locality}
+              margin="normal"
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              label="Provincia"
+              name="province"
+              onChange={handleChange}
+              value={formData.province}
+              margin="normal"
+            />
           </FormControl>
 
           <Typography
