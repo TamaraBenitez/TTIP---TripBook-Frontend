@@ -40,6 +40,7 @@ const Register = () => {
     confirmPassword: "",
     phoneNumber: "",
     birthDate: "",
+    dniFile: "",
   });
   const [isDataLoading, setIsDataLoading] = useState(false);
   const store = useContext(StoreContext);
@@ -107,6 +108,13 @@ const Register = () => {
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
 
     let date = dayjs(formData.birthDate.$d).toISOString();
+
+    if (!formData.dniFile) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        dniFile: "La foto es requerida",
+      }));
+    }
     if (
       Object.values(errors).every((error) => error === "") &&
       Object.keys(formData).every((field) => {
@@ -125,7 +133,6 @@ const Register = () => {
       formDataToSend.append("phoneNumber", formData.phoneNumber);
       formDataToSend.append("locality", formData.locality);
       formDataToSend.append("province", formData.province);
-      console.log("entra al if");
 
       setIsDataLoading(true);
       store.services.authService
@@ -344,6 +351,7 @@ const Register = () => {
                   setFormData({ ...formData, dniFile: e.target.files[0] });
                   if (e.target.files.length > 0) {
                     setFileMessage(`Archivo subido: ${e.target.files[0].name}`);
+                    setErrors((prevErrors) => ({ ...prevErrors, dniFile: "" }));
                   } else {
                     setFileMessage("");
                   }
@@ -352,6 +360,11 @@ const Register = () => {
               />
             </Button>
             <FormHelperText>{fileMessage}</FormHelperText>
+            {errors.dniFile && (
+              <Typography color="error" variant="body2">
+                {errors.dniFile}
+              </Typography>
+            )}
           </FormControl>
           <Button
             type="submit"
