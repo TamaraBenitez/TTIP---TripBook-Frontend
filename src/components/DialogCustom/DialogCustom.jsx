@@ -20,6 +20,7 @@ const DialogCustom = ({
   confirmButton,
   showCancelButton,
   dialogContent,
+  hideConfirmButton,
 }) => {
   return (
     <>
@@ -51,7 +52,14 @@ const DialogCustom = ({
           {confirmButton ? (
             confirmButton
           ) : (
-            <Button onClick={handleConfirm} color="primary" variant="contained">Confirmar</Button>
+            <Button
+              sx={{ display: hideConfirmButton ? "none" : "inline-flex" }}
+              onClick={handleConfirm}
+              color="primary"
+              variant="contained"
+            >
+              Confirmar
+            </Button>
           )}
           {showCancelButton && <Button onClick={handleClose}>Cancelar</Button>}
         </DialogActions>

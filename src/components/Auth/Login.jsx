@@ -19,8 +19,6 @@ import { TaskAlt, Visibility, VisibilityOff } from "@mui/icons-material";
 import StoreContext from "../../store/storecontext";
 import { useUser } from "../../user/UserContext";
 import DialogCustom from "../DialogCustom/DialogCustom";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -341,18 +339,23 @@ const Login = () => {
           </Box>
         </Box>
       </Box>
-      <Dialog
+      <DialogCustom
         open={openModalLoading}
-        fullWidth
-        maxWidth="md"
-        PaperProps={{ style: { zIndex: 1300 } }}
-      >
-        <DialogContent>
-          Este proceso puede demorar ya que se esta procesando su rostro. Sea
-          paciente
-          <LinearProgress />
-        </DialogContent>
-      </Dialog>
+        handleClose={() => {}}
+        title="Procesando rostro"
+        dialogContent={
+          <>
+            <p>
+              Este proceso puede demorar ya que se está procesando su rostro.
+              Sea paciente.
+            </p>
+            <LinearProgress />
+          </>
+        }
+        confirmButton={null}
+        hideConfirmButton={true}
+        showCancelButton={false}
+      />
     </div>
   );
 };

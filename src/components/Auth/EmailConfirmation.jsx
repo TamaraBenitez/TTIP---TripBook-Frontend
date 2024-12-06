@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography, Button, Container } from "@mui/material";
 import { MailOutline } from "@mui/icons-material";
-import StoreContext from '../../store/storecontext';
-import { useNavigate } from 'react-router-dom';
+import StoreContext from "../../store/storecontext";
+import { useNavigate } from "react-router-dom";
 
 const EmailConfirmation = ({ userId }) => {
   const store = useContext(StoreContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
@@ -32,7 +32,7 @@ const EmailConfirmation = ({ userId }) => {
   }, [userId]);
 
   const handleGoBack = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -43,7 +43,6 @@ const EmailConfirmation = ({ userId }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
           textAlign: "center",
         }}
       >
@@ -67,7 +66,9 @@ const EmailConfirmation = ({ userId }) => {
           disabled={isButtonDisabled}
           sx={{ marginTop: 2 }}
         >
-          {isButtonDisabled ? `Reenviar en ${countdown}s` : 'Reenviar correo de confirmación'}
+          {isButtonDisabled
+            ? `Reenviar en ${countdown}s`
+            : "Reenviar correo de confirmación"}
         </Button>
         <Button
           variant="text"
