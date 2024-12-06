@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   TextField,
   Button,
@@ -39,6 +39,7 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     phoneNumber: "",
+    birthDate: "",
   });
   const [isDataLoading, setIsDataLoading] = useState(false);
   const store = useContext(StoreContext);
@@ -74,6 +75,9 @@ const Register = () => {
           error =
             "El número de teléfono debe tener 13 dígitos (por ejemplo, 5491109876543)";
         break;
+      case "birthDate":
+        if (!value) error = "Fecha de nacimiento es requerido";
+        break;
       default:
         break;
     }
@@ -99,9 +103,9 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
-    console.log("pasa el validate");
+
     let date = dayjs(formData.birthDate.$d).toISOString();
     if (
       Object.values(errors).every((error) => error === "") &&
@@ -249,9 +253,16 @@ const Register = () => {
               disableFuture
               minDate={minDate}
               format="DD/MM/YYYY"
-              onChange={(newDate) =>
-                setFormData({ ...formData, birthDate: newDate })
-              }
+              onChange={(newDate) => {
+                setFormData({ ...formData, birthDate: newDate });
+                validate("birthDate", newDate);
+              }}
+              slotProps={{
+                textField: {
+                  error: Boolean(errors.birthDate),
+                  helperText: errors.birthDate,
+                },
+              }}
             />
           </FormControl>
           <FormControl fullWidth>
