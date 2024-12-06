@@ -11,6 +11,8 @@ import {
   Tabs,
   Tab,
   Grid2,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -19,15 +21,24 @@ import VerificationSteps from "./VerificationSteps";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import MyVehicles from "../MyVehicles/MyVehicles";
+import DialogCustom from "../DialogCustom/DialogCustom";
+import { Edit, ErrorOutline } from "@mui/icons-material";
+import { getProvinces } from "../../utility/Utility";
+import StoreContext from "../../store/storecontext";
 
 const Profile = () => {
   const [verifyingUser, setVerifyingUser] = useState(false);
   const [isAccountVerified, setIsAccountVerified] = useState(false);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
   const [tabIndex, setTabIndex] = useState(0);
   const [vehicles, setVehicles] = useState([]);
   const [alertMsg, setAlertMsg] = useState("Su cuenta ha sido verificada con exito")
-  const { user, userDataLoading } = useUser();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { user, userDataLoading, setUser } = useUser();
+  const [editedProvince, setEditedProvince] = useState("");
+  const [editedLocality, setEditedLocality] = useState("");
+  const store = useContext(StoreContext);
 
   useEffect(() => {
     if (!userDataLoading) {
@@ -54,13 +65,29 @@ const Profile = () => {
   };
   const handleCreateVehicle = (vehicle) =>{
     setAlertMsg("Vehiculo registrado exitosamente")
-    setShowSuccessAlert(true);
+    setShowAlert(true);
     setTimeout(() => {
-      setShowSuccessAlert(false)
+      setShowAlert(false)
     }, 5000);
     setVehicles([...vehicles, vehicle]);
   }
 
+  const handleEdit = () => {
+    store.services.userService
+        .UpdateUser(user.id, {locality:editedLocality, province:editedProvince})
+        .then((res)=>setUser({...user, locality:editedLocality, province:editedProvince}))
+        .catch((error)=>{
+          setAlertMsg(error.response.data.message);
+          setAlertSeverity("error")
+          setShowAlert(true);
+          setTimeout(() => {
+            setAlertSeverity("success");
+            setShowAlert(false)
+          }, 5000);
+        })
+    setIsDialogOpen(false);
+  };
+  
   return (
     <>
       {userDataLoading ? (
@@ -109,7 +136,7 @@ const Profile = () => {
           </Tabs>
           {tabIndex === 0 && (
             <Paper sx={{mr:5, minWidth:600}}>
-            <Box>
+            <Box display={"flex"} flexDirection={"column"} alignItems="center" p={3}>
               <Box
                 sx={{
                   display: "flex",
@@ -254,7 +281,7 @@ const Profile = () => {
                 </Typography>
               </Grid2>
               </Grid2>
-              
+              <Button sx={{maxWidth:"max-content"}} variant="outlined" onClick={() => setIsDialogOpen(true)}>Editar {<Edit sx={{ml:1}} fontSize="22"/>}</Button>
             </Box>
             </Paper>
           )}
@@ -279,17 +306,44 @@ const Profile = () => {
           open={verifyingUser}
           userId={user.id}
           setAccountVerified={setIsAccountVerified}
-          setSuccessAlert={setShowSuccessAlert}
+          setSuccessAlert={setShowAlert}
         />
       )}
       {
         <AlertCustom
-          inProp={showSuccessAlert}
+          inProp={showAlert}
           timeout={500}
           msg={alertMsg}
-          icon={<CheckCircleIcon />}
-          severity={"success"}
+          icon={alertSeverity === "success" ? <CheckCircleIcon /> : <ErrorOutline />}
+          severity={alertSeverity}
         />
+      }
+      {
+        <DialogCustom
+        open={isDialogOpen}
+        handleClose={() => setIsDialogOpen(false)}
+        title="Editar Provincia y Localidad"
+        dialogContent={
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt:1}}>
+            <Autocomplete
+              options={getProvinces()}
+              value={editedProvince}
+              onChange={(event, newValue) => setEditedProvince(newValue)}
+              renderInput={(params) => (
+                <TextField {...params} label="Provincia" fullWidth />
+              )}
+            />
+            <TextField
+              fullWidth
+              label="Localidad"
+              value={editedLocality}
+              onChange={(e) => setEditedLocality(e.target.value)}
+            />
+          </Box>
+        }
+        handleConfirm={handleEdit}
+        showCancelButton={true}
+      />
       }
     </>
   );
