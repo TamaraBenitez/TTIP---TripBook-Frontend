@@ -1,14 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Trips from "../TripList/Trips";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import StoreContext from "../../store/storecontext";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import { useUser } from "../../user/UserContext";
@@ -17,7 +10,6 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItem";
 import FilterAccordion from "../AllTrips/FilterAccordion";
 

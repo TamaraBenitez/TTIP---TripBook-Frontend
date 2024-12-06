@@ -35,6 +35,8 @@ import { useUser } from "../../user/UserContext";
 import whatsapp from "../../assets/Whatsapp.svg";
 import gmail from "../../assets/Gmail.svg";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 
 export default function TripDetails({
   pendingSolicitudes,
@@ -116,6 +118,11 @@ export default function TripDetails({
     } else return null;
   };
 
+  const roleMapping = {
+    driver: "Conductor",
+    passenger: "Pasajero",
+  };
+
   useEffect(() => {
     //If is a pending solicitude, show the pending coordinates
     if (pendingSolicitudes) {
@@ -139,273 +146,274 @@ export default function TripDetails({
 
   return (
     <>
-    <RibbonHeading
-        heading={heading}
-        component={"h2"}
-        variant={"h2"}
-      />
-      <Grid2 container size={12} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-        <Grid2 item size={4} display={"flex"} flexDirection={"column"}>
-
-        
-          {pendingSolicitudes &&
-          <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          maxWidth: 400,
-          marginLeft: 5,
-        }}
+      <RibbonHeading heading={heading} component={"h2"} variant={"h2"} />
+      <Grid2
+        container
+        size={12}
+        sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        <SvgIcon
-          sx={{
-            marginRight: 1,
-            fontSize: 50,
-          }}
-        >
-          <image href={markerUser} height="100%" />
-        </SvgIcon>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          fontSize="1rem"
-          sx={{
-            whiteSpace: "normal",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
-        >
-          El punto de partida de la solicitud está marcado con el siguiente
-          marcador
-        </Typography>
-          </Box>}
+        <Grid2 item size={4} display={"flex"} flexDirection={"column"}>
+          {pendingSolicitudes && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                maxWidth: 400,
+                marginLeft: 5,
+              }}
+            >
+              <SvgIcon
+                sx={{
+                  marginRight: 1,
+                  fontSize: 50,
+                }}
+              >
+                <image href={markerUser} height="100%" />
+              </SvgIcon>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                fontSize="1rem"
+                sx={{
+                  whiteSpace: "normal",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                }}
+              >
+                El punto de partida de la solicitud está marcado con el
+                siguiente marcador
+              </Typography>
+            </Box>
+          )}
           <Card sx={{ maxWidth: 600, margin: "20px auto", padding: "20px" }}>
             <CardContent>
-            {loading ? (
-              <>
-                <Skeleton variant="text" height={40} width="60%" />
-                <Skeleton variant="text" width="40%" />
-                <Skeleton variant="text" />
-                <Skeleton variant="text" />
-                <Skeleton variant="rectangular" height={118} />
-              </>
-            ) : (
-              <>
-                <Typography variant="h4" component="h1" gutterBottom>
-                  Viaje a {trip.destination}
-                </Typography>
-                <Divider />
-                <Typography variant="body1" color="textSecondary">
-                  <strong>Fecha de salida:</strong>{" "}
-                  {formatDate(trip.startDate, true)}
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  <strong>Desde:</strong> {trip.origin}
-                </Typography>
-                {!pendingSolicitudes && (
-                  <Typography variant="body1" color="textSecondary">
-                    <strong>Descripción:</strong> {trip.description}
+              {loading ? (
+                <>
+                  <Skeleton variant="text" height={40} width="60%" />
+                  <Skeleton variant="text" width="40%" />
+                  <Skeleton variant="text" />
+                  <Skeleton variant="text" />
+                  <Skeleton variant="rectangular" height={118} />
+                </>
+              ) : (
+                <>
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    Viaje a {trip.destination}
                   </Typography>
-                )}
-                {!pendingSolicitudes && (
+                  <Divider />
                   <Typography variant="body1" color="textSecondary">
-                    <strong>Costo estimado:</strong> ${trip.estimatedCost}
+                    <strong>Fecha de salida:</strong>{" "}
+                    {formatDate(trip.startDate, true)}
                   </Typography>
-                )}
-
-                {!pendingSolicitudes && (
-                  <>
-                    <Divider sx={{ margin: "20px 0" }} />
-
-                    <Typography variant="h5" component="h2" gutterBottom>
-                      Participantes
+                  <Typography variant="body1" color="textSecondary">
+                    <strong>Desde:</strong> {trip.origin}
+                  </Typography>
+                  {!pendingSolicitudes && (
+                    <Typography variant="body1" color="textSecondary">
+                      <strong>Descripción:</strong>{" "}
+                      {trip.description == ""
+                        ? "Sin descripción"
+                        : trip.description}
                     </Typography>
-                    {trip.participants?.length > 0 ? (
-                      trip.participants.map((user) => (
-                        <Accordion key={user.id} sx={{ maxWidth: 250 }}>
-                          <AccordionSummary
-                            sx={{ justifyContent: "flex-start" }}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
-                          >
-                            <ListItemIcon sx={{ minWidth: 40 }}>
-                              <AccountCircle />
-                            </ListItemIcon>
-                            <Typography variant="body1">
-                              {user.name} {user.surname}
-                            </Typography>
-                          </AccordionSummary>
-                          <AccordionDetails
-                            sx={{
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: "vertical",
-                            }}
-                          >
-                            <Box>
-                              <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                sx={{
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
+                  )}
+                  {!pendingSolicitudes && (
+                    <Typography variant="body1" color="textSecondary">
+                      <strong>Costo estimado:</strong> ${trip.estimatedCost}
+                    </Typography>
+                  )}
+
+                  {!pendingSolicitudes && (
+                    <>
+                      <Divider sx={{ margin: "20px 0" }} />
+
+                      <Typography variant="h5" component="h2" gutterBottom>
+                        Participantes
+                      </Typography>
+                      {trip.participants?.length > 0 ? (
+                        trip.participants.map((user) => (
+                          <Accordion key={user.id} sx={{ maxWidth: 320 }}>
+                            <AccordionSummary
+                              sx={{ justifyContent: "flex-start" }}
+                              aria-controls="panel1-content"
+                              id="panel1-header"
+                            >
+                              <Stack
+                                direction={"row"}
+                                spacing={2}
+                                alignItems={"center"}
                               >
-                                Email: {user.email}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                sx={{
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                              >
-                                Localidad: {user.locality}, {user.province}
-                              </Typography>
-                            </Box>
-                          </AccordionDetails>
-                        </Accordion>
-                      ))
-                    ) : (
-                      <Typography variant="body1">
-                        No hay participantes registrados aún.
-                      </Typography>
-                    )}
-                    {!isRegistered && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          marginTop: "20px",
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleClickOpen}
-                        >
-                          Unirme al viaje
-                        </Button>
-                      </Box>
-                    )}
-                  </>
-                )}
-                {pendingSolicitudes && (
-                  <>
-                    <Divider sx={{ margin: "20px 0" }} />
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 2,
-                      }}
-                    >
-                      <ListItemIcon sx={{ minWidth: 40 }}>
-                        <AccountCircle />
-                      </ListItemIcon>
-                      <Typography variant="body1">
-                        {trip.name} {trip.surname}
-                      </Typography>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 1,
-                        marginLeft: 0.5,
-                      }}
-                    >
-                      <Tooltip
-                        title={
-                          trip.isUserVerified
-                            ? "Usuario verificado"
-                            : "Usuario no verificado"
-                        }
-                        placement="right"
-                      >
-                        {trip.isUserVerified ? (
-                          <CheckCircle
-                            sx={{ color: "green", marginLeft: "10px" }}
-                          />
-                        ) : (
-                          <Cancel sx={{ color: "red", marginLeft: "10px" }} />
-                        )}
-                      </Tooltip>
-                      <Typography variant="body2" color="textSecondary">
-                        {trip.isUserVerified
-                          ? "Usuario verificado"
-                          : "Usuario no verificado"}
-                      </Typography>
-                    </Box>
-
-                    <AccordionDetails
-                      sx={{
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 1,
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                          }}
-                        >
-                          <a
-                            href={`mailto:${trip.email}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              textDecoration: "none",
-                              color: "inherit",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <SvgIcon sx={{ marginRight: 1 }}>
-                              <image href={gmail} height="100%" />
-                            </SvgIcon>
-                            <Typography
-                              variant="body2"
+                                <ListItemIcon
+                                  sx={{
+                                    minWidth: 20,
+                                  }}
+                                >
+                                  <AccountCircle />
+                                </ListItemIcon>
+                                <Typography variant="body1" noWrap>
+                                  {user.name} {user.surname}{" "}
+                                </Typography>
+                                <Chip label={roleMapping[user.role]} />
+                                {user.role === "driver" && (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {" "}
+                                    <a
+                                      href={`https://wa.me/${user.phoneNumber}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        textDecoration: "none",
+                                        color: "inherit",
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <SvgIcon sx={{ marginRight: 1 }}>
+                                        <image href={whatsapp} height="100%" />
+                                      </SvgIcon>
+                                    </a>
+                                  </Box>
+                                )}
+                              </Stack>
+                            </AccordionSummary>
+                            <AccordionDetails
                               sx={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                },
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: "vertical",
                               }}
                             >
-                              Contactar por Email
-                            </Typography>
-                          </a>
+                              <Box>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                  sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  Email: {user.email}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                  sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  Localidad: {user.locality}, {user.province}
+                                </Typography>
+                              </Box>
+                            </AccordionDetails>
+                          </Accordion>
+                        ))
+                      ) : (
+                        <Typography variant="body1">
+                          No hay participantes registrados aún.
                         </Typography>
+                      )}
+                      {!isRegistered && (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginTop: "20px",
+                          }}
+                        >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleClickOpen}
+                          >
+                            Unirme al viaje
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  )}
+                  {pendingSolicitudes && (
+                    <>
+                      <Divider sx={{ margin: "20px 0" }} />
 
-                        {pendingSolicitudes && (
-                          <Box
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginBottom: 2,
+                        }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 40 }}>
+                          <AccountCircle />
+                        </ListItemIcon>
+                        <Typography variant="body1">
+                          {trip.name} {trip.surname}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 1,
+                          marginLeft: 0.5,
+                        }}
+                      >
+                        <Tooltip
+                          title={
+                            trip.isUserVerified
+                              ? "Usuario verificado"
+                              : "Usuario no verificado"
+                          }
+                          placement="right"
+                        >
+                          {trip.isUserVerified ? (
+                            <CheckCircle
+                              sx={{ color: "green", marginLeft: "10px" }}
+                            />
+                          ) : (
+                            <Cancel sx={{ color: "red", marginLeft: "10px" }} />
+                          )}
+                        </Tooltip>
+                        <Typography variant="body2" color="textSecondary">
+                          {trip.isUserVerified
+                            ? "Usuario verificado"
+                            : "Usuario no verificado"}
+                        </Typography>
+                      </Box>
+
+                      <AccordionDetails
+                        sx={{
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
                             sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
                           >
-                            {" "}
                             <a
-                              href={`https://wa.me/${trip.contact}`}
+                              href={`mailto:${trip.email}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{
@@ -416,11 +424,10 @@ export default function TripDetails({
                               }}
                             >
                               <SvgIcon sx={{ marginRight: 1 }}>
-                                <image href={whatsapp} height="100%" />
+                                <image href={gmail} height="100%" />
                               </SvgIcon>
                               <Typography
                                 variant="body2"
-                                color="textSecondary"
                                 sx={{
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
@@ -429,29 +436,67 @@ export default function TripDetails({
                                   },
                                 }}
                               >
-                                Contactar por WhatsApp
+                                Contactar por Email
                               </Typography>
                             </a>
-                          </Box>
-                        )}
-                      </Box>
-                    </AccordionDetails>
-                  </>
-                )}
-              </>
-            )}
+                          </Typography>
+
+                          {pendingSolicitudes && (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                            >
+                              {" "}
+                              <a
+                                href={`https://wa.me/${trip.contact}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <SvgIcon sx={{ marginRight: 1 }}>
+                                  <image href={whatsapp} height="100%" />
+                                </SvgIcon>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                  sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                    },
+                                  }}
+                                >
+                                  Contactar por WhatsApp
+                                </Typography>
+                              </a>
+                            </Box>
+                          )}
+                        </Box>
+                      </AccordionDetails>
+                    </>
+                  )}
+                </>
+              )}
             </CardContent>
           </Card>
         </Grid2>
         {showMap() && (
-        <Grid2  item size={8}> 
-
-          <MapComponent
-            coordinates={getCoordinates()}
-            userMarkerParam={getUserMarker()}
-            width={"95%"}
+          <Grid2 item size={8}>
+            <MapComponent
+              coordinates={getCoordinates()}
+              userMarkerParam={getUserMarker()}
+              width={"95%"}
             />
-            </Grid2>
+          </Grid2>
         )}
       </Grid2>
       <DialogCustom
