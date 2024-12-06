@@ -55,7 +55,10 @@ const Profile = () => {
   const handleCreateVehicle = (vehicle) =>{
     setAlertMsg("Vehiculo registrado exitosamente")
     setShowSuccessAlert(true);
-    setVehicles([...vehicles, vehicle])
+    setTimeout(() => {
+      setShowSuccessAlert(false)
+    }, 5000);
+    setVehicles([...vehicles, vehicle]);
   }
 
   return (
@@ -261,7 +264,9 @@ const Profile = () => {
                 <MyVehicles
                   vehicles={vehicles}
                   onSave={(vehicle)=>handleCreateVehicle(vehicle)}
-                  userId={user.id}    
+                  userId={user.id}
+                  profile={true}
+                  setVehicles={setVehicles}    
                 />
               
             </Paper>

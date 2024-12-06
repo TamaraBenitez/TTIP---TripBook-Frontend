@@ -165,7 +165,7 @@ const TripCreation = () => {
     })
     const formDataToSend = new FormData();
     formDataToSend.append("coordinates",JSON.stringify(mappedC));
-    formDataToSend.append("startDate", dayjs.utc(departureDate).toISOString());
+    formDataToSend.append("startDate", dayjs.utc(departureDate).local().toISOString());
     formDataToSend.append("description", notes);
     formDataToSend.append("maxPassengers", seats);
     formDataToSend.append("estimatedCost", estimatedCost);

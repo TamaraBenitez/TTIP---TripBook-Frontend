@@ -94,7 +94,6 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
     setSelectedMake(value)
   }
   const handleSave = () => {
-    debugger;
     setLoading(true);
     const vehicleData = {
       model: selectedMake.label + " " + selectedModel?.label,
@@ -196,11 +195,9 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
               </li>
             )}
             onChange={(event, value) => setColor(value)}
-            onInputChange={(event, value) => setColor({label:value})}
             isOptionEqualToValue={(option, value) =>
               option.label === value.label
             }
-            freeSolo
           />
         </>
       )}

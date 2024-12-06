@@ -29,7 +29,6 @@ class VehicleService extends BaseService {
       data: data
     });
   }
-
   GetVehiclesById(userId){
     return this.axios({
       url: `${this.baseUrl}/vehicles/owner/${userId}`,
@@ -37,8 +36,13 @@ class VehicleService extends BaseService {
       headers: this.config.headers,
     });
   }
-
-  
+  DeleteVehicle(vehicleId){
+    return this.axios({
+      url: `${this.baseUrl}/vehicles/delete/${vehicleId}`,
+      method: "PATCH",
+      headers: this.config.headers,
+    });
+  }
 }
 
 export default VehicleService;
