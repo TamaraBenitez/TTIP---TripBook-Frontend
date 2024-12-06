@@ -183,22 +183,6 @@ export default function TripCard({
               </Typography>
             )}
 
-            {isHovered && (
-              <Typography
-                className={isHovered ? "less-width" : ""}
-                variant="body2"
-                sx={{
-                  color: "text.secondary",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {description}
-              </Typography>
-            )}
             <Typography color="primary" variant="h6">
               ${estimatedCost}
             </Typography>
