@@ -18,6 +18,7 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import Stack from "@mui/material/Stack";
 
 const Register = () => {
   const emptyForm = {
@@ -155,18 +156,27 @@ const Register = () => {
   );
 
   return isDataLoading ? (
-    <Dialog
+    <DialogCustom
       open={isDataLoading}
-      fullWidth
-      maxWidth="md"
-      PaperProps={{ style: { zIndex: 1300 } }}
-    >
-      <DialogContent>
-        Este proceso puede demorar ya que se esta procesando su rostro. Sea
-        paciente
-        <LinearProgress />
-      </DialogContent>
-    </Dialog>
+      handleClose={() => {}}
+      title="Procesando rostro"
+      dialogContent={
+        <>
+          <p
+            style={{
+              fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+            }}
+          >
+            Este proceso puede demorar ya que se está procesando su rostro. Sea
+            paciente.
+          </p>
+          <LinearProgress />
+        </>
+      }
+      hideConfirmButton={true}
+      showCancelButton={false}
+      confirmButton={null}
+    />
   ) : success ? (
     <EmailConfirmation userId={userId} />
   ) : (
@@ -222,6 +232,7 @@ const Register = () => {
               margin="normal"
             />
           </FormControl>
+
           <FormControl fullWidth margin="normal">
             <DatePicker
               label="Fecha de nacimiento"
@@ -264,9 +275,11 @@ const Register = () => {
                 error={Boolean(errors.phoneNumber)}
                 helperText={errors.phoneNumber}
                 margin="normal"
+                placeholder="54911..."
               />
             </FormControl>
           </FormControl>
+
           <Typography
             variant="body2"
             color="textSecondary"
@@ -332,7 +345,7 @@ const Register = () => {
             open={showModal}
             title={"Registro Exitoso"}
             textParagraph={
-              "The enviaremos un mail para verificar tu correo electronico"
+              "Te enviaremos un mail para verificar tu correo electronico"
             }
             handleClose={handleCloseModal}
             confirmButton={okButton}
