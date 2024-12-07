@@ -34,6 +34,7 @@ const MyVehicles = ({
   const [vehicleToRemove, setVehicleToRemove] = useState(null);
   const [alert, setAlert] = useState(null);
   const store = useContext(StoreContext);
+  const [alertSeverity, setAlertSeverity] = useState("success");
 
   const handleTrashClick = (vehicleId) => {
     setVehicleToRemove(vehicleId);
@@ -46,12 +47,18 @@ const MyVehicles = ({
         let filteredVehicles = vehicles.filter((v) => v.id !== vehicleToRemove);
         setVehicles(filteredVehicles);
         handleCloseModal();
+        setAlert("Vehículo eliminado con éxito");
+        setAlertSeverity("success");
+        setTimeout(() => {
+          setAlert(null);
+        }, 5000);
       })
-      .catch((error) =>{
+      .catch((error) => {
         handleCloseModal();
         setAlert(error.response.data.message);
+        setAlertSeverity("error");
         setTimeout(() => {
-          setAlert(null)
+          setAlert(null);
         }, 5000);
       });
   };
@@ -188,14 +195,18 @@ const MyVehicles = ({
         handleConfirm={removeVehicle}
         showCancelButton={true}
       />
-      {<AlertCustom 
-        inProp={alert !== null}
-        timeout={500}
-        onClose={() => setAlert(null)}
-        msg={alert}
-        icon={<ErrorOutline />}
-        severity={"error"}
-      />}
+      {
+        <AlertCustom
+          inProp={alert !== null}
+          timeout={500}
+          onClose={() => setAlert(null)}
+          msg={alert}
+          icon={
+            alertSeverity === "success" ? <CheckCircleIcon /> : <ErrorOutline />
+          }
+          severity={alertSeverity}
+        />
+      }
     </>
   );
 };
