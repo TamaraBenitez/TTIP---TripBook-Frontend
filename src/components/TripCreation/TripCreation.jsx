@@ -216,7 +216,8 @@ const TripCreation = () => {
     seats,
     estimatedCost,
     licensePhoto,
-    tripPhoto
+    tripPhoto,
+    selectedVehicle
   ]);
   useEffect(() => {
     let newRoute = route;
