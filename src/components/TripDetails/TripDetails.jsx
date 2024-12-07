@@ -226,7 +226,7 @@ export default function TripDetails({
                       <strong>Costo estimado:</strong> $ {trip.estimatedCost}
                     </Typography>
                   )}
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     <Typography variant="body1" color="textSecondary">
                       <strong>Desvío Máximo:</strong>
                     </Typography>
