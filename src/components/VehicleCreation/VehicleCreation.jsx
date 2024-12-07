@@ -121,7 +121,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Marca"
+                label="Marca*"
                 variant="outlined"
               />
             )}
@@ -139,7 +139,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Modelo"
+                label="Modelo*"
                 variant="outlined"
               />
             )}
@@ -168,7 +168,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
             freeSolo
           />
           <TextField
-            label="Placa"
+            label="Placa*"
             variant="outlined"
             value={licensePlate}
             onChange={(e) => setLicensePlate(e.target.value)}
@@ -177,7 +177,7 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
             options={getCarColors()}
             getOptionLabel={(option) => option.label || ""}
             renderInput={(params) => (
-              <TextField {...params} label="Color" variant="outlined" />
+              <TextField {...params} label="Color*" variant="outlined" />
             )}
             renderOption={(props, option) => (
               <li {...props} style={{ display: "flex", alignItems: "center" }}>

@@ -142,7 +142,7 @@ const Profile = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  padding:2,
+                  padding: 2,
                   mb: 2,
                   width: "-webkit-fill-available",
                 }}
@@ -170,117 +170,124 @@ const Profile = () => {
               </Box>
 
               <Grid2
-              container
+                container
                 sx={{
                   display: "flex",
                   flexDirection: "row",
                   width: "100%",
-                  flexWrap:"nowrap",
-                  justifyContent:"space-evenly",
-                  padding:2
+                  flexWrap: "nowrap",
+                  justifyContent: "space-evenly",
+                  padding: 2,
                 }}
               >
                 <Grid2 item xs={6}>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Email:</strong>
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>DNI:</strong>
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Número de Trámite:</strong>{" "}
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Fecha de Nacimiento:</strong>{" "}
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Género:</strong>{" "}
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Provincia:</strong>
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Localidad:</strong>
-                  </Typography>
-                </Grid2>
-                <Grid2
-                  container
-                  xs={12}
-                  sx={{ justifyContent: "space-between" }}
-                >
-                  <Typography variant="subtitle1">
-                    <strong>Telefono:</strong>
-                  </Typography>
-                </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Email:</strong>
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>DNI:</strong>
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Número de Trámite:</strong>{" "}
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Fecha de Nacimiento:</strong>{" "}
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Género:</strong>{" "}
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Provincia:</strong>
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Localidad:</strong>
+                    </Typography>
+                  </Grid2>
+                  <Grid2
+                    container
+                    xs={12}
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1">
+                      <strong>Telefono:</strong>
+                    </Typography>
+                  </Grid2>
                 </Grid2>
                 <Grid2 item xs={6}>
-                <Typography variant="subtitle1">
-                  {handleNull(user.email)}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.nroDni)}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.nroTramiteDni)}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(new Date(user.birthDate).toLocaleDateString())}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.gender === "F" ? "Femenino" : "Masculino")}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.province)}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.locality)}
-                </Typography>
-                <Typography variant="subtitle1">
-                  {handleNull(user.phoneNumber)}
-                </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.email)}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.nroDni)}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.nroTramiteDni)}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(new Date(user.birthDate).toLocaleDateString())}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(
+                      user.gender === null
+                        ? "Sin información aun"
+                        : user.gender === "F"
+                        ? "Femenino"
+                        : "Masculino"
+                    )}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.province)}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.locality)}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    {handleNull(user.phoneNumber)}
+                  </Typography>
+                </Grid2>
               </Grid2>
-              </Grid2>
+
               <Button sx={{maxWidth:"max-content"}} variant="outlined" onClick={() => setIsDialogOpen(true)}>Editar {<Edit sx={{ml:1}} fontSize="22"/>}</Button>
             </Box>
             </Paper>

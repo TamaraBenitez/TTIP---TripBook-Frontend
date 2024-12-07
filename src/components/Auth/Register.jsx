@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   TextField,
   Button,
@@ -16,8 +16,6 @@ import { CloudUpload, ErrorOutline } from "@mui/icons-material";
 import AlertCustom from "../AlertCustom/AlertCustom";
 import DialogCustom from "../DialogCustom/DialogCustom";
 import EmailConfirmation from "./EmailConfirmation";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import Stack from "@mui/material/Stack";
 
 const Register = () => {
@@ -30,6 +28,8 @@ const Register = () => {
     confirmPassword: "",
     dniFile: null,
     phoneNumber: "",
+    locality: "",
+    province: "",
   };
   const [formData, setFormData] = useState(emptyForm);
 
@@ -40,6 +40,8 @@ const Register = () => {
     password: "",
     confirmPassword: "",
     phoneNumber: "",
+    birthDate: "",
+    dniFile: "",
   });
   const [isDataLoading, setIsDataLoading] = useState(false);
   const store = useContext(StoreContext);
@@ -75,6 +77,9 @@ const Register = () => {
           error =
             "El número de teléfono debe tener 13 dígitos (por ejemplo, 5491109876543)";
         break;
+      case "birthDate":
+        if (!value) error = "Fecha de nacimiento es requerido";
+        break;
       default:
         break;
     }
@@ -100,11 +105,24 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     Object.keys(formData).forEach((field) => validate(field, formData[field]));
+
     let date = dayjs(formData.birthDate.$d).toISOString();
+
+    if (!formData.dniFile) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        dniFile: "La foto es requerida",
+      }));
+    }
     if (
       Object.values(errors).every((error) => error === "") &&
-      Object.values(formData).every((field) => field !== "")
+      Object.keys(formData).every((field) => {
+        return (
+          field === "locality" || field === "province" || formData[field] !== ""
+        );
+      })
     ) {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
@@ -114,6 +132,9 @@ const Register = () => {
       formDataToSend.append("password", formData.password);
       formDataToSend.append("dniPhoto", formData.dniFile);
       formDataToSend.append("phoneNumber", formData.phoneNumber);
+      formDataToSend.append("locality", formData.locality);
+      formDataToSend.append("province", formData.province);
+
       setIsDataLoading(true);
       store.services.authService
         .register(formDataToSend)
@@ -188,7 +209,7 @@ const Register = () => {
           alignItems: "center",
           justifyContent: "center",
           padding: 2,
-          maxWidth: 600,
+          maxWidth: 700,
           margin: "auto",
           border: "1px solid #ccc",
           borderRadius: 2,
@@ -201,71 +222,88 @@ const Register = () => {
           Registro
         </Typography>
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth>
-            <TextField
-              label="Nombre"
-              name="name"
-              onChange={handleChange}
-              error={Boolean(errors.name)}
-              helperText={errors.name}
-              margin="normal"
-            />
-          </FormControl>
-          <FormControl fullWidth>
-            <TextField
-              label="Apellido"
-              name="surname"
-              onChange={handleChange}
-              error={Boolean(errors.surname)}
-              helperText={errors.surname}
-              margin="normal"
-            />
-          </FormControl>
-          <FormControl fullWidth>
-            <TextField
-              label="Email"
-              name="email"
-              type="email"
-              onChange={handleChange}
-              error={Boolean(errors.email)}
-              helperText={errors.email}
-              margin="normal"
-            />
-          </FormControl>
-
-          <FormControl fullWidth margin="normal">
-            <DatePicker
-              label="Fecha de nacimiento"
-              name="birthDate"
-              disableFuture
-              minDate={minDate}
-              format="DD/MM/YYYY"
-              onChange={(newDate) =>
-                setFormData({ ...formData, birthDate: newDate })
-              }
-            />
-          </FormControl>
-          <FormControl fullWidth>
-            <TextField
-              label="Contraseña"
-              name="password"
-              type="password"
-              onChange={handleChange}
-              error={Boolean(errors.password)}
-              helperText={errors.password}
-              margin="normal"
-            />
-          </FormControl>
-          <FormControl fullWidth>
-            <TextField
-              label="Confirmar contraseña"
-              name="confirmPassword"
-              type="password"
-              onChange={handleChange}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword}
-              margin="normal"
-            />
+          <Stack direction={"row"} spacing={2}>
+            <FormControl fullWidth>
+              <TextField
+                label="Nombre"
+                name="name"
+                onChange={handleChange}
+                error={Boolean(errors.name)}
+                helperText={errors.name}
+                margin="normal"
+                required
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Apellido"
+                name="surname"
+                onChange={handleChange}
+                error={Boolean(errors.surname)}
+                helperText={errors.surname}
+                margin="normal"
+                required
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                onChange={handleChange}
+                error={Boolean(errors.email)}
+                helperText={errors.email}
+                margin="normal"
+                required
+              />
+            </FormControl>
+          </Stack>
+          <Stack direction={"row"} spacing={2} alignItems={"center"}>
+            <FormControl fullWidth margin="normal">
+              <DatePicker
+                label="Fecha de nacimiento *"
+                name="birthDate"
+                disableFuture
+                minDate={minDate}
+                format="DD/MM/YYYY"
+                onChange={(newDate) => {
+                  setFormData({ ...formData, birthDate: newDate });
+                  validate("birthDate", newDate);
+                }}
+                slotProps={{
+                  textField: {
+                    error: Boolean(errors.birthDate),
+                    helperText: errors.birthDate,
+                  },
+                }}
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Contraseña"
+                name="password"
+                type="password"
+                onChange={handleChange}
+                error={Boolean(errors.password)}
+                helperText={errors.password}
+                margin="normal"
+                required
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Confirmar contraseña"
+                name="confirmPassword"
+                type="password"
+                onChange={handleChange}
+                error={Boolean(errors.confirmPassword)}
+                helperText={errors.confirmPassword}
+                margin="normal"
+                required
+              />
+            </FormControl>
+          </Stack>
+          <Stack direction={"row"} spacing={2}>
             <FormControl fullWidth>
               <TextField
                 label="Número de Teléfono"
@@ -276,15 +314,29 @@ const Register = () => {
                 helperText={errors.phoneNumber}
                 margin="normal"
                 placeholder="54911..."
+                required
               />
             </FormControl>
-          </FormControl>
-
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{ marginBottom: "8px" }}
-          >
+            <FormControl fullWidth>
+              <TextField
+                label="Localidad"
+                name="locality"
+                onChange={handleChange}
+                value={formData.locality}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                label="Provincia"
+                name="province"
+                onChange={handleChange}
+                value={formData.province}
+                margin="normal"
+              />
+            </FormControl>
+          </Stack>
+          <Typography variant="body2" color="textSecondary" sx={{ p: 2 }}>
             La foto solicitada se utilizará para verificar su identidad al
             iniciar sesión, comparándola con una imagen tomada en tiempo real.
             Esto garantiza su seguridad y la integridad de su cuenta.
@@ -306,6 +358,7 @@ const Register = () => {
                   setFormData({ ...formData, dniFile: e.target.files[0] });
                   if (e.target.files.length > 0) {
                     setFileMessage(`Archivo subido: ${e.target.files[0].name}`);
+                    setErrors((prevErrors) => ({ ...prevErrors, dniFile: "" }));
                   } else {
                     setFileMessage("");
                   }
@@ -314,6 +367,11 @@ const Register = () => {
               />
             </Button>
             <FormHelperText>{fileMessage}</FormHelperText>
+            {errors.dniFile && (
+              <Typography color="error" variant="body2">
+                {errors.dniFile}
+              </Typography>
+            )}
           </FormControl>
           <Button
             type="submit"
@@ -324,7 +382,7 @@ const Register = () => {
           >
             Registrarse
           </Button>
-          <Box display={"flex"} justifyContent={"center"} marginTop={"10px"}>
+          <Box display={"flex"} justifyContent={"center"} marginTop={"30px"}>
             <Link href="/login" variant="body2">
               Ya tienes una cuenta? Inicia sesion
             </Link>
