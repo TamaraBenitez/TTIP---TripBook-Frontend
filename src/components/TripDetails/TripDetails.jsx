@@ -17,6 +17,7 @@ import {
   SvgIcon,
   Tooltip,
   Grid2,
+  IconButton,
 } from "@mui/material";
 import {
   AccountCircle,
@@ -37,6 +38,7 @@ import gmail from "../../assets/Gmail.svg";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 export default function TripDetails({
   pendingSolicitudes,
@@ -221,9 +223,25 @@ export default function TripDetails({
                   )}
                   {!pendingSolicitudes && (
                     <Typography variant="body1" color="textSecondary">
-                      <strong>Costo estimado:</strong> ${trip.estimatedCost}
+                      <strong>Costo estimado:</strong> $ {trip.estimatedCost}
                     </Typography>
                   )}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography variant="body1" color="textSecondary">
+                      <strong>Desvío Máximo:</strong>
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                      {`${(trip.maxTolerableDistance / 1000).toFixed(2)} km`}
+                    </Typography>
+                    <Tooltip
+                      title="Distancia máxima en kilómetros que el conductor puede desviarse de su ruta original."
+                      arrow
+                    >
+                      <IconButton size="small">
+                        <InfoOutlinedIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
 
                   {!pendingSolicitudes && (
                     <>
@@ -309,7 +327,23 @@ export default function TripDetails({
                                     textOverflow: "ellipsis",
                                   }}
                                 >
-                                  Localidad: {user.locality}, {user.province}
+                                  Localidad:{" "}
+                                  {user.locality == ""
+                                    ? "Sin informacion"
+                                    : user.locality}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                  sx={{
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  Provincia:{" "}
+                                  {user.province == ""
+                                    ? "Sin informacion"
+                                    : user.province}
                                 </Typography>
                               </Box>
                             </AccordionDetails>
