@@ -106,7 +106,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   const handleNextStep = () => {
     if (step === 0) {
       store.services.userService
-        .UpdateUser(user.id, {
+        .UpdateVerifiedDataUser(user.id, {
           nroDni: dni,
           nroTramiteDni: tramite,
           gender: genero,

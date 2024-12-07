@@ -25,12 +25,20 @@ class UserService extends BaseService {
     });
   }
 
-  UpdateUser(id, user) {
+  UpdateVerifiedDataUser(id, user) {
     return this.axios({
       url: `${this.baseUrl}/user/verify/${id}`,
       method: "PATCH",
       headers: this.config.headers,
       data: user,
+    });
+  }
+  UpdateUser(id, userData) {
+    return this.axios({
+      url: `${this.baseUrl}/user/update/${id}`,
+      method: "PATCH",
+      headers: this.config.headers,
+      data: userData,
     });
   }
 }

@@ -1,14 +1,9 @@
 import { MAP_MAX_ZOOM } from "./Constants";
 
 export const formatDate = (date, time) => {
-  const dateObj = new Date(date);
+  const dateObj = new Date(date)
 
-  // Check if date is valid
-  if (isNaN(dateObj.getTime())) {
-    return "Invalid Date";
-  }
-
-  const dateOptions = { year: "numeric", month: "long", day: "numeric" };
+  const dateOptions = { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" };
   const formattedDate = dateObj.toLocaleDateString(undefined, dateOptions);
 
   let formattedTime = "";
@@ -19,7 +14,6 @@ export const formatDate = (date, time) => {
     if (isNaN(timeObj.getTime())) {
       return `${formattedDate} - Invalid Time`;
     }
-
     const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: false };
     formattedTime = timeObj.toLocaleTimeString(undefined, timeOptions);
   }
@@ -162,3 +156,95 @@ export const areCoordsEqual = (coord1, coord2, decimals = 4) => {
   );
 };
 
+export const getCarColors = () =>{
+  return [
+    { label: "Verde claro", hex: "#90ee90" },
+    { label: "Verde lima", hex: "#32cd32" },
+    { label: "Verde oliva claro", hex: "#c4d600" },
+    
+    { label: "Verde oscuro", hex: "#006400" },
+    { label: "Verde bosque", hex: "#228b22" },
+    { label: "Verde esmeralda", hex: "#50c878" },
+    { label: "Verde jade", hex: "#00a86b" },
+    { label: "Verde musgo", hex: "#8a9a5b" },
+    
+    { label: "Azul claro", hex: "#add8e6" },
+    { label: "Azul bebé", hex: "#89cff0" },
+    { label: "Azul perla", hex: "#b0e0e6" },
+    { label: "Azul hielo", hex: "#f0f8ff" },
+    
+    { label: "Azul oscuro", hex: "#00008b" },
+    { label: "Azul marino", hex: "#000080" },
+    { label: "Azul real", hex: "#4169e1" },
+    { label: "Azul zafiro", hex: "#0f52ba" },
+    { label: "Azul petróleo", hex: "#004953" },
+
+    { label: "Morado", hex: "#800080" },
+    { label: "Lavanda", hex: "#e6e6fa" },
+    { label: "Púrpura", hex: "#6a0dad" },
+    { label: "Lila", hex: "#c8a2c8" },
+    { label: "Orquídea", hex: "#da70d6" },
+    
+    { label: "Rosa", hex: "#ffc0cb" },
+    { label: "Rosa fuerte", hex: "#ff69b4" },
+    { label: "Rosa pastel", hex: "#ffd1dc" },
+    { label: "Fucsia", hex: "#ff00ff" },
+    { label: "Rosa salmón", hex: "#fa8072" },
+
+    { label: "Blanco", hex: "#ffffff" },
+    { label: "Blanco humo", hex: "#f5f5f5" },
+    { label: "Blanco marfil", hex: "#fffff0" },
+    
+    { label: "Negro", hex: "#000000" },
+    { label: "Negro carbón", hex: "#36454f" },
+    
+    { label: "Rojo", hex: "#ff0000" },
+    { label: "Rojo cereza", hex: "#de3163" },
+    { label: "Rojo carmesí", hex: "#dc143c" },
+    { label: "Bordó", hex:"#800020"},
+    
+    { label: "Amarillo", hex: "#ffff00" },
+    { label: "Amarillo oro", hex: "#ffd700" },
+    { label: "Amarillo pastel", hex: "#fdfd96" },
+    
+    { label: "Naranja", hex: "#ffa500" },
+    { label: "Naranja quemado", hex: "#cc5500" },
+    { label: "Naranja coral", hex: "#ff7f50" },
+    { label: "Naranja melón", hex: "#fca985" },
+    { label: "Naranja pastel", hex: "#ffcc99" },
+  
+    { label: "Gris", hex: "#808080" },
+    { label: "Gris claro", hex: "#d3d3d3" },
+    { label: "Gris oscuro", hex: "#2f4f4f" },
+    { label: "Gris azulado", hex: "#708090" },
+    { label: "Gris pizarra", hex: "#556b2f" },
+  ];
+}
+
+export const getProvinces = () =>{
+  return [
+    "Buenos Aires",
+    "Catamarca",
+    "Chaco",
+    "Chubut",
+    "Córdoba",
+    "Corrientes",
+    "Entre Ríos",
+    "Formosa",
+    "Jujuy",
+    "La Pampa",
+    "La Rioja",
+    "Mendoza",
+    "Misiones",
+    "Neuquén",
+    "Río Negro",
+    "Salta",
+    "San Juan",
+    "San Luis",
+    "Santa Cruz",
+    "Santa Fe",
+    "Santiago del Estero",
+    "Tierra del Fuego",
+    "Tucumán",
+  ];
+}

@@ -102,9 +102,9 @@ export default function TripCard({
         className="tripCard"
         sx={{
           textDecoration: "none",
-          height: "fit-content",
+          height: isHovered ? "auto" : "320px",
           width: 345,
-          transition: "transform 0.3s ease-in-out",
+          transition: "transform 0.3s ease-in-out, height 0.3s ease-in-out",
           "&:hover": {
             transform: "scale(1.05)",
           },
@@ -144,26 +144,47 @@ export default function TripCard({
           </CardMedia>
           <CardContent
             sx={{
-              maxHeight: 300,
+              maxHeight: 200,
               overflow: "hidden",
             }}
           >
             <Grid2
               container
               size={12}
-              sx={{ display: "flex", paddingLeft: "0px !important" }}
+              sx={{
+                display: "flex",
+                paddingLeft: "0px !important",
+                justifyContent: "space-between",
+              }}
+              columnGap={2}
             >
-              <Grid2 size={6} width={"55%"}>
-                <Typography variant="h5" component="div">
+              <Grid2
+                size={isHovered ? 8 : 12}
+                width={isHovered ? "75%" : "100%"}
+              >
+                <Typography
+                  variant="h5"
+                  component="div"
+                  fontSize={22}
+                  color="primary"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    transition: "width 0.3s ease-in-out",
+                    ...(isHovered && { whiteSpace: "normal" }),
+                  }}
+                >
                   {destination}
                 </Typography>
               </Grid2>
               {isHovered && (
                 <Grid2
-                  size={6}
+                  item
+                  size={isHovered ? 4 : 2}
                   sx={{
                     display: "flex",
-                    width: "45%",
+                    width: isHovered ? "fit-content" : "0",
                     marginRight: "0px",
                     justifyContent: "flex-end",
                   }}
@@ -175,9 +196,8 @@ export default function TripCard({
                 </Grid2>
               )}
             </Grid2>
-
             <Typography>{formatDate(startDate)}</Typography>
-            {status && (
+            {status && isHovered && (
               <Typography variant="body2" color="text.secondary">
                 Estado: {mapStatusToSpanish(status)}
               </Typography>
@@ -198,11 +218,12 @@ export default function TripCard({
               {action}
             </Button>
             {status === "confirmed" && role === 0 && (
-              <Button onClick={handleOpenDialog}>Cancelar inscripcion </Button>
+              <Button onClick={handleOpenDialog}>Cancelar inscripción </Button>
             )}
           </CardActions>
         )}
       </Card>
+
       <DialogCustom
         open={openDialog}
         handleClose={handleCloseDialog}

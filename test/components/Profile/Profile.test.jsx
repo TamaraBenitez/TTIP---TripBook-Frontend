@@ -5,6 +5,20 @@ import { useUser } from "../../../src/user/UserContext";
 import { store } from "../../store/store";
 import StoreContext from "../../../src/store/storecontext";
 import Profile from "../../../src/components/Profile/Profile";
+import { ThemeProvider } from "@emotion/react";
+import { createTheme } from "@mui/material";
+
+const theme = createTheme({
+  palette: {
+    mode: "light",
+    primary: {
+      main: "#226668",
+    },
+    secondary: {
+      main: "#4E8487",
+    },
+  },
+});
 
 vi.mock("../../../src/user/UserContext", () => ({
   useUser: vi.fn(),
@@ -41,9 +55,11 @@ describe("Profile Component", () => {
       userDataLoading: loading,
     });
     return render(
+      <ThemeProvider theme={theme}>
       <StoreContext.Provider value={store}>
         <Profile />
       </StoreContext.Provider>
+      </ThemeProvider>
     );
   };
   afterEach(() => {

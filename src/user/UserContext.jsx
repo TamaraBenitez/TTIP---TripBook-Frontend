@@ -16,6 +16,8 @@ export const UserProvider = ({ children }) => {
         const decoded = jwtDecode(token);
         try {
           const userData = await store.services.userService.GetUser(decoded.id);
+          const vehiclesData = await store.services.vehicleService.GetVehiclesById(decoded.id);
+          userData.data.vehicles = vehiclesData.data;
           setUser(userData.data);
         } catch (error) {
           console.error("Error fetching user data", error);
