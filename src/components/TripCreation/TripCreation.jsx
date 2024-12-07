@@ -543,7 +543,7 @@ const TripCreation = () => {
             alignItems: "center",
           }}
         >
-          <Grid2 size={4} sx={{ minWidth: "fit-content" }}>
+          <Grid2 size={2} sx={{ wordWrap:"break-word", width:"45%"}}>
             <Typography variant="h3" gutterBottom>
               Confirmacion del viaje
             </Typography>
