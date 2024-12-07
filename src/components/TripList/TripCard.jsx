@@ -98,142 +98,131 @@ export default function TripCard({
   return (
     <>
       <Card
-  variant="outlined"
-  className="tripCard"
-  sx={{
-    textDecoration: "none",
-    height: isHovered ? "auto" : "320px",
-    width: 345,
-    transition: "transform 0.3s ease-in-out, height 0.3s ease-in-out",
-    "&:hover": {
-      transform: "scale(1.05)",
-    },
-    position: "relative",
-  }}
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
-  onClick={() => handleClick}
->
-  <CardActionArea component={NavLink} to={`/trips/${to}`}>
-    <CardMedia
-      sx={{ height: 190, position: "relative" }}
-      image={imageUrl ?? defaultImage}
-      title="road"
-    >
-      {isHovered && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "30%",
-            bgcolor: "rgba(255, 255, 255, 0.7)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Container sx={{ display: "flex", justifyContent: "center" }}>
-            <Typography variant="h6">
-              {"Sale de " + startingPoint}
-            </Typography>
-          </Container>
-        </Box>
-      )}
-    </CardMedia>
-    <CardContent
-      sx={{
-        maxHeight: 200,
-        overflow: "hidden",
-      }}
-    >
-      <Grid2
-        container
-        size={12}
+        variant="outlined"
+        className="tripCard"
         sx={{
-          display: "flex",
-          paddingLeft: "0px !important",
-          justifyContent: "space-between",
+          textDecoration: "none",
+          height: isHovered ? "auto" : "320px",
+          width: 345,
+          transition: "transform 0.3s ease-in-out, height 0.3s ease-in-out",
+          "&:hover": {
+            transform: "scale(1.05)",
+          },
+          position: "relative",
         }}
-        columnGap={2}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => handleClick}
       >
-        <Grid2 size={isHovered ? 8 : 12} width={isHovered ? "75%" : "100%"}>
-          <Typography
-            variant="h5"
-            component="div"
-            fontSize={22}
-            color="primary"
+        <CardActionArea component={NavLink} to={`/trips/${to}`}>
+          <CardMedia
+            sx={{ height: 190, position: "relative" }}
+            image={imageUrl ?? defaultImage}
+            title="road"
+          >
+            {isHovered && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "30%",
+                  bgcolor: "rgba(255, 255, 255, 0.7)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Container sx={{ display: "flex", justifyContent: "center" }}>
+                  <Typography variant="h6">
+                    {"Sale de " + startingPoint}
+                  </Typography>
+                </Container>
+              </Box>
+            )}
+          </CardMedia>
+          <CardContent
             sx={{
-              whiteSpace: "nowrap",
+              maxHeight: 200,
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              transition: "width 0.3s ease-in-out",
-              ...(isHovered && { whiteSpace: "normal" }),
             }}
           >
-            {destination}
-          </Typography>
-        </Grid2>
-        {isHovered && (
-          <Grid2
-            item
-            size={isHovered ? 4 : 2}
-            sx={{
-              display: "flex",
-              width: isHovered ? "fit-content" : "0",
-              marginRight: "0px",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Groups className="groupIcon" />
-            <Typography>
-              {participantsNumber} / {maxPassengers}
+            <Grid2
+              container
+              size={12}
+              sx={{
+                display: "flex",
+                paddingLeft: "0px !important",
+                justifyContent: "space-between",
+              }}
+              columnGap={2}
+            >
+              <Grid2
+                size={isHovered ? 8 : 12}
+                width={isHovered ? "75%" : "100%"}
+              >
+                <Typography
+                  variant="h5"
+                  component="div"
+                  fontSize={22}
+                  color="primary"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    transition: "width 0.3s ease-in-out",
+                    ...(isHovered && { whiteSpace: "normal" }),
+                  }}
+                >
+                  {destination}
+                </Typography>
+              </Grid2>
+              {isHovered && (
+                <Grid2
+                  item
+                  size={isHovered ? 4 : 2}
+                  sx={{
+                    display: "flex",
+                    width: isHovered ? "fit-content" : "0",
+                    marginRight: "0px",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Groups className="groupIcon" />
+                  <Typography>
+                    {participantsNumber} / {maxPassengers}
+                  </Typography>
+                </Grid2>
+              )}
+            </Grid2>
+            <Typography>{formatDate(startDate)}</Typography>
+            {status && isHovered && (
+              <Typography variant="body2" color="text.secondary">
+                Estado: {mapStatusToSpanish(status)}
+              </Typography>
+            )}
+
+            <Typography color="primary" variant="h6">
+              ${estimatedCost}
             </Typography>
-          </Grid2>
+          </CardContent>
+        </CardActionArea>
+        {isHovered && (
+          <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={(e) => handleAction(e, to)}
+            >
+              {action}
+            </Button>
+            {status === "confirmed" && role === 0 && (
+              <Button onClick={handleOpenDialog}>Cancelar inscripción </Button>
+            )}
+          </CardActions>
         )}
-      </Grid2>
-      <Typography>{formatDate(startDate)}</Typography>
-      {status && isHovered && (
-        <Typography variant="body2" color="text.secondary">
-          Estado: {mapStatusToSpanish(status)}
-        </Typography>
-      )}
-      {isHovered && (
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {description}
-        </Typography>
-      )}
-      <Typography color="primary" variant="h6">
-        ${estimatedCost}
-      </Typography>
-    </CardContent>
-  </CardActionArea>
-  {isHovered && (
-    <CardActions>
-      <Button
-        size="small"
-        color="primary"
-        onClick={(e) => handleAction(e, to)}
-      >
-        {action}
-      </Button>
-      {status === "confirmed" && role === 0 && (
-        <Button onClick={handleOpenDialog}>Cancelar inscripción </Button>
-      )}
-    </CardActions>
-  )}
-</Card>
+      </Card>
 
       <DialogCustom
         open={openDialog}

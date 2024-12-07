@@ -206,7 +206,7 @@ export default function TripDetails({
                   <Divider />
                   <Typography variant="body1" color="textSecondary">
                     <strong>Fecha de salida:</strong>{" "}
-                    {formatDate(trip.startDate, true)}
+                    {formatDate(trip.startDate)}
                   </Typography>
                   <Typography variant="body1" color="textSecondary">
                     <strong>Desde:</strong> {trip.origin}
