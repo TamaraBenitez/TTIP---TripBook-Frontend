@@ -46,8 +46,11 @@ const Profile = () => {
     if (!userDataLoading) {
       setIsAccountVerified(user.isUserVerified && user.isEmailVerified);
       setVehicles(user.vehicles);
+
+      setEditedProvince(user.province || "");
+      setEditedLocality(user.locality || "");
     }
-  }, [userDataLoading]);
+  }, [userDataLoading, user]);
 
   useEffect(() => {
     if (user && user.isEmailVerified && user.isUserVerified) {
