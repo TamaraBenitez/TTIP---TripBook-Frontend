@@ -121,6 +121,7 @@ const MapWithGeocoding = ({
       event.noInertia = false
     const marker = event.target;
     const position = marker.getLatLng();
+    handleReverseGeocode(position.lat, position.lng)
     setPoint({...point, coords:[position.lat,position.lng]})
     }, 200);
   }

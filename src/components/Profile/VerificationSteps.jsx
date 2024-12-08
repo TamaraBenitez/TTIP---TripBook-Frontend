@@ -61,7 +61,7 @@ const VerificationSteps = ({ open, onClose, setSuccessAlert }) => {
   }, []);
 
   useEffect(() => {
-    setUser({ ...user, isUserVerified: verifiedDni }); //Trigger userContext useEffect
+    setUser({ ...user, isUserVerified: verifiedDni, nroTramiteDni:tramite, nroDni:dni }); //Trigger userContext useEffect
   }, [verifiedDni]);
 
   const handleSendEmailVerification = async () => {

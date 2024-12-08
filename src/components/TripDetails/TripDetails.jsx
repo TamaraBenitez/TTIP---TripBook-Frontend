@@ -257,11 +257,13 @@ export default function TripDetails({
                               sx={{ justifyContent: "flex-start" }}
                               aria-controls="panel1-content"
                               id="panel1-header"
+                              className="accordion-summary"
                             >
-                              <Stack
-                                direction={"row"}
-                                spacing={2}
+                              <Box
+                                flexDirection={"row"}
+                                display={"flex"}
                                 alignItems={"center"}
+                                gap={1}
                               >
                                 <ListItemIcon
                                   sx={{
@@ -300,7 +302,7 @@ export default function TripDetails({
                                     </a>
                                   </Box>
                                 )}
-                              </Stack>
+                              </Box>
                             </AccordionSummary>
                             <AccordionDetails
                               sx={{
