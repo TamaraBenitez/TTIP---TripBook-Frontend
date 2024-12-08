@@ -219,7 +219,10 @@ const Profile = () => {
           setShowAlert(false);
         }, 5000);
       });
+
     setIsDialogOpen(false);
+    setNewPassword("");
+    setCurrentPassword("");
   };
 
   return (
@@ -475,7 +478,11 @@ const Profile = () => {
       {
         <DialogCustom
           open={isDialogOpen}
-          handleClose={() => setIsDialogOpen(false)}
+          handleClose={() => {
+            setIsDialogOpen(false);
+            setCurrentPassword("");
+            setNewPassword("");
+          }}
           title="Editar perfil"
           dialogContent={
             <Box
