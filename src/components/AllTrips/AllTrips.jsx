@@ -1,12 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import {
-  Skeleton,
-  Card,
-  CardContent,
   Alert,
   Button,
   Slide,
   Box,
+  IconButton,
 } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import Trips from "../TripList/Trips";
@@ -16,7 +14,7 @@ import { TaskAlt } from "@mui/icons-material";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import TripsSkeleton from "../TripList/TripsSkeleton";
 import FilterAccordion from "./FilterAccordion";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import AddTripButton from "../TripList/AddTripButton";
 
 export default function AllTrips() {
   const [trips, setTrips] = useState([]);
@@ -150,6 +148,7 @@ export default function AllTrips() {
             >
               No se encontraron viajes
             </Alert>
+            <AddTripButton />
           </Box>
         ) : (
           <>
