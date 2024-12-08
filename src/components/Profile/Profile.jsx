@@ -175,8 +175,11 @@ const Profile = () => {
     const hasErrors = Object.values(errors).some((error) => error !== "");
 
     if (hasErrors) {
-      console.log("estoy entrando al error, errores", errors);
-      return; // Evitar que se haga la llamada a la API si hay errores
+      return;
+    }
+
+    if (changePassword && (currentPassword == "" || newPassword == "")) {
+      return;
     }
     const updateData = {
       locality: editedLocality,
