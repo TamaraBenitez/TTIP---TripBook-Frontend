@@ -4,6 +4,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import the ca
 import markersImages from "../assets/markersImage.png";
 import people from "../assets/people.webp";
 import ahorro from "../assets/ahorro.webp";
+import seguridad from "../assets/seguridad.jpg";
 import { useUser } from "../user/UserContext";
 import { useEffect } from "react";
 
@@ -23,6 +24,12 @@ const images = [
     imgPath: ahorro,
     title: "Ahorra dinero",
     label: "Compartir viajes te permite ahorrar costos en combustible y más.",
+  },
+  {
+    imgPath: seguridad,
+    title: "Seguridad al inicio de sesión y verificación de perfiles",
+    label:
+      "Nuesta plataforma se asegura que en cada inicio de sesión nuestros usuarios verifiquen su identidad tomandose una imagen en tiempo real. Además, pueden verificar su cuenta desde su perfil, cada usuario aparecera como verificado/no verificado ",
   },
 ];
 
