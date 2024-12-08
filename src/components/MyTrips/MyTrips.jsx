@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Trips from "../TripList/Trips";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import StoreContext from "../../store/storecontext";
 import RibbonHeading from "../RibbonHeading/RibbonHeading";
 import { useUser } from "../../user/UserContext";
@@ -12,6 +12,7 @@ import Tab from "@mui/material/Tab";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItem";
 import FilterAccordion from "../AllTrips/FilterAccordion";
+import AddTripButton from "../TripList/AddTripButton";
 
 export default function MyTrips() {
   const [trips, setTrips] = useState([]);
@@ -28,7 +29,6 @@ export default function MyTrips() {
     status: "",
   });
   const [filtersApplied, setFiltersApplied] = useState(false);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -190,9 +190,12 @@ export default function MyTrips() {
                 filtersApplied ? (
                   <EmptyMessage message="No se encontraron viajes con los filtros aplicados." />
                 ) : (
+                  <>
                   <EmptyMessage
                     message={`Aún no tienes viajes como pasajero.`}
                   />
+                  <AddTripButton />
+          </>
                 )
               ) : (
                 <Trips

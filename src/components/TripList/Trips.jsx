@@ -9,11 +9,10 @@ import {
   Select,
 } from "@mui/material";
 import TripCard from "./TripCard";
-import { AddOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import AddTripButton from "./AddTripButton";
 
 export default function Trips(props) {
-  const theme = useTheme();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6); // Valor por defecto: 6
@@ -86,43 +85,16 @@ export default function Trips(props) {
           </Box>
         ))}
         {currentPage === totalPages || currentTrips.length < itemsPerPage ? (
-          <Box
-            sx={{
-              width: 345,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: 250,
-            }}
-          >
-            <IconButton
-              sx={{
-                height: "100px",
-                width: "100px",
-                color: theme.palette.primary.light,
-                ":hover": {
-                  bgcolor: theme.palette.secondary.light,
-                  color: "white",
-                },
-              }}
-              onClick={() => navigate("/trip")}
-            >
-              <AddOutlined sx={{ fontSize: "-webkit-xxx-large" }} />
-            </IconButton>
-          </Box>
+          <AddTripButton />
         ) : null}
       </Grid2>
 
-      {/* Contenedor para la paginación con el select a la derecha */}
       <Box sx={{ position: "relative", marginTop: 5 }}>
         {" "}
-        {/* Ajuste margen superior */}
-        {/* Paginación centrada */}
         <Box
           sx={{ display: "flex", justifyContent: "center", marginBottom: 0 }}
         >
           {" "}
-          {/* Menor espacio con el ícono "+" */}
           <Pagination
             count={totalPages}
             page={currentPage}
@@ -130,16 +102,15 @@ export default function Trips(props) {
             color="primary"
           />
         </Box>
-        {/* Select alineado a la derecha */}
         <Box sx={{ position: "absolute", top: 0, right: 0 }}>
           <Select
             value={selectedItems ? itemsPerPage : ""}
             onChange={handleItemsPerPageChange}
             displayEmpty
             sx={{
-              minWidth: 100, // Más pequeño
-              fontSize: "0.85rem", // Texto más pequeño
-              marginTop: "-10px", // Movido hacia arriba
+              minWidth: 100,
+              fontSize: "0.85rem",
+              marginTop: "-10px", 
             }}
             renderValue={(value) =>
               value ? `${value} por página` : "Seleccionar"
