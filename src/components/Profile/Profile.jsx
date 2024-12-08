@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   Avatar,
   Box,
@@ -25,6 +25,8 @@ import DialogCustom from "../DialogCustom/DialogCustom";
 import { Edit, ErrorOutline } from "@mui/icons-material";
 import { getProvinces } from "../../utility/Utility";
 import StoreContext from "../../store/storecontext";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 const Profile = () => {
   const [verifyingUser, setVerifyingUser] = useState(false);
@@ -40,7 +42,89 @@ const Profile = () => {
   const { user, userDataLoading, setUser } = useUser();
   const [editedProvince, setEditedProvince] = useState("");
   const [editedLocality, setEditedLocality] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [editedPhoneNumber, setEditedPhoneNumber] = useState("");
+  const [changePassword, setChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    phoneNumber: "",
+    currentPassword: "",
+    newPassword: "",
+  });
   const store = useContext(StoreContext);
+
+  const validate = (field, value) => {
+    let error = "";
+
+    switch (field) {
+      case "email":
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Email inválido";
+        break;
+      case "phoneNumber":
+        if (!/^\d{13}$/.test(value))
+          error =
+            "El número de teléfono debe tener 13 dígitos (por ejemplo, 5491109876543)";
+        break;
+      case "currentPassword":
+        if (changePassword && !value)
+          error = "La contraseña actual es requerida";
+        break;
+      case "newPassword":
+        if (changePassword && !value)
+          error = "La nueva contraseña es requerida";
+        else if (changePassword && value.length < 4)
+          error = "La nueva contraseña debe tener al menos 4 caracteres";
+        break;
+      default:
+        break;
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: error,
+    }));
+  };
+
+  const handleChange = (eOrField, value) => {
+    let name, newValue;
+
+    if (typeof eOrField === "string") {
+      // Caso para Autocomplete (el primer argumento es el nombre del campo)
+      name = eOrField;
+      newValue = value;
+    } else {
+      // Caso para TextField (el argumento es un evento)
+      name = eOrField.target.name;
+      newValue = eOrField.target.value;
+    }
+
+    switch (name) {
+      case "province":
+        setEditedProvince(newValue);
+        break;
+      case "locality":
+        setEditedLocality(newValue);
+        break;
+      case "email":
+        setEditedEmail(newValue);
+        break;
+      case "phoneNumber":
+        setEditedPhoneNumber(newValue);
+        break;
+      case "currentPassword":
+        setCurrentPassword(newValue);
+        break;
+      case "newPassword":
+        setNewPassword(newValue);
+        break;
+      default:
+        break;
+    }
+
+    validate(name, newValue);
+  };
 
   useEffect(() => {
     if (!userDataLoading) {
@@ -49,6 +133,8 @@ const Profile = () => {
 
       setEditedProvince(user.province || "");
       setEditedLocality(user.locality || "");
+      setEditedEmail(user.email || "");
+      setEditedPhoneNumber(user.phoneNumber || "");
     }
   }, [userDataLoading, user]);
 
@@ -76,17 +162,42 @@ const Profile = () => {
     setVehicles([...vehicles, vehicle]);
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.preventDefault();
+
+    validate("email", editedEmail);
+    validate("phoneNumber", editedPhoneNumber);
+    if (changePassword) {
+      validate("currentPassword", currentPassword);
+      validate("newPassword", newPassword);
+    }
+
+    const hasErrors = Object.values(errors).some((error) => error !== "");
+
+    if (hasErrors) {
+      console.log("estoy entrando al error, errores", errors);
+      return; // Evitar que se haga la llamada a la API si hay errores
+    }
+    const updateData = {
+      locality: editedLocality,
+      province: editedProvince,
+      email: editedEmail,
+      phoneNumber: editedPhoneNumber,
+    };
+
+    if (changePassword) {
+      updateData.currentPassword = currentPassword;
+      updateData.password = newPassword;
+    }
     store.services.userService
-      .UpdateUser(user.id, {
-        locality: editedLocality,
-        province: editedProvince,
-      })
+      .UpdateUser(user.id, updateData)
       .then((res) => {
         setUser({
           ...user,
           locality: editedLocality,
           province: editedProvince,
+          email: editedEmail,
+          phoneNumber: editedPhoneNumber,
         });
         setAlertMsg("Información editada con éxito");
         setAlertSeverity("success");
@@ -365,12 +476,20 @@ const Profile = () => {
           title="Editar perfil"
           dialogContent={
             <Box
-              sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                pt: 1,
+                width: "30vw",
+              }}
             >
               <Autocomplete
                 options={getProvinces()}
                 value={editedProvince}
-                onChange={(event, newValue) => setEditedProvince(newValue)}
+                onChange={(event, newValue) =>
+                  handleChange("province", newValue)
+                }
                 renderInput={(params) => (
                   <TextField {...params} label="Provincia" fullWidth />
                 )}
@@ -379,8 +498,61 @@ const Profile = () => {
                 fullWidth
                 label="Localidad"
                 value={editedLocality}
-                onChange={(e) => setEditedLocality(e.target.value)}
+                onChange={(e) => handleChange("locality", e.target.value)}
               />
+              <TextField
+                fullWidth
+                label="Email"
+                required
+                value={editedEmail}
+                onChange={(e) => handleChange("email", e.target.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+              <TextField
+                fullWidth
+                label="Teléfono"
+                required
+                value={editedPhoneNumber}
+                onChange={(e) => handleChange("phoneNumber", e.target.value)}
+                error={!!errors.phoneNumber}
+                helperText={errors.phoneNumber}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={changePassword}
+                    onChange={(e) => setChangePassword(e.target.checked)}
+                  />
+                }
+                label="Cambiar contraseña"
+              />
+              {changePassword && (
+                <>
+                  <TextField
+                    fullWidth
+                    label="Contraseña actual"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) =>
+                      handleChange("currentPassword", e.target.value)
+                    }
+                    error={!!errors.currentPassword}
+                    helperText={errors.currentPassword}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Nueva contraseña"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) =>
+                      handleChange("newPassword", e.target.value)
+                    }
+                    error={!!errors.newPassword}
+                    helperText={errors.newPassword}
+                  />
+                </>
+              )}
             </Box>
           }
           handleConfirm={handleEdit}
