@@ -175,10 +175,13 @@ const Profile = () => {
     const hasErrors = Object.values(errors).some((error) => error !== "");
 
     if (hasErrors) {
+      console.log("esta en hasErrors");
+      console.log(errors);
       return;
     }
 
     if (changePassword && (currentPassword == "" || newPassword == "")) {
+      console.log("esta en la contraseña");
       return;
     }
     const updateData = {
@@ -192,6 +195,7 @@ const Profile = () => {
       updateData.currentPassword = currentPassword;
       updateData.password = newPassword;
     }
+    console.log(updateData);
     store.services.userService
       .UpdateUser(user.id, updateData)
       .then((res) => {
@@ -532,7 +536,13 @@ const Profile = () => {
                 control={
                   <Checkbox
                     checked={changePassword}
-                    onChange={(e) => setChangePassword(e.target.checked)}
+                    onChange={(e) => {
+                      setChangePassword(e.target.checked);
+                      if (!e.target.checked) {
+                        setNewPassword("");
+                        setCurrentPassword("");
+                      }
+                    }}
                   />
                 }
                 label="Cambiar contraseña"
