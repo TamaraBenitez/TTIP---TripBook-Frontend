@@ -348,6 +348,42 @@ export default function TripDetails({
                                     : user.province}
                                 </Typography>
                               </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: 1,
+                                  marginTop: 1,
+                                }}
+                              >
+                                <Tooltip
+                                  title={
+                                    trip.isUserVerified
+                                      ? "Usuario verificado"
+                                      : "Usuario no verificado"
+                                  }
+                                  placement="right"
+                                >
+                                  {user.isUserVerified ? (
+                                    <CheckCircle
+                                      sx={{
+                                        color: "green",
+                                      }}
+                                    />
+                                  ) : (
+                                    <Cancel sx={{ color: "red" }} />
+                                  )}
+                                </Tooltip>
+                                <Typography
+                                  variant="body2"
+                                  color="textSecondary"
+                                >
+                                  {user.isUserVerified
+                                    ? "Usuario verificado"
+                                    : "Usuario no verificado"}
+                                </Typography>
+                              </Box>
                             </AccordionDetails>
                           </Accordion>
                         ))
