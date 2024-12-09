@@ -97,11 +97,13 @@ const VehicleCreation = ({ showCreateCar, handleClose, onSave, userId }) => {
     setLoading(true);
     const vehicleData = {
       model: selectedMake.label + " " + selectedModel?.label,
-      year: parseInt(selectedYear.label),
       plateNumber: licensePlate,
       color: color.label,
       ownerId: userId,
     };
+    if(selectedYear){
+      vehicleData.year = parseInt(selectedYear.label);
+    }
     store.services.vehicleService.CreateVehicle(vehicleData).then((res) => {
       onSave(res.data);
       setLoading(false);
