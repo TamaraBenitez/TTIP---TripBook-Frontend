@@ -86,7 +86,7 @@ export default function ImageSelectionStep({setTripPhoto}) {
   return (
     <div>
       <Grid>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Selecciona o sube una imagen
         </Typography>
 
