@@ -154,12 +154,14 @@ const Profile = () => {
     setTabIndex(newValue);
   };
   const handleCreateVehicle = (vehicle) => {
+    const newVehicles = [...vehicles, vehicle]
     setAlertMsg("Vehiculo registrado exitosamente");
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
     }, 5000);
-    setVehicles([...vehicles, vehicle]);
+    setVehicles(newVehicles);
+    setUser({...user, vehicles: newVehicles})
   };
 
   const handleEdit = (e) => {
