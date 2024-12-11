@@ -1,8 +1,6 @@
-import React from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
-  Navigate,
   Route,
 } from "react-router-dom";
 import AllTrips from "../components/AllTrips/AllTrips";
@@ -29,7 +27,6 @@ const routes = [
   { path: "/trips/:id", component: <TripDetails /> },
   { path: "/trip", component: <TripCreation /> },
   { path: "/mytrips", component: <MyTrips /> },
-  { path: "/verify-email", component: <VerifyEmail /> },
   { path: "/profile", component: <Profile /> },
   { path: "/trip", component: <TripCreation /> },
   { path: "/trip/suscribe/:id", component: <TripRegistration /> },
@@ -37,23 +34,36 @@ const routes = [
 ];
 
 const authRoutes = [
-  { path: "/login", component: <Login /> },
-  { path: "/register", component: <Register /> },
+  {
+    path: "/login",
+    component: <Login />,
+    titleButton: "Registro",
+    navigateTo: "/register",
+  },
+  {
+    path: "/register",
+    component: <Register />,
+    titleButton: "Iniciar Sesión",
+    navigateTo: "/login",
+  },
+  {
+    path: "/verify-email",
+    component: <VerifyEmail />,
+    titleButton: "Ir a iniciar sesión",
+    navigateTo: "/login",
+  },
 ];
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {authRoutes.map(({ path, component }, i) => (
+      {authRoutes.map(({ path, component, titleButton, navigateTo }) => (
         <Route
           key={path}
           path={path}
           element={
             <>
-              <ToolbarAuth
-                titleButton={i == 0 ? "Registro" : "Iniciar Sesion"}
-                navigateTo={i == 0 ? "/register" : "/login"}
-              />
+              <ToolbarAuth titleButton={titleButton} navigateTo={navigateTo} />
               {component}
             </>
           }
