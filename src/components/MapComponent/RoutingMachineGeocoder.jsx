@@ -17,28 +17,28 @@ const RoutingMachineGeocoder = ({
   setCoordToAdd,
   setCalculating,
   manualCalculation,
+  setManualCalculation,
   isRegistering,
   setRoutingMachineCalulatedCoordinates,
   userPickPoint,
 }) => {
-
   useEffect(() => {
     var geocoder;
-    if(!isRegistering){
-       geocoder = L.Control.geocoder({
-      defaultMarkGeocode: false,
-    })
-      .on("markgeocode", (e) => {
-        const latLng = e.geocode.center;
-
-        setCoordToAdd({
-          address: e.geocode.properties.display_name,
-          coords: [latLng.lat, latLng.lng],
-        });
-
-        mapInstance.setView(latLng, 13);
+    if (!isRegistering) {
+      geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false,
       })
-      .addTo(mapInstance);
+        .on("markgeocode", (e) => {
+          const latLng = e.geocode.center;
+
+          setCoordToAdd({
+            address: e.geocode.properties.display_name,
+            coords: [latLng.lat, latLng.lng],
+          });
+
+          mapInstance.setView(latLng, 13);
+        })
+        .addTo(mapInstance);
     }
     if (mapInstance._routingControl) {
       mapInstance.removeControl(mapInstance._routingControl);
@@ -54,7 +54,11 @@ const RoutingMachineGeocoder = ({
         serviceUrl: `https://router.project-osrm.org/route/v1`,
       }),
       createMarker: (i, waypoint) => {
-        if (isRegistering && waypoint.latLng.lat == userPickPoint[0] && waypoint.latLng.lng == userPickPoint[1]) {
+        if (
+          isRegistering &&
+          waypoint.latLng.lat == userPickPoint[0] &&
+          waypoint.latLng.lng == userPickPoint[1]
+        ) {
           return;
         } else {
           const customMarker = new L.Icon({
@@ -70,7 +74,7 @@ const RoutingMachineGeocoder = ({
             icon: customMarker,
           });
           const draggableMarker = L.marker(waypoint.latLng, {
-            draggable: true,
+            draggable: !isRegistering,
           });
           var marker;
           const container = L.DomUtil.create("div");
@@ -82,14 +86,16 @@ const RoutingMachineGeocoder = ({
             const draggableMarkerText = L.DomUtil.create("p", "", container);
             draggableMarkerText.innerHTML = address;
 
-            const deleteBtn = L.DomUtil.create("button", "", container);
-            deleteBtn.innerHTML = "Borrar";
+            if (!isRegistering) {
+              const deleteBtn = L.DomUtil.create("button", "", container);
+              deleteBtn.innerHTML = "Borrar";
 
-            deleteBtn.onclick = () => {
-              const newRoute = points.filter((_, index) => index !== i);
-              setRoute(newRoute);
-              mapInstance.removeLayer(marker);
-            };
+              deleteBtn.onclick = () => {
+                const newRoute = points.filter((_, index) => index !== i);
+                setRoute(newRoute);
+                mapInstance.removeLayer(marker);
+              };
+            }
             marker.on("drag", (e) => {
               mapInstance._userInteracted = true;
             });
@@ -97,12 +103,14 @@ const RoutingMachineGeocoder = ({
             const disclaimerText = L.DomUtil.create("p", "", container);
             const adrdressText = L.DomUtil.create("p", "", container);
             adrdressText.innerHTML = address;
-            
+
             if (!isRegistering) {
               disclaimerText.innerHTML =
                 "Para cambiar este punto haz click en 'EDITAR VIAJE'";
             } else {
-              disclaimerText.innerHTML = `Punto de ${i == 0 ? "partida" : "llegada"}`
+              disclaimerText.innerHTML = `Punto de ${
+                i == 0 ? "partida" : "llegada"
+              }`;
             }
             marker = staticMarker;
           }
@@ -115,7 +123,7 @@ const RoutingMachineGeocoder = ({
     routingControl.on("routesfound", (e) => {
       //Since route recalculation may change a bit the pin positions(if user has placed pin on unreachable place)
       //We get the start point by closeness to the original start point(points[0])
-      if (mapInstance._userInteracted || manualCalculation) {
+      if (mapInstance._userInteracted || (isRegistering && manualCalculation)) {
         for (let index = 0; index < e.routes[0].waypoints.length; index++) {
           const wp = e.routes[0].waypoints[index];
           let geocoder = L.Control.Geocoder.nominatim();
@@ -138,27 +146,29 @@ const RoutingMachineGeocoder = ({
                 index == e.routes[0].waypoints.length - 1 &&
                 filtered.length == e.routes[0].waypoints.length
               ) {
-                let start = filtered.reduce((closestPoint, currentPoint) => {
-                  const currentDistance = calculateMapDistance(
-                    mapInstance,
-                    points[0].coords,
-                    currentPoint.coords
-                  );
+                const finalRoute = points.map(
+                  (targetPoint) =>
+                    filtered.reduce((closestPoint, currentPoint) => {
+                      const currentDistance = calculateMapDistance(
+                        mapInstance,
+                        targetPoint.coords,
+                        currentPoint.coords
+                      );
 
-                  if (
-                    !closestPoint ||
-                    currentDistance < closestPoint.distance
-                  ) {
-                    return { point: currentPoint, distance: currentDistance };
-                  }
+                      if (
+                        !closestPoint ||
+                        currentDistance < closestPoint.distance
+                      ) {
+                        return {
+                          point: currentPoint,
+                          distance: currentDistance,
+                        };
+                      }
 
-                  return closestPoint;
-                }, null)?.point;
-                let tail = filtered.filter(
-                  (point) => !areCoordsEqual(start.coords, point.coords, 3)
+                      return closestPoint;
+                    }, null)?.point
                 );
-                const sorted = sortedCoords(start, tail);
-                setRoute(sorted);
+                setRoute(finalRoute);
                 setCalculating(false);
               }
             },
@@ -175,13 +185,14 @@ const RoutingMachineGeocoder = ({
 
     mapInstance._routingControl = routingControl;
     mapInstance._userInteracted = false;
+    setManualCalculation(false);
 
     return () => {
       if (mapInstance._routingControl) {
         mapInstance.removeControl(mapInstance._routingControl);
         mapInstance._routingControl = null;
       }
-      if(!isRegistering){
+      if (!isRegistering) {
         mapInstance.removeControl(geocoder);
       }
     };

@@ -67,7 +67,7 @@ export default function TripRegistration() {
       pickPoint
     );
     setRoute(updatedCoords);
-    setRouteCalculated(true)
+    setRouteCalculated(true);
   };
   const reverseRouteGeocode = (routeParam) => {
     let geocoder = L.Control.Geocoder.nominatim();
@@ -91,6 +91,7 @@ export default function TripRegistration() {
     setPickPoint({ address: "", coords: [] });
     setIsPointInRange(null);
     setRouteCalculated(false);
+    setCalculating(false);
   };
 
   const enableCalculate = () => {
@@ -170,6 +171,7 @@ export default function TripRegistration() {
             setIsPointInRange={setIsPointInRange}
             routeCalculated={routeCalculated}
             route={route}
+            setRoute={setRoute}
             setMapInstanceProp={setMapInstance}
             setCalculating={setCalculating}
           />
@@ -200,16 +202,17 @@ export default function TripRegistration() {
           </Box>
 
           {isPointInRange == false && ( //Equal false because when is null it shouldn't render
-            <Box sx={{display:"flex", justifyContent:"center", width:"100%"}}>
-            
-            <Typography
-            variant="body2"
-            color="error"
-            sx={{ textAlign: "center", marginTop: 2}}
+            <Box
+              sx={{ display: "flex", justifyContent: "center", width: "100%" }}
             >
-            El punto está fuera de la distancia máxima tolerable.
-            </Typography>
-              </Box>
+              <Typography
+                variant="body2"
+                color="error"
+                sx={{ textAlign: "center", marginTop: 2 }}
+              >
+                El punto está fuera de la distancia máxima tolerable.
+              </Typography>
+            </Box>
           )}
         </Grid2>
       )}

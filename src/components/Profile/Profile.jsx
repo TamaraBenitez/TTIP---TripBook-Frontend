@@ -154,14 +154,14 @@ const Profile = () => {
     setTabIndex(newValue);
   };
   const handleCreateVehicle = (vehicle) => {
-    const newVehicles = [...vehicles, vehicle]
+    const newVehicles = [...vehicles, vehicle];
     setAlertMsg("Vehiculo registrado exitosamente");
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
     }, 5000);
     setVehicles(newVehicles);
-    setUser({...user, vehicles: newVehicles})
+    setUser({ ...user, vehicles: newVehicles });
   };
 
   const handleEdit = (e) => {
@@ -177,13 +177,10 @@ const Profile = () => {
     const hasErrors = Object.values(errors).some((error) => error !== "");
 
     if (hasErrors) {
-      console.log("esta en hasErrors");
-      console.log(errors);
       return;
     }
 
     if (changePassword && (currentPassword == "" || newPassword == "")) {
-      console.log("esta en la contraseña");
       return;
     }
     const updateData = {
@@ -197,7 +194,6 @@ const Profile = () => {
       updateData.currentPassword = currentPassword;
       updateData.password = newPassword;
     }
-    console.log(updateData);
     store.services.userService
       .UpdateUser(user.id, updateData)
       .then((res) => {

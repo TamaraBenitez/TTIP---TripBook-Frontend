@@ -35,23 +35,27 @@ const MapWithGeocoding = ({
   userMarker = null,
   maxTolerableDistance = DEFAULT_TOLERABLE_DISTANCE,
   isPointInRange = null,
-  setIsPointInRange = ()=>{},
+  setIsPointInRange = () => {},
   routeCalculated = null,
-  setCalculating = ()=>{},
-  setMapInstanceProp
+  setCalculating = () => {},
+  setMapInstanceProp,
 }) => {
   const { address, coords, setPoint } = point;
   const [mapInstance, setMapInstance] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [routingMachineCalulatedCoordinates, setRoutingMachineCalulatedCoordinates] = useState([]);
-  
+  const [
+    routingMachineCalulatedCoordinates,
+    setRoutingMachineCalulatedCoordinates,
+  ] = useState([]);
+  const [manualCalculation, setManualCalculation] = useState(isRegistering);
+
   const suggestionsRef = useRef(null);
   const alertMsg =
     "No pudimos encontrar la ubicacion. Intenta nuevamente con mas zoom";
   const greenMarkerIcon = new L.Icon({
     iconUrl: greenMarker,
-    iconSize: [45, 75], 
+    iconSize: [45, 75],
     iconAnchor: [22.5, 75],
     shadowUrl: null,
     shadowAnchor: null,
@@ -69,14 +73,14 @@ const MapWithGeocoding = ({
       }
     });
   };
-  const handleLoadMap = (map) =>{
-    setMapInstance(map)
-    if(setMapInstanceProp){
-      setMapInstanceProp(map)
+  const handleLoadMap = (map) => {
+    setMapInstance(map);
+    if (setMapInstanceProp) {
+      setMapInstanceProp(map);
     }
-  }
+  };
   const handleMapClick = (point) => {
-    if(isRegistering && routeCalculated) return;
+    if (isRegistering && routeCalculated) return;
     handleReverseGeocode(point[0], point[1]);
   };
 
@@ -118,30 +122,39 @@ const MapWithGeocoding = ({
   };
   const handleDragMarker = (event) => {
     setTimeout(() => {
-      event.noInertia = false
-    const marker = event.target;
-    const position = marker.getLatLng();
-    handleReverseGeocode(position.lat, position.lng)
-    setPoint({...point, coords:[position.lat,position.lng]})
+      event.noInertia = false;
+      const marker = event.target;
+      const position = marker.getLatLng();
+      handleReverseGeocode(position.lat, position.lng);
+      setPoint({ ...point, coords: [position.lat, position.lng] });
     }, 200);
-  }
+  };
   // Utility function to find nearest route segment to the given point
   const findNearestRouteSegment = (mapInstance, route, point) => {
-  let minDistance = Infinity;
-  for (let i = 0; i < route.length - 1; i++) {
-    const closestPointOnSegment = L.GeometryUtil.closestOnSegment(mapInstance, point, route[i], route[i + 1]);
-    const segmentPointDistance = calculateMapDistance(mapInstance, closestPointOnSegment, point);
+    let minDistance = Infinity;
+    for (let i = 0; i < route.length - 1; i++) {
+      const closestPointOnSegment = L.GeometryUtil.closestOnSegment(
+        mapInstance,
+        point,
+        route[i],
+        route[i + 1]
+      );
+      const segmentPointDistance = calculateMapDistance(
+        mapInstance,
+        closestPointOnSegment,
+        point
+      );
 
-    if (segmentPointDistance < minDistance) {
-      minDistance = segmentPointDistance;
+      if (segmentPointDistance < minDistance) {
+        minDistance = segmentPointDistance;
+      }
     }
-  }
-  return minDistance;
+    return minDistance;
   };
-  
-  const canEditPoint = () =>{
-    return !routeCalculated
-  }
+
+  const canEditPoint = () => {
+    return !routeCalculated;
+  };
   useEffect(() => {
     //Close the suggestion box with "Escape" or click outside box
     const handleClickOutside = (event) => {
@@ -168,8 +181,17 @@ const MapWithGeocoding = ({
     };
   }, []);
   useEffect(() => {
-    if (isRegistering && userMarker.length && mapInstance && routingMachineCalulatedCoordinates.length > 0) {
-      const distanceToRoute = findNearestRouteSegment(mapInstance, routingMachineCalulatedCoordinates, userMarker);
+    if (
+      isRegistering &&
+      userMarker.length &&
+      mapInstance &&
+      routingMachineCalulatedCoordinates.length > 0
+    ) {
+      const distanceToRoute = findNearestRouteSegment(
+        mapInstance,
+        routingMachineCalulatedCoordinates,
+        userMarker
+      );
       setIsPointInRange(distanceToRoute <= maxTolerableDistance);
     }
   }, [userMarker, mapInstance, routingMachineCalulatedCoordinates]);
@@ -200,7 +222,11 @@ const MapWithGeocoding = ({
               endAdornment: (
                 <Tooltip title="Buscar" placement="top">
                   <InputAdornment position="end">
-                    <IconButton color="primary" disabled={!canEditPoint()} onClick={handleGeocode}>
+                    <IconButton
+                      color="primary"
+                      disabled={!canEditPoint()}
+                      onClick={handleGeocode}
+                    >
                       <Search />
                     </IconButton>
                   </InputAdornment>
@@ -264,18 +290,20 @@ const MapWithGeocoding = ({
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MapHelper onMapLoad={handleLoadMap} />
         <MapClickHandler handleNewMarker={handleMapClick} />
-        {coords.length && (<>
-          {
-          isRegistering ?
-           (<Marker 
-              position={coords}
-              draggable={canEditPoint()} 
-              eventHandlers={{dragend: handleDragMarker}} 
-              riseOnHover={true}
-              icon={greenMarkerIcon} />) :
+        {coords.length && (
+          <>
+            {isRegistering ? (
+              <Marker
+                position={coords}
+                draggable={canEditPoint()}
+                eventHandlers={{ dragend: handleDragMarker }}
+                riseOnHover={true}
+                icon={greenMarkerIcon}
+              />
+            ) : (
               <Marker position={coords} />
-          }
-            
+            )}
+
             {isRegistering && (
               <Circle
                 center={userMarker}
@@ -285,22 +313,24 @@ const MapWithGeocoding = ({
               />
             )}
             <CenterMap coordinates={coords} />
-            
-          </> )
-          }
+          </>
+        )}
         {isRegistering && route && mapInstance && (
-              <RoutingMachineGeocoder
-                mapInstance={mapInstance}
-                points={route}
-                setRoute={setRoute}
-                setCalculating={setCalculating}
-                manualCalculation={true}
-                setCoordToAdd={setPoint}
-                isRegistering={isRegistering}
-                setRoutingMachineCalulatedCoordinates={setRoutingMachineCalulatedCoordinates}
-                userPickPoint={userMarker}
-              />
-            )}
+          <RoutingMachineGeocoder
+            mapInstance={mapInstance}
+            points={route}
+            setRoute={setRoute}
+            setCalculating={setCalculating}
+            manualCalculation={manualCalculation}
+            setManualCalculation={setManualCalculation}
+            setCoordToAdd={setPoint}
+            isRegistering={isRegistering}
+            setRoutingMachineCalulatedCoordinates={
+              setRoutingMachineCalulatedCoordinates
+            }
+            userPickPoint={userMarker}
+          />
+        )}
       </MapContainer>
       <AlertCustom
         inProp={showAlert}
