@@ -136,7 +136,7 @@ export default function MyTrips() {
           textAlign: "center",
         }}
       >
-        <Typography variant="h6" color="textSecondary">
+        <Typography component="span" variant="h6" color="textSecondary">
           {message}
         </Typography>
       </Box>
@@ -191,11 +191,11 @@ export default function MyTrips() {
                   <EmptyMessage message="No se encontraron viajes con los filtros aplicados." />
                 ) : (
                   <>
-                  <EmptyMessage
-                    message={`Aún no tienes viajes como pasajero.`}
-                  />
-                  <AddTripButton />
-          </>
+                    <EmptyMessage
+                      message={`Aún no tienes viajes como pasajero.`}
+                    />
+                    <AddTripButton />
+                  </>
                 )
               ) : (
                 <Trips
@@ -238,13 +238,21 @@ export default function MyTrips() {
                         mb: 2,
                       }}
                     >
-                      <Typography variant="h6" sx={{ color: "#226668" }}>
+                      <Typography
+                        component="span"
+                        variant="h6"
+                        sx={{ color: "#226668" }}
+                      >
                         {trip.origin} ➔ {trip.destination}
                       </Typography>
                       <List>
                         {trip.pendingPassengers.map((passenger) => (
                           <Box key={passenger.tripUserId} sx={{ ml: 2, mt: 1 }}>
-                            <Typography variant="body1" color="textSecondary">
+                            <Typography
+                              component="span"
+                              variant="body1"
+                              color="textSecondary"
+                            >
                               Solicita: {passenger.name} {passenger.surname}
                             </Typography>
                             <ListItemText
@@ -290,7 +298,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          <Typography component="span">{children}</Typography>
         </Box>
       )}
     </div>

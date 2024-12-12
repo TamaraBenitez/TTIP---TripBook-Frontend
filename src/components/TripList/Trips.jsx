@@ -53,7 +53,7 @@ export default function Trips(props) {
       >
         {currentTrips.map((trip) => (
           <Box
-            key={trip.id}
+            key={trip.tripUserId}
             sx={{
               position: "relative",
               width: 345,
@@ -110,7 +110,7 @@ export default function Trips(props) {
             sx={{
               minWidth: 100,
               fontSize: "0.85rem",
-              marginTop: "-10px", 
+              marginTop: "-10px",
             }}
             renderValue={(value) =>
               value ? `${value} por página` : "Seleccionar"
