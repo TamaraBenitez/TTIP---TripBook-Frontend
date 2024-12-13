@@ -185,7 +185,9 @@ const RoutingMachineGeocoder = ({
 
     mapInstance._routingControl = routingControl;
     mapInstance._userInteracted = false;
-    setManualCalculation(false);
+    if (setManualCalculation) {
+      setManualCalculation(false);
+    }
 
     return () => {
       if (mapInstance._routingControl) {
