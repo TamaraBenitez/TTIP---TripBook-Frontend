@@ -39,6 +39,8 @@ const MapWithGeocoding = ({
   routeCalculated = null,
   setCalculating = () => {},
   setMapInstanceProp,
+  setIsLoading,
+  isLoading,
 }) => {
   const { address, coords, setPoint } = point;
   const [mapInstance, setMapInstance] = useState(null);
@@ -49,7 +51,7 @@ const MapWithGeocoding = ({
     setRoutingMachineCalulatedCoordinates,
   ] = useState([]);
   const [manualCalculation, setManualCalculation] = useState(isRegistering);
-
+  const [isGeocoding, setIsGeocoding] = useState(false);
   const suggestionsRef = useRef(null);
   const alertMsg =
     "No pudimos encontrar la ubicacion. Intenta nuevamente con mas zoom";
@@ -69,7 +71,7 @@ const MapWithGeocoding = ({
         setShowAlert(true);
         setTimeout(() => {
           setShowAlert(false);
-        }, 6000);
+        }, 200);
       }
     });
   };
@@ -282,56 +284,60 @@ const MapWithGeocoding = ({
           </Tooltip>
         </Grid2>
       </Grid2>
-      <MapContainer
-        center={[-34.6037, -58.3816]}
-        zoom={13}
-        style={{ height: "400px", width: "100%" }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MapHelper onMapLoad={handleLoadMap} />
-        <MapClickHandler handleNewMarker={handleMapClick} />
-        {coords.length && (
-          <>
-            {isRegistering ? (
-              <Marker
-                position={coords}
-                draggable={canEditPoint()}
-                eventHandlers={{ dragend: handleDragMarker }}
-                riseOnHover={true}
-                icon={greenMarkerIcon}
-              />
-            ) : (
-              <Marker position={coords} />
-            )}
+      {!isLoading && (
+        <MapContainer
+          center={[-34.6037, -58.3816]}
+          zoom={13}
+          style={{ height: "400px", width: "100%" }}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <MapHelper onMapLoad={handleLoadMap} />
+          <MapClickHandler handleNewMarker={handleMapClick} />
+          {coords.length && (
+            <>
+              {isRegistering ? (
+                <Marker
+                  position={coords}
+                  draggable={canEditPoint()}
+                  eventHandlers={{ dragend: handleDragMarker }}
+                  riseOnHover={true}
+                  icon={greenMarkerIcon}
+                />
+              ) : (
+                <Marker position={coords} />
+              )}
 
-            {isRegistering && (
-              <Circle
-                center={userMarker}
-                radius={maxTolerableDistance}
-                pathOptions={{ color: isPointInRange ? "green" : "red" }}
-                fillOpacity={0.2}
-              />
-            )}
-            <CenterMap coordinates={coords} />
-          </>
-        )}
-        {isRegistering && route && mapInstance && (
-          <RoutingMachineGeocoder
-            mapInstance={mapInstance}
-            points={route}
-            setRoute={setRoute}
-            setCalculating={setCalculating}
-            manualCalculation={manualCalculation}
-            setManualCalculation={setManualCalculation}
-            setCoordToAdd={setPoint}
-            isRegistering={isRegistering}
-            setRoutingMachineCalulatedCoordinates={
-              setRoutingMachineCalulatedCoordinates
-            }
-            userPickPoint={userMarker}
-          />
-        )}
-      </MapContainer>
+              {isRegistering && (
+                <Circle
+                  center={userMarker}
+                  radius={maxTolerableDistance}
+                  pathOptions={{ color: isPointInRange ? "green" : "red" }}
+                  fillOpacity={0.2}
+                />
+              )}
+              <CenterMap coordinates={coords} />
+            </>
+          )}
+          {isRegistering && route && mapInstance && !isLoading && (
+            <RoutingMachineGeocoder
+              mapInstance={mapInstance}
+              points={route}
+              setRoute={setRoute}
+              setCalculating={setCalculating}
+              manualCalculation={manualCalculation}
+              setManualCalculation={setManualCalculation}
+              setCoordToAdd={setPoint}
+              isRegistering={isRegistering}
+              setRoutingMachineCalulatedCoordinates={
+                setRoutingMachineCalulatedCoordinates
+              }
+              userPickPoint={userMarker}
+              isGeocoding={isGeocoding}
+              setIsGeocoding={setIsGeocoding}
+            />
+          )}
+        </MapContainer>
+      )}
       <AlertCustom
         inProp={showAlert}
         timeout={500}

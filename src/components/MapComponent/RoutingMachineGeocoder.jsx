@@ -25,6 +25,10 @@ const RoutingMachineGeocoder = ({
   useEffect(() => {
     var geocoder;
     if (!isRegistering) {
+      if (mapInstance.geocoder) {
+        console.log("REMOVING");
+        mapInstance.removeControl(geocoder);
+      }
       geocoder = L.Control.geocoder({
         defaultMarkGeocode: false,
       })
@@ -129,51 +133,61 @@ const RoutingMachineGeocoder = ({
           let geocoder = L.Control.Geocoder.nominatim();
           let { lat, lng } = wp.latLng;
           var filtered = [];
-          reverseGeocode(
-            geocoder,
-            lat,
-            lng,
-            (result) => {
-              if (
-                !filtered.find((point) =>
-                  areCoordsEqual(point.coords, result.coords)
-                )
-              ) {
-                filtered.push(result);
-              }
 
-              if (
-                index == e.routes[0].waypoints.length - 1 &&
-                filtered.length == e.routes[0].waypoints.length
-              ) {
-                const finalRoute = points.map(
-                  (targetPoint) =>
-                    filtered.reduce((closestPoint, currentPoint) => {
-                      const currentDistance = calculateMapDistance(
-                        mapInstance,
-                        targetPoint.coords,
-                        currentPoint.coords
-                      );
+          setTimeout(() => {
+            reverseGeocode(
+              geocoder,
+              lat,
+              lng,
+              (result) => {
+                if (
+                  !filtered.find((point) =>
+                    areCoordsEqual(point.coords, result.coords)
+                  )
+                ) {
+                  filtered.push(result);
+                }
+                if (
+                  index == e.routes[0].waypoints.length - 1 &&
+                  filtered.length == e.routes[0].waypoints.length
+                ) {
+                  let mappedPoints = [];
+                  for (let i = 0; i < points.length; i++) {
+                    const targetPoint = points[i];
+                    let closestPoint = filtered.reduce(
+                      (closestPoint, currentPoint) => {
+                        const currentDistance = calculateMapDistance(
+                          mapInstance,
+                          targetPoint.coords || targetPoint,
+                          currentPoint.coords
+                        );
 
-                      if (
-                        !closestPoint ||
-                        currentDistance < closestPoint.distance
-                      ) {
-                        return {
-                          point: currentPoint,
-                          distance: currentDistance,
-                        };
-                      }
+                        if (
+                          !closestPoint ||
+                          currentDistance < closestPoint.distance
+                        ) {
+                          return {
+                            point: currentPoint,
+                            distance: currentDistance,
+                          };
+                        }
 
-                      return closestPoint;
-                    }, null)?.point
-                );
-                setRoute(finalRoute);
-                setCalculating(false);
-              }
-            },
-            true
-          );
+                        return closestPoint;
+                      },
+                      null
+                    )?.point;
+                    mappedPoints.push(closestPoint);
+                  }
+                  console.log("MAPPED POINTS: ", mappedPoints);
+                  setRoute(mappedPoints);
+                  if (setCalculating) {
+                    setCalculating(false);
+                  }
+                }
+              },
+              true
+            );
+          }, 3000);
         }
       }
       if (setRoutingMachineCalulatedCoordinates) {
@@ -196,6 +210,9 @@ const RoutingMachineGeocoder = ({
       }
       if (!isRegistering) {
         mapInstance.removeControl(geocoder);
+      }
+      if (setCalculating) {
+        setCalculating(false);
       }
     };
   }, [points]);

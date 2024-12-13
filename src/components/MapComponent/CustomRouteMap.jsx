@@ -6,11 +6,7 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder.js";
 import MapHelper from "./MapHelper";
 import RoutingMachineGeocoder from "./RoutingMachineGeocoder";
-const CustomRouteMap = ({
-  startCoord,
-  route,
-  setRoute
-}) => {
+const CustomRouteMap = ({ startCoord, route, setRoute }) => {
   const [mapInstance, setMapInstance] = useState(null);
   const [coordToAdd, setCoordToAdd] = useState({});
   function createButton(label, container, className = "") {
@@ -30,26 +26,33 @@ const CustomRouteMap = ({
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
       }).addTo(mapInstance);
-  
+
       mapInstance.on("click", (e) => {
         const latLng = e.latlng;
-  
+
         const container = L.DomUtil.create("div");
         const addPinBtn = createButton("Agregar pin", container);
-  
+
         L.popup().setContent(container).setLatLng(latLng).openOn(mapInstance);
-  
+
         const geocoder = L.Control.Geocoder.nominatim();
         var mapAdress;
-        geocoder.reverse(latLng, mapInstance.options.crs.scale(mapInstance.getZoom()), (results) => {
-          if (results.length > 0) {
-            const address = results[0].name || "Direccion no disponible";
-            mapAdress = address;
+        geocoder.reverse(
+          latLng,
+          mapInstance.options.crs.scale(mapInstance.getZoom()),
+          (results) => {
+            if (results.length > 0) {
+              const address = results[0].name || "Direccion no disponible";
+              mapAdress = address;
+            }
           }
-        });
-  
+        );
+
         L.DomEvent.on(addPinBtn, "click", () => {
-          setCoordToAdd({coords: [latLng.lat, latLng.lng], address:mapAdress});
+          setCoordToAdd({
+            coords: [latLng.lat, latLng.lng],
+            address: mapAdress,
+          });
         });
       });
     }
@@ -62,7 +65,11 @@ const CustomRouteMap = ({
   }, [coordToAdd]);
 
   return (
-    <MapContainer center={startCoord} zoom={9} style={{ height: "50vh", width:"100%"}}>
+    <MapContainer
+      center={startCoord}
+      zoom={9}
+      style={{ height: "50vh", width: "100%" }}
+    >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

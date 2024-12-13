@@ -69,36 +69,59 @@ export default function TripRegistration() {
     setRoute(updatedCoords);
     setRouteCalculated(true);
   };
-  const reverseRouteGeocode = (routeParam) => {
+  const reverseRouteGeocode = async (routeParam) => {
     let geocoder = L.Control.Geocoder.nominatim();
-    var geocoded = [];
+    const geocoded = [];
+
     for (let i = 0; i < routeParam.length; i++) {
       const coord = routeParam[i];
-      reverseGeocode(geocoder, coord[0], coord[1], (result) => {
+      try {
+        const result = await reverseGeocodeAsync(geocoder, coord[0], coord[1]);
         geocoded.push(result);
-        if (i == routeParam.length - 1) {
-          const start = geocoded.find(
-            (point) =>
-              point.coords[0] == routeParam[0][0] &&
-              point.coords[1] == routeParam[0][1]
-          );
-          const filteredTail = geocoded.filter(
-            (point) =>
-              point.coords[0] !== start.coords[0] &&
-              point.coords[1] !== start.coords[1]
-          );
-          setRoute(
-            sortedCoords(
-              start.coords,
-              filteredTail.map((point) => point.coords)
-            )
-          );
-          setLoading(false);
-        }
-      });
+      } catch (error) {
+        console.error(`Error reverse geocoding coord ${coord}:`, error);
+      }
     }
-  };
 
+    const start = geocoded.find(
+      (point) =>
+        point.coords[0] === routeParam[0][0] &&
+        point.coords[1] === routeParam[0][1]
+    );
+
+    const filteredTail = geocoded.filter(
+      (point) =>
+        point.coords[0] !== start.coords[0] ||
+        point.coords[1] !== start.coords[1]
+    );
+
+    console.log("START: ", start);
+    console.log("TAIL: ", filteredTail);
+
+    const sorted = sortedCoords(
+      start.coords,
+      filteredTail.map((point) => point.coords)
+    );
+
+    console.log("SORTED: ", sorted);
+    setRoute(sorted);
+    setLoading(false);
+  };
+  // Helper function to wrap reverseGeocode in a Promise
+  const reverseGeocodeAsync = (geocoder, lat, lng, specific = false) => {
+    return new Promise((resolve, reject) => {
+      reverseGeocode(
+        geocoder,
+        lat,
+        lng,
+        (result) => {
+          if (result) resolve(result);
+          else reject(new Error("No result from reverseGeocode"));
+        },
+        specific
+      );
+    });
+  };
   const editPoint = () => {
     const filteredRoute = route.filter(
       (point) => point.coords !== pickPoint.coords
@@ -124,7 +147,6 @@ export default function TripRegistration() {
           let coordinates = mapTripCoordinates(
             res.data.tripCoordinates.filter((coord) => !coord.isStart)
           );
-
           let orderedRoute = sortedCoords(
             [startPoint.latitude, startPoint.longitude],
             coordinates
@@ -135,17 +157,13 @@ export default function TripRegistration() {
             longitude: point[1],
           }));
           setTrip(res.data);
-
-          const alreadyRegistered = res.data.participants.find((p) => {
-            return p.id == user.id;
-          });
-          if (alreadyRegistered) setIsRegistered(true);
         })
         .catch((e) => {
           console.log(e);
         });
     }
   }, [trip, userDataLoading]);
+
   return (
     <Box
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
@@ -192,6 +210,8 @@ export default function TripRegistration() {
             setRoute={setRoute}
             setMapInstanceProp={setMapInstance}
             setCalculating={setCalculating}
+            setIsLoading={setLoading}
+            isLoading={loading}
           />
 
           <Box
