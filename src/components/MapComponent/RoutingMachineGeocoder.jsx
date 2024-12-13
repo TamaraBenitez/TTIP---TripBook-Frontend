@@ -45,7 +45,7 @@ const RoutingMachineGeocoder = ({
     }
 
     const routingControl = L.Routing.control({
-      waypoints: points.map((point) => point.coords),
+      waypoints: points.map((point) => point.coords || point),
       routeWhileDragging: true,
       lineOptions: {
         styles: [{ color: "blue", weight: 2 }],

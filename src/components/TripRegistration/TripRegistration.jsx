@@ -72,15 +72,31 @@ export default function TripRegistration() {
   const reverseRouteGeocode = (routeParam) => {
     let geocoder = L.Control.Geocoder.nominatim();
     var geocoded = [];
-    routeParam.forEach((coord, i) => {
-      return reverseGeocode(geocoder, coord[0], coord[1], (result) => {
+    for (let i = 0; i < routeParam.length; i++) {
+      const coord = routeParam[i];
+      reverseGeocode(geocoder, coord[0], coord[1], (result) => {
         geocoded.push(result);
         if (i == routeParam.length - 1) {
-          setRoute(geocoded);
+          const start = geocoded.find(
+            (point) =>
+              point.coords[0] == routeParam[0][0] &&
+              point.coords[1] == routeParam[0][1]
+          );
+          const filteredTail = geocoded.filter(
+            (point) =>
+              point.coords[0] !== start.coords[0] &&
+              point.coords[1] !== start.coords[1]
+          );
+          setRoute(
+            sortedCoords(
+              start.coords,
+              filteredTail.map((point) => point.coords)
+            )
+          );
           setLoading(false);
         }
       });
-    });
+    }
   };
 
   const editPoint = () => {
@@ -113,9 +129,11 @@ export default function TripRegistration() {
             [startPoint.latitude, startPoint.longitude],
             coordinates
           );
-
           reverseRouteGeocode(orderedRoute);
-          res.data.tripCoordinates = orderedRoute;
+          res.data.tripCoordinates = orderedRoute.map((point) => ({
+            latitude: point[0],
+            longitude: point[1],
+          }));
           setTrip(res.data);
 
           const alreadyRegistered = res.data.participants.find((p) => {

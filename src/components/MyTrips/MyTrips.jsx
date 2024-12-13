@@ -191,11 +191,11 @@ export default function MyTrips() {
                   <EmptyMessage message="No se encontraron viajes con los filtros aplicados." />
                 ) : (
                   <>
-                  <EmptyMessage
-                    message={`Aún no tienes viajes como pasajero.`}
-                  />
-                  <AddTripButton />
-          </>
+                    <EmptyMessage
+                      message={`Aún no tienes viajes como pasajero.`}
+                    />
+                    <AddTripButton />
+                  </>
                 )
               ) : (
                 <Trips

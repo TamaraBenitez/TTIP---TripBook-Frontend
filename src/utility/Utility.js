@@ -1,9 +1,15 @@
 import { MAP_MAX_ZOOM } from "./Constants";
 
 export const formatDate = (date, time) => {
-  const dateObj = new Date(date)
+  const dateObj = new Date(date);
 
-  const dateOptions = { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" };
+  const dateOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
   const formattedDate = dateObj.toLocaleDateString(undefined, dateOptions);
 
   let formattedTime = "";
@@ -67,7 +73,6 @@ export const calculateDistance = (point1, point2) => {
 
 export const sortedCoords = (start, route) => {
   const startCoords = Array.isArray(start) ? start : start.coords;
-
   const sorted = route.slice().sort((a, b) => {
     const coordsA = Array.isArray(a) ? a : a.coords;
     const coordsB = Array.isArray(b) ? b : b.coords;
@@ -77,7 +82,6 @@ export const sortedCoords = (start, route) => {
 
     return distanceA - distanceB; // Sort in ascending order of distance
   });
-
   return [start, ...sorted];
 };
 // Map list of trip-coordinate entities to array of coordinates
@@ -110,36 +114,43 @@ export const reverseGeocode = (
 ) => {
   //Given latitude and longitude will reverse geocode and call the callback function with the result
 
-  geocoder.reverse(
-    { lat, lng },
-    MAP_MAX_ZOOM,
-    (results) => {
-      if (results.length > 0) {
-        const addressObtained = results[0].properties.address; 
-         if(specific && addressObtained["display_name"]) {
-          callback({ address: addressObtained["display_name"], coords: [lat, lng] });
-        } else if(specific){
-          var target = addressObtained["neighbourhood"] ? `${addressObtained["neighbourhood"]}, `: " ";
-          target += addressObtained["postcode"] ? `${addressObtained["postcode"]}, ` : " ";
-          target += addressObtained["suburb"] ? `${addressObtained["suburb"]}, ` : " ";
-          target += addressObtained["town"] ? `${addressObtained["town"]}, ` : " ";
-          target +=  `${target}${addressObtained["state_district"]}, ${addressObtained["state"]}`;
-          callback({ address: target, coords: [lat, lng] });
-        }
-        
-        if(addressObtained["city"]) {
-          callback({ address: addressObtained["city"], coords: [lat, lng] });
-        }  else if (addressObtained["state_district"]) {
-          callback({
-            address: `${addressObtained.state_district}, ${addressObtained.state}`,
-            coords: [lat, lng],
-          });
-        }
-      } else {
-        callback({ address: "", coords: [lat, lng] });
+  geocoder.reverse({ lat, lng }, MAP_MAX_ZOOM, (results) => {
+    if (results.length > 0) {
+      const addressObtained = results[0].properties.address;
+      if (specific && addressObtained["display_name"]) {
+        callback({
+          address: addressObtained["display_name"],
+          coords: [lat, lng],
+        });
+      } else if (specific) {
+        var target = addressObtained["neighbourhood"]
+          ? `${addressObtained["neighbourhood"]}, `
+          : " ";
+        target += addressObtained["postcode"]
+          ? `${addressObtained["postcode"]}, `
+          : " ";
+        target += addressObtained["suburb"]
+          ? `${addressObtained["suburb"]}, `
+          : " ";
+        target += addressObtained["town"]
+          ? `${addressObtained["town"]}, `
+          : " ";
+        target += `${target}${addressObtained["state_district"]}, ${addressObtained["state"]}`;
+        callback({ address: target, coords: [lat, lng] });
       }
+
+      if (addressObtained["city"]) {
+        callback({ address: addressObtained["city"], coords: [lat, lng] });
+      } else if (addressObtained["state_district"]) {
+        callback({
+          address: `${addressObtained.state_district}, ${addressObtained.state}`,
+          coords: [lat, lng],
+        });
+      }
+    } else {
+      callback({ address: "", coords: [lat, lng] });
     }
-  );
+  });
 };
 
 export const roundToDecimals = (value, decimals) => {
@@ -156,23 +167,23 @@ export const areCoordsEqual = (coord1, coord2, decimals = 4) => {
   );
 };
 
-export const getCarColors = () =>{
+export const getCarColors = () => {
   return [
     { label: "Verde claro", hex: "#90ee90" },
     { label: "Verde lima", hex: "#32cd32" },
     { label: "Verde oliva claro", hex: "#c4d600" },
-    
+
     { label: "Verde oscuro", hex: "#006400" },
     { label: "Verde bosque", hex: "#228b22" },
     { label: "Verde esmeralda", hex: "#50c878" },
     { label: "Verde jade", hex: "#00a86b" },
     { label: "Verde musgo", hex: "#8a9a5b" },
-    
+
     { label: "Azul claro", hex: "#add8e6" },
     { label: "Azul bebé", hex: "#89cff0" },
     { label: "Azul perla", hex: "#b0e0e6" },
     { label: "Azul hielo", hex: "#f0f8ff" },
-    
+
     { label: "Azul oscuro", hex: "#00008b" },
     { label: "Azul marino", hex: "#000080" },
     { label: "Azul real", hex: "#4169e1" },
@@ -184,7 +195,7 @@ export const getCarColors = () =>{
     { label: "Púrpura", hex: "#6a0dad" },
     { label: "Lila", hex: "#c8a2c8" },
     { label: "Orquídea", hex: "#da70d6" },
-    
+
     { label: "Rosa", hex: "#ffc0cb" },
     { label: "Rosa fuerte", hex: "#ff69b4" },
     { label: "Rosa pastel", hex: "#ffd1dc" },
@@ -194,34 +205,34 @@ export const getCarColors = () =>{
     { label: "Blanco", hex: "#ffffff" },
     { label: "Blanco humo", hex: "#f5f5f5" },
     { label: "Blanco marfil", hex: "#fffff0" },
-    
+
     { label: "Negro", hex: "#000000" },
     { label: "Negro carbón", hex: "#36454f" },
-    
+
     { label: "Rojo", hex: "#ff0000" },
     { label: "Rojo cereza", hex: "#de3163" },
     { label: "Rojo carmesí", hex: "#dc143c" },
-    { label: "Bordó", hex:"#800020"},
-    
+    { label: "Bordó", hex: "#800020" },
+
     { label: "Amarillo", hex: "#ffff00" },
     { label: "Amarillo oro", hex: "#ffd700" },
     { label: "Amarillo pastel", hex: "#fdfd96" },
-    
+
     { label: "Naranja", hex: "#ffa500" },
     { label: "Naranja quemado", hex: "#cc5500" },
     { label: "Naranja coral", hex: "#ff7f50" },
     { label: "Naranja melón", hex: "#fca985" },
     { label: "Naranja pastel", hex: "#ffcc99" },
-  
+
     { label: "Gris", hex: "#808080" },
     { label: "Gris claro", hex: "#d3d3d3" },
     { label: "Gris oscuro", hex: "#2f4f4f" },
     { label: "Gris azulado", hex: "#708090" },
     { label: "Gris pizarra", hex: "#556b2f" },
   ];
-}
+};
 
-export const getProvinces = () =>{
+export const getProvinces = () => {
   return [
     "Buenos Aires",
     "Catamarca",
@@ -247,4 +258,4 @@ export const getProvinces = () =>{
     "Tierra del Fuego",
     "Tucumán",
   ];
-}
+};
